@@ -1,0 +1,179 @@
+[
+  {
+    "record": {
+      "material": {
+        "formula": "Ge0.93Ti0.01Bi0.06Te",
+        "composition": null,
+        "structure": {
+          "space_group": null,
+          "lattice": null,
+          "phase": null
+        }
+      },
+      "properties": [
+        {
+          "name": "figure_of_merit_zT",
+          "value": 1.6,
+          "unit": null,
+          "condition": null
+        }
+      ],
+      "methods": [],
+      "synthesis": {
+        "precursors": null,
+        "temperature": "623",
+        "atmosphere": null,
+        "duration": null
+      },
+      "source": {
+        "doi": null,
+        "page": null,
+        "paragraph": null,
+        "doc_id": "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      },
+      "confidence": 0.4,
+      "extracted_at": "2026-08-04T15:41:16+00:00"
+    },
+    "evidence_ids": [
+      "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+    ],
+    "normalized_formula": "Ge0.93Ti0.01Bi0.06Te",
+    "merged": false
+  },
+  {
+    "record": {
+      "material": {
+        "formula": "PbTe",
+        "composition": null,
+        "structure": {
+          "space_group": null,
+          "lattice": null,
+          "phase": null
+        }
+      },
+      "properties": [],
+      "methods": [],
+      "synthesis": {
+        "precursors": null,
+        "temperature": "900",
+        "atmosphere": null,
+        "duration": null
+      },
+      "source": {
+        "doi": null,
+        "page": null,
+        "paragraph": null,
+        "doc_id": "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1"
+      },
+      "confidence": 0.4,
+      "extracted_at": "2026-08-04T15:41:16+00:00"
+    },
+    "evidence_ids": [
+      "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1"
+    ],
+    "normalized_formula": "PbTe",
+    "merged": false
+  },
+  {
+    "record": {
+      "material": {
+        "formula": "Bi2Te3",
+        "composition": null,
+        "structure": {
+          "space_group": null,
+          "lattice": null,
+          "phase": null
+        }
+      },
+      "properties": [],
+      "methods": [],
+      "synthesis": {
+        "precursors": null,
+        "temperature": null,
+        "atmosphere": null,
+        "duration": null
+      },
+      "source": {
+        "doi": null,
+        "page": null,
+        "paragraph": null,
+        "doc_id": "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+      },
+      "confidence": 0.4,
+      "extracted_at": "2026-08-04T15:41:16+00:00"
+    },
+    "evidence_ids": [
+      "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+    ],
+    "normalized_formula": "Bi2Te3",
+    "merged": false
+  },
+  {
+    "record": {
+      "material": {
+        "formula": "Ca5In2Sb6",
+        "composition": null,
+        "structure": {
+          "space_group": null,
+          "lattice": null,
+          "phase": null
+        }
+      },
+      "properties": [],
+      "methods": [],
+      "synthesis": {
+        "precursors": null,
+        "temperature": "750, 700, 950",
+        "atmosphere": null,
+        "duration": null
+      },
+      "source": {
+        "doi": null,
+        "page": null,
+        "paragraph": null,
+        "doc_id": "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd"
+      },
+      "confidence": 0.4,
+      "extracted_at": "2026-08-04T15:41:16+00:00"
+    },
+    "evidence_ids": [
+      "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd"
+    ],
+    "normalized_formula": "Ca5In2Sb6",
+    "merged": false
+  },
+  {
+    "record": {
+      "material": {
+        "formula": "Bi0.5Sb1.5Te",
+        "composition": null,
+        "structure": {
+          "space_group": null,
+          "lattice": null,
+          "phase": null
+        }
+      },
+      "properties": [],
+      "methods": [],
+      "synthesis": {
+        "precursors": null,
+        "temperature": "600",
+        "atmosphere": null,
+        "duration": null
+      },
+      "source": {
+        "doi": null,
+        "page": null,
+        "paragraph": null,
+        "doc_id": "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811"
+      },
+      "confidence": 0.4,
+      "extracted_at": "2026-08-04T15:41:16+00:00"
+    },
+    "evidence_ids": [
+      "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811"
+    ],
+    "normalized_formula": "Bi0.5Sb1.5Te",
+    "merged": false
+  }
+]

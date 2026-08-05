@@ -1,0 +1,621 @@
+{
+  "domain": "thermoelectric",
+  "n_entries": 29,
+  "n_known_facts": 16,
+  "gaps": [
+    {
+      "gap_type": "未探索方向",
+      "statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coefficient/thermal_conductivity/electrical_conductivity/power_factor 的系统研究",
+      "rationale": "成分空间已有研究基础，性能维度 figure_of_merit_zT/band_gap/seebeck_coefficient/thermal_conductivity/electrical_conductivity/power_factor 存在研究空白，可作路线 A 搜索的候选目标",
+      "formulas": [
+        "Ge0.93Ti0.01Bi0.06Te",
+        "GeTe"
+      ],
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      ],
+      "novelty": "部分已知",
+      "operability": "以 Ge0.93Ti0.01Bi0.06Te 为种子，搜索 figure_of_merit_zT/band_gap/seebeck_coefficient/thermal_conductivity/electrical_conductivity/power_factor 对应的成分-结构-性能关联",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效应缺乏系统研究",
+      "rationale": "Na 单掺杂 PbTe 峰值 zT≈1.4@750K，共掺杂可望进一步降低晶格热导率，但组分-温度联合空间存在空白",
+      "formulas": [
+        "PbTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "以 PbTe 为种子，搜索 Na/Sr/Mg 共掺杂组分-性能关联",
+      "verification": "Sciverse 回查 top5：4 条片段含 PbTe，判定仅供参考，需人工复核",
+      "confidence": 0.7,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>2%）下的相变温度与热电性能关联空白",
+      "rationale": "Ti 掺杂抑制 GeTe 相变并降低晶格热导率，高 Ti 区间性能-相变耦合未系统探索",
+      "formulas": [
+        "Ge0.93Ti0.01Bi0.06Te",
+        "GeTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "以 GeTe 为种子，扫描 Ti 掺杂浓度与 zT 的显式构效关系",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "Bi0.5Sb1.5Te3 中 Cu 间隙掺杂的长期热稳定性（>200 小时工作）与 zT 退化机制未被研究",
+      "rationale": "Cu 间隙原子在热循环下易迁移导致性能漂移，服役稳定性数据缺失",
+      "formulas": [
+        "Bi2Te3"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 Bi2Te3 为种子，评估 Cu 掺杂浓度对稳定性代理指标的影响",
+      "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+      "rationale": "In 掺杂抑制 Sn 空位、Cd 可调节能带收敛，两者协同的电子-声子耦合缺少第一性原理证据",
+      "formulas": [
+        "SnTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 SnTe 为种子，搜索 In/Cd 共掺杂的构效关系",
+      "verification": "Sciverse 回查 top5：5 条片段含 SnTe，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "n 型 Mg3Sb2 热电材料中阳离子空位浓度与载流子迁移率的关系缺乏系统第一性原理计算",
+      "rationale": "Mg 空位补偿受主机制已有定性认识，但空位浓度-迁移率定量关系未建立",
+      "formulas": [
+        "Mg3Sb2"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 Mg3Sb2 为种子，评估掺杂对空位形成能与迁移率代理指标的影响",
+      "verification": "Sciverse 回查 top5：0 条片段含 Mg3Sb2，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "缺失知识连接",
+      "statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf 替代对比缺失）",
+      "rationale": "Zr/Hf/Ti 位点质量涨落是声子散射来源，但组分-热电性能完整映射未建立",
+      "formulas": [
+        "ZrNiSn"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 ZrNiSn 为种子，搜索 Hf/Ti 位点掺杂的构效关系",
+      "verification": "Sciverse 回查 top5：2 条片段含 ZrNiSn，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+      "rationale": "Cu2Se 液相特性带来高热电优值，但离子迁移导致的衰减机制研究不足",
+      "formulas": [
+        "Cu2Se"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 Cu2Se 为种子，评估阴离子取代对稳定性代理指标的影响",
+      "verification": "Sciverse 回查 top5：0 条片段含 Cu2Se，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "矛盾结论",
+      "statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+      "rationale": "不同文献报道最佳双填充分数与峰值 zT 差异明显，可能与合成路线（熔融/热压）相关",
+      "formulas": [
+        "CoSb3"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "以 CoSb3 为种子，扫描 Yb/Ba 填充量并做数据库交叉验证",
+      "verification": "Sciverse 回查 top5：0 条片段含 CoSb3，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "矛盾结论",
+      "statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+      "rationale": "高温下 P 扩散与掺杂效率差异导致实验值分散，缺少统一的浓度-性能曲线",
+      "formulas": [
+        "SiGe"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "以 SiGe 为种子，搜索 P 掺杂浓度-性能显式关系",
+      "verification": "Sciverse 回查 top5：3 条片段含 SiGe，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "缺失知识连接",
+      "statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+      "rationale": "LAST 体系低晶格热导率来源（无序散射）与组分关联不清，阻碍组分设计",
+      "formulas": [
+        "AgSbTe2",
+        "PbTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "以 AgSbTe2/PbTe 为种子，搜索 LAST 合金组分-性能关联",
+      "verification": "Sciverse 回查 top5：0 条片段含 AgSbTe2，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "方法空白",
+      "statement": "热电材料 zT 与带隙/载流子浓度的关系多依赖经验模型，缺乏 ML 势函数覆盖 GeTe 基固溶体的声子输运计算",
+      "rationale": "分子动力学/声子计算需要高精度势函数，GeTe 基体系的 ML 势覆盖空白",
+      "formulas": [
+        "GeTe",
+        "PbTe",
+        "SnTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 GeTe 基固溶体为对象，评估 ML 势函数可覆盖的描述符空间",
+      "verification": "Sciverse 回查 top5：2 条片段含 GeTe，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "方法空白",
+      "statement": "高熵热电（GeTe-PbTe-SnTe 固溶体）组分设计依赖试错实验，尚无符号回归/主动学习驱动的高熵组分设计",
+      "rationale": "高熵组分空间维度高，需搜索算法+LLM 引导定位高性能区间",
+      "formulas": [
+        "GeTe",
+        "PbTe",
+        "SnTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 GeTe/PbTe/SnTe 为种子，用 GA/SR 搜索高熵组分-性能关联",
+      "verification": "Sciverse 回查 top5：3 条片段含 GeTe，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "矛盾结论",
+      "statement": "LAST 体系（AgPb18SbTe20）的 zT 峰位报道在 1.5-2.2 波动，峰位与合成工艺（熔融/球磨）关联未被量化",
+      "rationale": "相同名义组分不同工艺得到差异显著的 zT，工艺-性能映射缺失",
+      "formulas": [
+        "PbTe",
+        "AgSbTe2"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "以 PbTe 为种子，搜索 Ag/Sb 掺杂对 zT 代理指标的影响",
+      "verification": "Sciverse 回查 top5：5 条片段含 PbTe，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+      "rationale": "薄膜热电需要厚度-性能定量关系，现有数据零散且缺乏统一模型",
+      "formulas": [
+        "Bi2Te3"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 Bi2Te3 为种子，评估掺杂浓度对薄膜热电代理指标的影响",
+      "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "缺失知识连接",
+      "statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+      "rationale": "热电与力学两个性质域研究割裂，缺少多目标联合设计方法",
+      "formulas": [
+        "Mg3Sb2"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "以 Mg3Sb2 为种子，评估掺杂对热电-力学联合代理指标的影响",
+      "verification": "Sciverse 回查 top5：0 条片段含 Mg3Sb2，判定仅供参考，需人工复核",
+      "confidence": 0.4,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "矛盾结论",
+      "statement": "GeTe 的 rhombohedral-cubic 相变温度（约 700K）附近热电性能突变的实验与理论计算不一致",
+      "rationale": "相变温度附近能带/输运性质计算与实验偏差大，机制未定论",
+      "formulas": [
+        "GeTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "以 GeTe 为种子，搜索稳定 cubic 相的掺杂策略",
+      "verification": "Sciverse 回查 top5：5 条片段含 GeTe，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "coverage"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单独研究。",
+      "rationale": "已知该组分 zT=1.6，但未区分 Ti 和 Bi 各自对能带结构的影响，缺乏对 Pisarenko 关系的偏离分析。",
+      "formulas": [
+        "Ge0.93Ti0.01Bi0.06Te"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "通过变温 Hall 测量和第一性原理计算有效质量，对比不同 Ti/Bi 比例。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
+      "confidence": 0.8,
+      "source": "llm"
+    },
+    {
+      "gap_type": "矛盾结论",
+      "statement": "Bi2Te3 基材料中，Cu 掺杂对 zT 的提升作用在块体与薄膜体系中存在相反报道，其机制未统一。",
+      "rationale": "块体 Cu 掺杂常提高电导，而薄膜中 Cu 可能形成深能级缺陷，导致 zT 下降，缺乏系统对比。",
+      "formulas": [
+        "Bi2Te3"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "制备相同化学计量比的块体和薄膜样品，对比电输运与缺陷表征。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
+      "confidence": 0.7,
+      "source": "llm"
+    },
+    {
+      "gap_type": "缺失知识连接",
+      "statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+      "rationale": "Ca5In2Sb6 是潜在热电材料，但 In 空位对载流子浓度和晶格热导率的影响未见报道。",
+      "formulas": [
+        "Ca5In2Sb6"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "通过控制合成条件调节 In 空位，结合 Hall 和热导率测量建立关联。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ca5In2Sb6，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "llm"
+    },
+    {
+      "gap_type": "方法空白",
+      "statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展。",
+      "rationale": "现有研究依赖实验试错，缺乏高效计算工具覆盖掺杂体系的相变动力学。",
+      "formulas": [
+        "Ge0.93Ti0.01Bi0.06Te"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "训练 GeTe 基机器学习势，模拟不同掺杂浓度下的声子谱和自由能。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
+      "confidence": 0.7,
+      "source": "llm"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+      "rationale": "Bi-Sb-Te 体系的反位缺陷已知重要，但 Te 化学计量变化对缺陷平衡和热电性能的定量影响缺失。",
+      "formulas": [
+        "Bi0.5Sb1.5Te3"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "制备不同 Te 含量的样品，结合正电子湮灭和电输运测量。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Bi0.5Sb1.5Te3，判定仅供参考，需人工复核",
+      "confidence": 0.8,
+      "source": "llm"
+    },
+    {
+      "gap_type": "矛盾结论",
+      "statement": "PbTe 中 Na 掺杂的最佳浓度报道在 0.5-2 at% 之间波动，与合成方法（SPS vs 熔融）的关联未明确。",
+      "rationale": "不同工艺导致 Na 的固溶度和分布差异，但缺乏统一模型解释。",
+      "formulas": [
+        "PbTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "对比不同工艺制备的 Na 掺杂 PbTe，系统表征 Na 分布和电性能。",
+      "verification": "Sciverse 回查 top5：4 条片段含 PbTe，判定仅供参考，需人工复核",
+      "confidence": 0.7,
+      "source": "llm"
+    },
+    {
+      "gap_type": "缺失知识连接",
+      "statement": "Ca5In2Sb6 与 Bi2Te3 形成异质结时，界面能带对齐对热电输运的影响未被研究。",
+      "rationale": "异质结可能增强 Seebeck 系数，但缺乏理论预测和实验验证。",
+      "formulas": [
+        "Ca5In2Sb6",
+        "Bi2Te3"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "通过第一性原理计算界面能带，并制备多层膜测量输运。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ca5In2Sb6，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "llm"
+    },
+    {
+      "gap_type": "方法空白",
+      "statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+      "rationale": "现有组分优化依赖试错，主动学习可加速发现高 zT 组分。",
+      "formulas": [
+        "Ge1-x-yTixBiyTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "结合实验数据训练代理模型，迭代推荐新组分并验证。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ge1-x-yTixBiyTe，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "llm"
+    },
+    {
+      "gap_type": "未探索方向",
+      "statement": "Bi2Te3 中，Te 空位对晶格热导率的贡献在 300-500K 范围内未被定量分离。",
+      "rationale": "空位散射声子，但缺乏实验与模型结合的系统研究。",
+      "formulas": [
+        "Bi2Te3"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "通过控制 Te 空位浓度，测量热导率并拟合 Debye-Callaway 模型。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
+      "confidence": 0.7,
+      "source": "llm"
+    },
+    {
+      "gap_type": "矛盾结论",
+      "statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+      "rationale": "Bi 掺杂量、合成条件可能影响相变，但缺乏系统对比。",
+      "formulas": [
+        "Ge1-xBixTe"
+      ],
+      "evidence_ids": [],
+      "novelty": "部分已知",
+      "operability": "制备不同 Bi 含量样品，用 DSC 和变温 XRD 统一表征。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ge1-xBixTe，判定仅供参考，需人工复核",
+      "confidence": 0.8,
+      "source": "llm"
+    },
+    {
+      "gap_type": "缺失知识连接",
+      "statement": "Ca5In2Sb6 的 zT 与带隙的关系未被建立，缺乏通过能带工程提升性能的指导。",
+      "rationale": "带隙影响双极效应，但 Ca5In2Sb6 的带隙与 zT 关联未见报道。",
+      "formulas": [
+        "Ca5In2Sb6"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "通过掺杂调节带隙，测量高温 zT 并关联。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Ca5In2Sb6，判定仅供参考，需人工复核",
+      "confidence": 0.5,
+      "source": "llm"
+    },
+    {
+      "gap_type": "方法空白",
+      "statement": "Bi0.5Sb1.5Te3 中，利用高分辨率 TEM 定量分析 Te 空位与反位缺陷的浓度分布未见报道。",
+      "rationale": "缺陷类型和分布对热电性能至关重要，但缺乏原子尺度表征。",
+      "formulas": [
+        "Bi0.5Sb1.5Te3"
+      ],
+      "evidence_ids": [],
+      "novelty": "新知",
+      "operability": "采用 STEM 和 EELS 对缺陷进行统计，结合 DFT 计算验证。",
+      "verification": "Sciverse 回查 top5：0 条片段含 Bi0.5Sb1.5Te3，判定仅供参考，需人工复核",
+      "confidence": 0.6,
+      "source": "llm"
+    }
+  ],
+  "known_facts": [
+    {
+      "id": "kf-01",
+      "relation": "PbTe 掺 Na（p 型）提升热电优值 zT，峰值 zT≈1.4@750K",
+      "host": "PbTe",
+      "dopant": "Na",
+      "concentration": 2.0,
+      "formulas": [
+        "PbTe"
+      ],
+      "reference": "文献常识（Pei et al., Nature 2011，Na 掺杂 PbTe 经典体系）；gaps.json 第 2 条 Gap 陈述",
+      "note": "已知关系召回率评测期望集：搜索算法应从 Gap 种子召回该掺杂方案"
+    },
+    {
+      "id": "kf-02",
+      "relation": "GeTe 掺 Bi 提升 zT（知识库 Ge0.93Ti0.01Bi0.06Te 已报道 zT=1.6，Bi 溶入阳离子位点）",
+      "host": "GeTe",
+      "dopant": "Bi",
+      "concentration": 6.0,
+      "formulas": [
+        "GeTe",
+        "Ge0.93Ti0.01Bi0.06Te"
+      ],
+      "reference": "知识库 data/knowledge_base.json（Ge0.93Ti0.01Bi0.06Te zT=1.6，证据 doc_id 0559a8...）；gaps.json 第 3/28 条 Gap 陈述",
+      "note": "已知关系召回率评测期望集：Bi 浓度取知识库共掺杂中的名义值 6%"
+    },
+    {
+      "id": "kf-03",
+      "relation": "GeTe 掺 Ti 抑制 rhombohedral-cubic 相变并降低晶格热导率",
+      "host": "GeTe",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "formulas": [
+        "GeTe"
+      ],
+      "reference": "gaps.json 第 3 条 Gap 陈述（Ti 掺杂抑制 GeTe 相变）；热电领域文献事实",
+      "note": "已知关系召回率评测期望集：Ti 为 GA 规则网格首元素，浓度 4% 落在常见掺杂区间"
+    },
+    {
+      "id": "kf-04",
+      "relation": "SnTe 掺 In 抑制 Sn 空位、提升 Seebeck 系数",
+      "host": "SnTe",
+      "dopant": "In",
+      "concentration": 4.0,
+      "formulas": [
+        "SnTe"
+      ],
+      "reference": "gaps.json 第 5 条 Gap 陈述（In 掺杂抑制 Sn 空位）；热电领域文献事实",
+      "note": "已知关系召回率评测期望集：In 不在规则网格前 6 元素池，用于测算法覆盖能力边界"
+    },
+    {
+      "id": "kf-05",
+      "relation": "n 型 Mg3Sb2 掺 Bi 提升电导率（n 型化掺杂路线）",
+      "host": "Mg3Sb2",
+      "dopant": "Bi",
+      "concentration": 2.0,
+      "formulas": [
+        "Mg3Sb2"
+      ],
+      "reference": "gaps.json 第 6 条 Gap 区域（n 型 Mg3Sb2 阳离子空位研究）；热电领域文献事实（n 型 Mg3Sb2 掺 Bi/Te）",
+      "note": "已知关系召回率评测期望集：Bi 在规则网格前 6 元素池，浓度 2% 落在网格下限"
+    },
+    {
+      "id": "kf-06",
+      "relation": "n 型 PbTe 掺 I 是经典施主掺杂路线，峰值 zT≈1.4（I 取代 Te 位提供电子）",
+      "host": "PbTe",
+      "dopant": "I",
+      "concentration": 1.0,
+      "formulas": [
+        "PbTe"
+      ],
+      "reference": "热电领域文献事实（I 掺杂 n 型 PbTe，LaLonde et al., Energy Environ. Sci. 2011 体系）",
+      "note": "已知关系召回率评测期望集：I 不在 DOPANT_POOL（超池测点，测算法覆盖边界）"
+    },
+    {
+      "id": "kf-07",
+      "relation": "n 型 PbTe 掺 Sb 提升电导率与功率因子（Sb 施主掺杂路线）",
+      "host": "PbTe",
+      "dopant": "Sb",
+      "concentration": 3.0,
+      "formulas": [
+        "PbTe"
+      ],
+      "reference": "热电领域文献事实（Sb 掺杂 n 型 PbTe）",
+      "note": "已知关系召回率评测期望集：Sb 在 DOPANT_POOL 前 3 位，浓度 3% 落在常见掺杂区间"
+    },
+    {
+      "id": "kf-08",
+      "relation": "GeTe 掺 Sb 稳定 cubic 相并提升 zT（Ge0.94Sb0.06Te 报道 zT≈2.2）",
+      "host": "GeTe",
+      "dopant": "Sb",
+      "concentration": 4.0,
+      "formulas": [
+        "GeTe"
+      ],
+      "reference": "热电领域文献事实（Li et al., Adv. Mater. 2018，Sb 掺杂 GeTe 高 zT）",
+      "note": "已知关系召回率评测期望集：Sb 在 DOPANT_POOL 前 3 位，测算法在 GeTe 体系对不同掺杂元素的区分"
+    },
+    {
+      "id": "kf-09",
+      "relation": "SnTe 掺 Cd 填充阳离子空位、抑制晶格热导率（zT≈1.3）",
+      "host": "SnTe",
+      "dopant": "Cd",
+      "concentration": 5.0,
+      "formulas": [
+        "SnTe"
+      ],
+      "reference": "热电领域文献事实（Cd 掺杂 SnTe 空位工程）",
+      "note": "已知关系召回率评测期望集：Cd 在 DOPANT_POOL 第 9 位——BO 默认池扩至 10 可覆盖，MCTS 池 8 不覆盖，测算法池差异"
+    },
+    {
+      "id": "kf-10",
+      "relation": "SnTe 掺 Ag 提升 Seebeck 系数（Ag 溶入阳离子位点、抑制本征空位）",
+      "host": "SnTe",
+      "dopant": "Ag",
+      "concentration": 5.0,
+      "formulas": [
+        "SnTe"
+      ],
+      "reference": "热电领域文献事实（Ag 掺杂 SnTe 性能提升）",
+      "note": "已知关系召回率评测期望集：Ag 在 DOPANT_POOL 前 6 位，与 kf-04 In 同母体不同掺杂元素，测掺杂元素区分度"
+    },
+    {
+      "id": "kf-11",
+      "relation": "n 型 Bi2Te3-xSex 合金（x≈0.3，即 Se 3%）是经典 n 型热电材料",
+      "host": "Bi2Te3",
+      "dopant": "Se",
+      "concentration": 3.0,
+      "formulas": [
+        "Bi2Te3",
+        "Bi2Te2.7Se0.3"
+      ],
+      "reference": "热电领域文献事实（Bi2Te3-xSex 合金，经典 n 型材料）",
+      "note": "已知关系召回率评测期望集：Se 在 DOPANT_POOL 第 10 位——BO 默认池扩至 10 可覆盖，MCTS 池 8 不覆盖"
+    },
+    {
+      "id": "kf-12",
+      "relation": "Cu 插层 Bi2Te3 提升 zT（Cu 迁移至层间提供载流子，zT≈1.1）",
+      "host": "Bi2Te3",
+      "dopant": "Cu",
+      "concentration": 1.0,
+      "formulas": [
+        "Bi2Te3"
+      ],
+      "reference": "热电领域文献事实（Cu intercalation in Bi2Te3，Mallik et al. 系列工作）",
+      "note": "已知关系召回率评测期望集：Cu 在 DOPANT_POOL 前 6 位，浓度 1% 落在 BO 搜索区间下限"
+    },
+    {
+      "id": "kf-13",
+      "relation": "n 型 Mg3Sb2 掺 Te 提升电导率（Te 取代 Sb 位施主掺杂）",
+      "host": "Mg3Sb2",
+      "dopant": "Te",
+      "concentration": 2.0,
+      "formulas": [
+        "Mg3Sb2"
+      ],
+      "reference": "热电领域文献事实（n 型 Mg3Sb2 掺 Te/Se，Zhang et al. 系列工作）",
+      "note": "已知关系召回率评测期望集：Te 不在 DOPANT_POOL（超池测点，与 kf-05 Bi 同母体对照）"
+    },
+    {
+      "id": "kf-14",
+      "relation": "Half-Heusler ZrNiSn 掺 Nb 提升功率因子（Nb 取代 Zr 位施主掺杂，n 型）",
+      "host": "ZrNiSn",
+      "dopant": "Nb",
+      "concentration": 5.0,
+      "formulas": [
+        "ZrNiSn"
+      ],
+      "reference": "热电领域文献事实（Nb 掺杂 ZrNiSn half-Heusler）",
+      "note": "已知关系召回率评测期望集：Nb 不在 DOPANT_POOL（超池测点）；宿主超热电传统六体系，测算法跨体系泛化"
+    },
+    {
+      "id": "kf-15",
+      "relation": "Skutterudite CoSb3 掺 Fe 部分置换 Co 位（p 型化掺杂，提升功率因子）",
+      "host": "CoSb3",
+      "dopant": "Fe",
+      "concentration": 5.0,
+      "formulas": [
+        "CoSb3"
+      ],
+      "reference": "热电领域文献事实（Fe 置换 CoSb3 笼状结构）",
+      "note": "已知关系召回率评测期望集：Fe 不在 DOPANT_POOL（超池测点）"
+    },
+    {
+      "id": "kf-16",
+      "relation": "p 型 PbTe 掺 Mg 提升 Seebeck 系数与 zT（Mg 溶入阳离子位点）",
+      "host": "PbTe",
+      "dopant": "Mg",
+      "concentration": 2.0,
+      "formulas": [
+        "PbTe"
+      ],
+      "reference": "热电领域文献事实（Mg 掺杂 p 型 PbTe）",
+      "note": "已知关系召回率评测期望集：Mg 不在 DOPANT_POOL（超池测点，与 kf-01 Na 同母体 p 型对照）"
+    }
+  ],
+  "generated_at": "2026-08-04T21:45:24+00:00"
+}

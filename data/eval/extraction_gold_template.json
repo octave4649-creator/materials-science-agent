@@ -1,0 +1,247 @@
+{
+  "dataset": "extraction_f1",
+  "created_at": "2026-08-04T22:50:45.642405+00:00",
+  "instruction": "对每条 chunk 标注 gold 抽取结果（五段式 schema）。只标 chunk 中明确提到的信息，未提及字段留 null/[]。填写完成后保存为 data/eval/extraction_gold.json 再运行本脚本。properties.name 建议使用 zT/band gap/Seebeck coefficient/thermal conductivity/electrical conductivity/power factor 等标准名。",
+  "items": [
+    {
+      "idx": 0,
+      "doc_id": "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c",
+      "chunk": "![](dt=2026-04-08/ht=12/eabb306584d5b1f894f6fa4f091bb2ed903e941a459b41aeaca2c617068f04fd.jpg)\n\nThe effects of band convergence due to Ti doping, optimization of carrier concentration, and a simultaneo",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 1,
+      "doc_id": "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+      "chunk": "In this paper, we present theoretically that the thermoelectric figure of merit for a semiconductor material with a small band gap can be significantly enhanced near the intrinsic doping regime at hig",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 2,
+      "doc_id": "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc",
+      "chunk": "These results, and thermal conductivity calculations for nanostructured $\\mathrm{Bi}_{2}\\mathrm{Te}_{3}$ , suggest that $\\mathrm{Pb}$ or $\\mathrm{Ca}$ doping can enhance the thermoelectric figure of m",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 3,
+      "doc_id": "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd",
+      "chunk": "are found to be higher than $\\kappa_{\\mathrm{min}} = 0.42\\mathrm{Wm}^{-1}\\mathrm{K}^{-1}$ suggesting a further reduction to $\\kappa_{\\mathrm{L}}$ is possible.\n\n# Thermoelectric figure of merit\n\nThe fi",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 4,
+      "doc_id": "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811",
+      "chunk": "Nevertheless, generally the TE figure of merit ZT increases up to six times relative to the undoped starting $\\mathrm{Bi}_{0.5}\\mathrm{Sb}_{1.5}\\mathrm{Te}_3$ alloy over a wide temperature range of 40",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 5,
+      "doc_id": "aaef60abb1ea83d77b4d8a19db45456f3e051b943e65b3d7dc2b5849a71fe10b",
+      "chunk": "",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 6,
+      "doc_id": "fe41d73f3fa1791803790f8d21c6081b2f994f54a9214ab8794a90c3fda80d18",
+      "chunk": "",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 7,
+      "doc_id": "f8ab08da21fa8eb5df215193d20c94a7995baf4100cf72c6bee31352e8840ec8",
+      "chunk": "",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 8,
+      "doc_id": "6f622988d66bf05417b896e9b4d62c371930f972836bf078c91de7dd2885661a",
+      "chunk": "",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    },
+    {
+      "idx": 9,
+      "doc_id": null,
+      "chunk": "",
+      "gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      }
+    }
+  ]
+}

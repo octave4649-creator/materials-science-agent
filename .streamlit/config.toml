@@ -1,0 +1,29 @@
+# Streamlit 主题配置：商务蓝白极简风
+# 主色 深海蓝 #1A5F9E / 背景 冰川白 #F7F9FC / 辅色 薄荷绿 #4ECDC4 / 暖橙 #FF8C42
+
+[theme]
+base = "light"
+primaryColor = "#1A5F9E"
+backgroundColor = "#F7F9FC"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1F2D3D"
+linkColor = "#1A5F9E"
+borderColor = "#E3EBF3"
+codeTextColor = "#1F2D3D"
+codeBackgroundColor = "#F0F5FA"
+font = "sans-serif"
+
+# 语义色：薄荷绿=成功/完成，暖橙=提醒/警告
+greenColor = "#4ECDC4"
+orangeColor = "#FF8C42"
+redColor = "#D9534F"
+blueColor = "#1A5F9E"
+grayColor = "#8C9AA8"
+
+# 图表分类色（蓝白体系 + 语义点缀）
+chartCategoricalColors = ["#1A5F9E", "#4ECDC4", "#FF8C42", "#7BA7CC", "#35506B", "#9AB8D8"]
+chartSequentialColors = ["#EDF4FA", "#C7DCEE", "#A3C4E2", "#7BA7CC", "#5A90BE", "#3D79AE", "#2A689F", "#1F5A8E", "#174C7A", "#0F3E66"]
+
+# 数据表格
+dataframeBorderColor = "#E3EBF3"
+dataframeHeaderBackgroundColor = "#F0F5FA"

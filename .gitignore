@@ -1,0 +1,24 @@
+# 密钥与凭据（禁止入库）
+.env
+*.key
+credentials.json
+
+# 本地缓存与数据
+data/cache/
+results/
+__pycache__/
+*.pyc
+
+# 虚拟环境
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# 大文件
+*.pdf
+*.pptx
+*.docx
