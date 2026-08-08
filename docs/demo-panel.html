@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
 <title>材料科学文献驱动的科学发现智能体 · 现场演示</title>
 <style>
   :root {
@@ -2798,8 +2799,11 @@ function mount() {
   if (search) search.addEventListener("input", renderGapList);
 }
 function switchTab(id) {
-  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
-  [...nav.children].forEach(b => { if (b.textContent === TABS.find(t => t[0] === id)[1]) b.classList.add("active"); });
+  // 高亮 Tab 按钮（限定 button 元素，避免文本节点干扰）
+  document.querySelectorAll("nav button").forEach(b => {
+    if (b.textContent === TABS.find(t => t[0] === id)[1]) b.classList.add("active");
+    else b.classList.remove("active");
+  });
   document.querySelectorAll("section.panel").forEach(s => s.classList.remove("active"));
   let panel = document.getElementById("panel-" + id);
   if (!panel) {
@@ -2810,7 +2814,15 @@ function switchTab(id) {
   }
   panel.innerHTML = RENDER[id]();
   panel.classList.add("active");
-  if (id === "gaps") renderGapList();
+  if (id === "gaps") {
+    renderGapList();
+    // 修复：每次渲染 gaps 面板后重新绑定搜索框事件
+    const search = document.getElementById("gap-search");
+    if (search) {
+      search.addEventListener("input", renderGapList);
+      search.focus();
+    }
+  }
 }
 function renderGapList() {
   const kw = (document.getElementById("gap-search")?.value || "").trim().toLowerCase();
