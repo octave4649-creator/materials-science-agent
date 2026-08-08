@@ -6,7 +6,7 @@ description: "各模块开发过程中积累的实测经验、踩坑与解决方
 created: "2026-08-04"
 updated: "2026-08-08"
 status: "active"
-version: "1.28"
+version: "1.29"
 ---
 
 # 开发经验记录（exp）
@@ -795,3 +795,8 @@ version: "1.28"
 - **现象**：本地验证脚本 `verify_demo_live.py` 已验证六阶段渲染（14 文献/9 Gap/2 发现/10 验证），但公网部署后不能直接复用——BASE URL 写死 127.0.0.1、截图名写死 live_local_shot.png，且 nginx 反代 + 公网访问路径（/demo-live.html）与本地挂载（/demo/demo-live.html）不同
 - **解决**：脚本加 `--online` 参数——`base = ONLINE_BASE if args.online else LOCAL_BASE`，截图名按参数切换（live_online_shot.png / live_local_shot.png）；页面加载 `wait_until="networkidle"` + timeout 60s，轮询最长 240s 等真实流水线跑完（检索 14 篇 → LLM 抽取 → 9 Gap → GA×LLM 2 发现 → 9 验证判定）再断言各区块渲染；console/pageerror 双监听收集 JS 错误
 - **注意**：① 真实流水线是**异步任务**（线程池 + 2s 轮询），验证脚本必须轮询 `#statusLine` 状态文本变化（抽取中→Gap 识别中→搜索中→流水线完成），直接 sleep 固定时长不靠谱（LLM 调用耗时不定）；② 公网验证通过才代表「真正部署成功」——本地 API 通 + nginx 200 只是必要不充分，必须浏览器端到端提交一次真实问题；③ 退出码 1 可能是 SogouPY 日志沙箱噪音（TRAE Sandbox Error: hit restricted SogouPY\LOG）与部署无关，看页面断言输出判断真伪
+
+### 经验 140：改完静态页必须同步「首页别名」——nginx 首页 index.html 不会随 demo-panel.html 自动更新
+- **现象**：用户反馈「没看到真实的体验入口」——实测首页 `http://120.53.11.211/` 只有 demo-pipeline 链接、没有 demo-live 链接，而 `demo-panel.html` 单独访问却正常。原因：之前静态部署把 demo-panel.html 上传为 `index.html`（首页别名），本次部署只更新了 demo-panel.html/demo-pipeline.html/demo-live.html 三个文件，**index.html 仍是旧版快照**，用户访问根路径看到的还是旧首页
+- **解决**：`sudo cp 新版demo-panel.html /var/www/html/index.html` 同步首页别名，再用 playwright 断言首页 `<a href>` 集合是否包含全部入口（本案例从 1 个链接变 2 个），而不是只检查 200
+- **注意**：① 凡是「改动入口导航/hero 链接」的部署，必须同时同步 index.html（若有别名），否则赛事组从根路径进入就「找不到新功能」；② 验证脚本要断言**链接集合**（href + 文案），链接缺失是部署后最常见又最隐蔽的问题；③ 修改静态页后部署「验证目录是否是最新 md5」比凭感觉可靠——git 提交后部署前先 diff 服务器文件与本地文件
