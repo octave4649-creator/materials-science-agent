@@ -1,247 +1,237 @@
 {
   "dataset": "extraction_f1",
-  "created_at": "2026-08-04T22:50:45.642405+00:00",
-  "instruction": "对每条 chunk 标注 gold 抽取结果（五段式 schema）。只标 chunk 中明确提到的信息，未提及字段留 null/[]。填写完成后保存为 data/eval/extraction_gold.json 再运行本脚本。properties.name 建议使用 zT/band gap/Seebeck coefficient/thermal conductivity/electrical conductivity/power factor 等标准名。",
+  "created_at": "2026-08-08T08:37:36.138233+00:00",
+  "instruction": "对每条 chunk 复核 gold 抽取结果（五段式 schema）。只保留 chunk 中明确提到的信息，未提及字段留 null/[]。ai_prefilled=true 的条目为 AI 预填初稿，请对照原文复核修正。填写完成后保存为 data/eval/extraction_gold.json 再运行本脚本。properties.name 建议使用 zT/band gap/Seebeck coefficient/thermal conductivity/electrical conductivity/power factor 等标准名。",
+  "n_skipped_no_chunk": 5,
   "items": [
     {
       "idx": 0,
       "doc_id": "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c",
-      "chunk": "![](dt=2026-04-08/ht=12/eabb306584d5b1f894f6fa4f091bb2ed903e941a459b41aeaca2c617068f04fd.jpg)\n\nThe effects of band convergence due to Ti doping, optimization of carrier concentration, and a simultaneo",
+      "chunk": "![](dt=2026-04-08/ht=12/eabb306584d5b1f894f6fa4f091bb2ed903e941a459b41aeaca2c617068f04fd.jpg)\n\nThe effects of band convergence due to Ti doping, optimization of carrier concentration, and a simultaneously enhanced phonon scattering by additional Bi doping finally contribute to the further enhancement in the thermoelectric figure of merit $ZT$ , as shown in Figure 4d. The highest $ZT$ of 1.6 is achieved for $\\mathrm{Ge}_{0.93}\\mathrm{Ti}_{0.01}\\mathrm{Bi}_{0.06}\\mathrm{Te}$ at $623\\mathrm{K}$ , much higher than that of pristine GeTe and also comparable with those of previous reports.[44,52] Therefore, we have demonstrated the high thermoelectric performance of bulk GeTe-based materials through the strategy of manipulating crystal field effect and point defects effect, making these doped mat",
       "gold": {
         "material": {
-          "formula": null,
-          "composition": null,
+          "formula": "Ge0.93Ti0.01Bi0.06Te",
+          "composition": "Ti and Bi doped GeTe",
           "structure": {
             "space_group": null,
             "lattice": null,
             "phase": null
           }
         },
-        "properties": [],
+        "properties": [
+          {
+            "name": "ZT",
+            "value": 1.6,
+            "unit": null,
+            "condition": "at 623 K"
+          }
+        ],
         "methods": [],
         "synthesis": {
           "precursors": null,
           "temperature": null,
           "atmosphere": null,
           "duration": null
-        }
-      }
+        },
+        "source": {
+          "doi": null,
+          "page": "5",
+          "paragraph": null,
+          "doc_id": "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+        },
+        "confidence": 0.6,
+        "extracted_at": "2026-08-08T08:37:20+00:00"
+      },
+      "ai_prefilled": true,
+      "prefill_note": "AI 预填：gold 初稿来自 LLM 抽取结果（provisional），请对照 chunk 原文复核修正后保存为 data/eval/extraction_gold.json"
     },
     {
       "idx": 1,
       "doc_id": "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
-      "chunk": "In this paper, we present theoretically that the thermoelectric figure of merit for a semiconductor material with a small band gap can be significantly enhanced near the intrinsic doping regime at hig",
+      "chunk": "In this paper, we present theoretically that the thermoelectric figure of merit for a semiconductor material with a small band gap can be significantly enhanced near the intrinsic doping regime at high temperatures via the suppression of bipolar thermal conductivity when the minority carriers are selectively blocked by heterostructure barriers.\n\nThis scheme is particularly effective in nanostructured materials where the lattice thermal conductivity is lowered by increased phonon scatterings at the boundaries, so that the electronic thermal conductivity including the bipolar term is limiting the figure of merit $zT$ . We show that $zT$ can be enhanced to above 3 for p-type PbTe, and above 2 for n-type PbTe at $900\\mathrm{K}$ with minority carrier blocking, when the lattice thermal conductiv",
       "gold": {
         "material": {
-          "formula": null,
-          "composition": null,
+          "formula": "PbTe",
+          "composition": "p-type PbTe, n-type PbTe",
           "structure": {
             "space_group": null,
             "lattice": null,
             "phase": null
           }
         },
-        "properties": [],
-        "methods": [],
+        "properties": [
+          {
+            "name": "thermoelectric figure of merit",
+            "value": 3.0,
+            "unit": null,
+            "condition": "p-type PbTe at 900 K with minority carrier blocking and lattice thermal conductivity 0.3 W/mK"
+          },
+          {
+            "name": "thermoelectric figure of merit",
+            "value": 2.0,
+            "unit": null,
+            "condition": "n-type PbTe at 900 K with minority carrier blocking and lattice thermal conductivity 0.3 W/mK"
+          }
+        ],
+        "methods": [
+          {
+            "type": "OTHER",
+            "software": null,
+            "key_params": "minority carrier blocking, suppression of bipolar thermal conductivity"
+          }
+        ],
         "synthesis": {
           "precursors": null,
           "temperature": null,
           "atmosphere": null,
           "duration": null
-        }
-      }
+        },
+        "source": {
+          "doi": "10.1063/1.4892653",
+          "page": "1",
+          "paragraph": null,
+          "doc_id": "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1"
+        },
+        "confidence": 0.7,
+        "extracted_at": "2026-08-08T08:37:22+00:00"
+      },
+      "ai_prefilled": true,
+      "prefill_note": "AI 预填：gold 初稿来自 LLM 抽取结果（provisional），请对照 chunk 原文复核修正后保存为 data/eval/extraction_gold.json"
     },
     {
       "idx": 2,
       "doc_id": "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc",
-      "chunk": "These results, and thermal conductivity calculations for nanostructured $\\mathrm{Bi}_{2}\\mathrm{Te}_{3}$ , suggest that $\\mathrm{Pb}$ or $\\mathrm{Ca}$ doping can enhance the thermoelectric figure of m",
+      "chunk": "These results, and thermal conductivity calculations for nanostructured $\\mathrm{Bi}_{2}\\mathrm{Te}_{3}$ , suggest that $\\mathrm{Pb}$ or $\\mathrm{Ca}$ doping can enhance the thermoelectric figure of merit ZT to values up to ZT $\\sim 1.7$ , based on an experimentally determined $\\tau$ . Our findings suggest that divalent doping can be attractive for realizing large ZT enhancements in pnictogen chalcogenides.\n\nPublished under license by AIP Publishing. https://doi.org/10.1063/1.5081438\n\n# I. INTRODUCTION",
       "gold": {
         "material": {
-          "formula": null,
-          "composition": null,
+          "formula": "Bi2Te3",
+          "composition": "Pb or Ca doping",
           "structure": {
             "space_group": null,
             "lattice": null,
             "phase": null
           }
         },
-        "properties": [],
-        "methods": [],
+        "properties": [
+          {
+            "name": "thermoelectric figure of merit ZT",
+            "value": 1.7,
+            "unit": null,
+            "condition": "based on experimentally determined tau"
+          }
+        ],
+        "methods": [
+          {
+            "type": "DFT",
+            "software": null,
+            "key_params": "thermal conductivity calculations"
+          }
+        ],
         "synthesis": {
           "precursors": null,
           "temperature": null,
           "atmosphere": null,
           "duration": null
-        }
-      }
+        },
+        "source": {
+          "doi": "10.1063/1.5081438",
+          "page": "1",
+          "paragraph": null,
+          "doc_id": "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+        },
+        "confidence": 0.6,
+        "extracted_at": "2026-08-08T08:37:24+00:00"
+      },
+      "ai_prefilled": true,
+      "prefill_note": "AI 预填：gold 初稿来自 LLM 抽取结果（provisional），请对照 chunk 原文复核修正后保存为 data/eval/extraction_gold.json"
     },
     {
       "idx": 3,
       "doc_id": "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd",
-      "chunk": "are found to be higher than $\\kappa_{\\mathrm{min}} = 0.42\\mathrm{Wm}^{-1}\\mathrm{K}^{-1}$ suggesting a further reduction to $\\kappa_{\\mathrm{L}}$ is possible.\n\n# Thermoelectric figure of merit\n\nThe fi",
+      "chunk": "are found to be higher than $\\kappa_{\\mathrm{min}} = 0.42\\mathrm{Wm}^{-1}\\mathrm{K}^{-1}$ suggesting a further reduction to $\\kappa_{\\mathrm{L}}$ is possible.\n\n# Thermoelectric figure of merit\n\nThe figure of merit, $zT$ , is shown as a function of temperature in Fig. 8a. The $zT$ values increase with increasing doping concentration, reaching values slightly lower than that of Zn-doped $\\mathrm{Ca}_{5}\\mathrm{In}_{2}\\mathrm{Sb}_{6}$ at $750\\mathrm{K}$ . However, due to the smaller band gap and thus earlier onset of minority carrier activation, and lack of dopant activation, the peak $zT$ in Zn-doped $\\mathrm{Sr}_{5}\\mathrm{In}_{2}\\mathrm{Sb}_{6}$ ( $\\sim 0.4$ at $700\\mathrm{K}$ ) is lower and occurs at lower temperatures than the peak $zT$ of the Ca analogue ( $\\sim 0.7$ at $950\\mathrm{K}$ ",
       "gold": {
         "material": {
-          "formula": null,
-          "composition": null,
+          "formula": "Sr5In2Sb6",
+          "composition": "Zn-doped",
           "structure": {
             "space_group": null,
             "lattice": null,
             "phase": null
           }
         },
-        "properties": [],
+        "properties": [
+          {
+            "name": "figure of merit",
+            "value": 0.4,
+            "unit": null,
+            "condition": "at 700 K"
+          },
+          {
+            "name": "lattice thermal conductivity",
+            "value": 0.42,
+            "unit": "Wm^-1K^-1",
+            "condition": "minimum"
+          }
+        ],
         "methods": [],
         "synthesis": {
           "precursors": null,
           "temperature": null,
           "atmosphere": null,
           "duration": null
-        }
-      }
+        },
+        "source": {
+          "doi": null,
+          "page": "4",
+          "paragraph": null,
+          "doc_id": "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd"
+        },
+        "confidence": 0.6,
+        "extracted_at": "2026-08-08T08:37:26+00:00"
+      },
+      "ai_prefilled": true,
+      "prefill_note": "AI 预填：gold 初稿来自 LLM 抽取结果（provisional），请对照 chunk 原文复核修正后保存为 data/eval/extraction_gold.json"
     },
     {
       "idx": 4,
       "doc_id": "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811",
-      "chunk": "Nevertheless, generally the TE figure of merit ZT increases up to six times relative to the undoped starting $\\mathrm{Bi}_{0.5}\\mathrm{Sb}_{1.5}\\mathrm{Te}_3$ alloy over a wide temperature range of 40",
+      "chunk": "Nevertheless, generally the TE figure of merit ZT increases up to six times relative to the undoped starting $\\mathrm{Bi}_{0.5}\\mathrm{Sb}_{1.5}\\mathrm{Te}_3$ alloy over a wide temperature range of 400–600 K. This may provide strong growth in efficiency for the thermoelectric devices based on these materials. Using the new concept of doping the nanostructured materials with fullerenes, it is possible to vary and optimize the transport properties and the functional parameters of thermoelectric materials.\n\nAcknowledgements The authors thank Mr. Zherdev for the samples preparation and Dr. Mavrin for fruitful discussion. This work was supported by the Ministry of Education and Science of the Russian Federation, Grant 02.740.11.0792.\n\n# References\n\nOriginal\n\nPaper\n\nPhys. Status Solidi A 208, No",
       "gold": {
         "material": {
-          "formula": null,
-          "composition": null,
+          "formula": "Bi0.5Sb1.5Te3",
+          "composition": "fullerene-doped nanostructured Bi0.5Sb1.5Te3",
           "structure": {
             "space_group": null,
             "lattice": null,
             "phase": null
           }
         },
-        "properties": [],
-        "methods": [],
-        "synthesis": {
-          "precursors": null,
-          "temperature": null,
-          "atmosphere": null,
-          "duration": null
-        }
-      }
-    },
-    {
-      "idx": 5,
-      "doc_id": "aaef60abb1ea83d77b4d8a19db45456f3e051b943e65b3d7dc2b5849a71fe10b",
-      "chunk": "",
-      "gold": {
-        "material": {
-          "formula": null,
-          "composition": null,
-          "structure": {
-            "space_group": null,
-            "lattice": null,
-            "phase": null
+        "properties": [
+          {
+            "name": "ZT",
+            "value": null,
+            "unit": null,
+            "condition": "increases up to six times relative to undoped starting Bi0.5Sb1.5Te3 alloy over a wide temperature range of 400–600 K"
           }
-        },
-        "properties": [],
+        ],
         "methods": [],
         "synthesis": {
           "precursors": null,
           "temperature": null,
           "atmosphere": null,
           "duration": null
-        }
-      }
-    },
-    {
-      "idx": 6,
-      "doc_id": "fe41d73f3fa1791803790f8d21c6081b2f994f54a9214ab8794a90c3fda80d18",
-      "chunk": "",
-      "gold": {
-        "material": {
-          "formula": null,
-          "composition": null,
-          "structure": {
-            "space_group": null,
-            "lattice": null,
-            "phase": null
-          }
         },
-        "properties": [],
-        "methods": [],
-        "synthesis": {
-          "precursors": null,
-          "temperature": null,
-          "atmosphere": null,
-          "duration": null
-        }
-      }
-    },
-    {
-      "idx": 7,
-      "doc_id": "f8ab08da21fa8eb5df215193d20c94a7995baf4100cf72c6bee31352e8840ec8",
-      "chunk": "",
-      "gold": {
-        "material": {
-          "formula": null,
-          "composition": null,
-          "structure": {
-            "space_group": null,
-            "lattice": null,
-            "phase": null
-          }
+        "source": {
+          "doi": null,
+          "page": "6",
+          "paragraph": null,
+          "doc_id": "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811"
         },
-        "properties": [],
-        "methods": [],
-        "synthesis": {
-          "precursors": null,
-          "temperature": null,
-          "atmosphere": null,
-          "duration": null
-        }
-      }
-    },
-    {
-      "idx": 8,
-      "doc_id": "6f622988d66bf05417b896e9b4d62c371930f972836bf078c91de7dd2885661a",
-      "chunk": "",
-      "gold": {
-        "material": {
-          "formula": null,
-          "composition": null,
-          "structure": {
-            "space_group": null,
-            "lattice": null,
-            "phase": null
-          }
-        },
-        "properties": [],
-        "methods": [],
-        "synthesis": {
-          "precursors": null,
-          "temperature": null,
-          "atmosphere": null,
-          "duration": null
-        }
-      }
-    },
-    {
-      "idx": 9,
-      "doc_id": null,
-      "chunk": "",
-      "gold": {
-        "material": {
-          "formula": null,
-          "composition": null,
-          "structure": {
-            "space_group": null,
-            "lattice": null,
-            "phase": null
-          }
-        },
-        "properties": [],
-        "methods": [],
-        "synthesis": {
-          "precursors": null,
-          "temperature": null,
-          "atmosphere": null,
-          "duration": null
-        }
-      }
+        "confidence": 0.4,
+        "extracted_at": "2026-08-08T08:37:28+00:00"
+      },
+      "ai_prefilled": true,
+      "prefill_note": "AI 预填：gold 初稿来自 LLM 抽取结果（provisional），请对照 chunk 原文复核修正后保存为 data/eval/extraction_gold.json"
     }
   ]
 }

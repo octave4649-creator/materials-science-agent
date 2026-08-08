@@ -52,6 +52,14 @@ def main() -> int:
                 f"VerificationOracle: 加载 {oracle_dir} 真值表"
                 f"（{n_idx} 条候选验证记录，三臂统一数据库真值打分）"
             )
+            # 自动纳入 OQMD 扩面真值表（scripts/expand_oracle_truth.py 产物）
+            truth_dir = RESULTS_DIR / "oracle"
+            if truth_dir.is_dir():
+                n_truth = oracle.load_oracle_truth(truth_dir)
+                print(
+                    f"VerificationOracle: 加载 {truth_dir} OQMD 自动扩面真值表"
+                    f"（+{n_truth} 条母体直查记录，真值表覆盖自动扩面）"
+                )
         else:
             print(f"警告: 验证目录不存在 {oracle_dir}，跳过 oracle（使用 GA 内部分数）")
 

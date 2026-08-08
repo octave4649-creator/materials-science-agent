@@ -9,6 +9,8 @@ alwaysApply: true
 
 **适用范围**：本仓库全部代码、文档、数据与配置。所有提交必须符合本规范，特殊场景需在 PR/提交说明中注明理由。
 
+**材料领域定位**：本项目面向**生物材料**方向——以酵母蛋白质组学（WAYB/WAYC 数据集）为核心研究对象，将酵母菌株视为「功能生物材料」，以基因表达谱作为「材料成分描述符」，以培养条件（温度/培养基/化学扰动）作为「合成加工条件」，构建设效关系（基因表达→菌株性能）发现管线。
+
 **配套文档**：
 
 | 文档 | 用途 |
@@ -16,6 +18,12 @@ alwaysApply: true
 | `DEVELOPMENT-GUIDE.md` | 整体开发路线图与方法论（做什么、怎么做、顺序） |
 | `.trae/rules/01-10-*.md` | 知识库：赛题规则、数据源、材料数据库、Agent 设计等 |
 | `materials-science-kb/` | 知识库导航与清单 |
+
+**核心数据集**：
+
+| 数据集 | 内容 | 规模 |
+|--------|------|------|
+| WAYB/WAYC 酵母蛋白质组学 | 5 种菌株 × 41 种化学扰动 × 5243 蛋白表达量 | 13,412 样本（train+val+test） |
 
 ## 2. 项目结构规范
 
@@ -49,7 +57,12 @@ alwaysApply: true
 │   │   ├── bo_search.py          # 贝叶斯优化
 │   │   └── sr_search.py          # 符号回归
 │   ├── validation/               # 数据库交叉验证
-│   │   └── mp_client.py          # Materials Project 封装
+│   │   ├── mp_client.py          # Materials Project 封装
+│   │   └── proteome_validator.py # 蛋白质组学数据验证（新增：生物材料）
+│   ├── proteome/                 # 生物材料·蛋白质组学管线（新增）
+│   │   ├── data_loader.py        # WAYB/WAYC 数据加载
+│   │   ├── feature_engineering.py # 特征工程（基因表达→材料描述符）
+│   │   └── strain_response.py    # 菌株响应标签构建
 │   ├── report/                   # 报告生成
 │   └── common/                   # 公共模块
 │       ├── llm.py                # LLM 统一接入
@@ -57,6 +70,9 @@ alwaysApply: true
 │       └── logging.py            # 审计日志
 ├── scripts/                      # 运行脚本
 ├── data/                         # 数据（或获取脚本）
+│   ├── raw/                      # 原始数据（WAYB/WAYC CSV）
+│   ├── processed/                # 预处理后的数据
+│   └── cache/                    # 缓存
 ├── results/                      # 实验结果
 ├── docs/                         # 文档
 └── tests/                        # 测试
@@ -157,9 +173,20 @@ class EvidenceChain:
 - 批量查询注意 API 限额，必要时分片 + 限速
 - 引用数据遵守各库使用条款（MP/OQMD/NOMAD 须注明出处）
 
-### 5.3 数据与授权
+### 5.3 蛋白质组学数据规范（生物材料方向）
+
+- WAYB/WAYC 数据集存放在 `data/raw/`，文件名保持原始不变
+- 数据结构：metadata CSV（15列样本元数据）+ proteome CSV（5244列=1 sample_ID + 5243 蛋白特征）
+- 样本划分：train(5920) / val_strain_only(1547) / val_chem_only(1065) / val_both(269) / val_time(157) / test(4454)
+- 5 种酵母菌株：BAI、BAH、DHY210、CEK、CGD
+- 培养条件：温度(30°C/37°C)、培养基(YNB+CSM+葡萄糖/半乳糖)、41 种化学扰动
+- 特征处理：5243 维蛋白表达量需做对数转换/归一化后作为搜索算法输入
+- 特征工程：将基因表达谱聚合为「菌株-条件」级别的材料描述符（e.g. 特定功能蛋白家族的表达模式）
+
+### 5.4 数据与授权
 
 - Sci-Base（CC-BY-4.0）可自由使用，需注明来源
+- WAYB/WAYC 数据集为赛事提供，仅限本次参赛使用
 - 禁止将付费/受限数据混入开源仓库
 - 所有外部数据在 `data/README.md` 中登记：来源、授权、版本、获取时间
 

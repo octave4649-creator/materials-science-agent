@@ -107,6 +107,14 @@ _LATEX_SEQ_RE = re.compile(
 _HTML_SEQ_RE = re.compile(r"(?:[A-Z][a-z]?<sub>\d+</sub>)+")
 # 简单元素-数字组合（如 GeTe / Bi2Te3 / Sr5In2Sb6）
 _SIMPLE_RE = re.compile(r"\b(?:[A-Z][a-z]?\d*(?:\.\d+)?){2,}\b")
+# 掺杂/类型描述（composition 候选）：如 "Ti and Bi doped"、"Zn-doped"、
+# "Pb or Ca doping"、"p-type"。对齐 gold 字段分布（composition 5/5 有值），
+# 补齐规则抽取器从不填 composition 的结构性缺陷（per_field recall=0）。
+_DOPING_PHRASE_RE = re.compile(
+    r"(?:[A-Z][a-z]?\s*(?:and\s+|[a-z]+\s*,\s*|[a-z]+\s+or\s+)?)+"
+    r"[- ]?dop(?:ed|ing)\b"
+    r"|(?:p|n)-type\b"
+)
 
 
 def _is_valid_formula(norm: str) -> bool:
@@ -143,6 +151,21 @@ def _first_formula(text: str) -> str | None:
     return None
 
 
+def _extract_composition(text: str) -> str | None:
+    """提取组成/掺杂描述（composition 字段降级路径）。
+
+    gold 复算揭示规则抽取器 composition recall=0（结构上从不填该字段），
+    此函数补齐：捕获掺杂/类型修饰短语（"Ti and Bi doped"、"Zn-doped"、
+    "Pb or Ca doping"、"p-type"）。取首个命中并清洗多余空白；
+    未命中返回 None（保持空-空跳过语义，不引入误报）。
+    """
+    for m in _DOPING_PHRASE_RE.finditer(text):
+        phrase = re.sub(r"\s+", " ", m.group(0)).strip()
+        if phrase:
+            return phrase
+    return None
+
+
 def rule_based_extract(text: str, *, doc_id: str | None = None) -> ExtractionRecord | None:
     """规则式抽取：从文献片段提取材料知识四元组（降级路径）。
 
@@ -155,7 +178,10 @@ def rule_based_extract(text: str, *, doc_id: str | None = None) -> ExtractionRec
     props = _extract_properties(text)
     synthesis = SynthesisInfo(temperature=", ".join(temps) if temps else None)
     return ExtractionRecord(
-        material=Material(formula=formula),
+        material=Material(
+            formula=formula,
+            composition=_extract_composition(text),
+        ),
         properties=props,
         synthesis=synthesis,
         source=SourceRef(doc_id=doc_id),

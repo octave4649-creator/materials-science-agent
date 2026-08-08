@@ -1,0 +1,288 @@
+{
+  "dataset": "extraction_f1_prefill",
+  "created_at": "2026-08-08T07:52:06.326116+00:00",
+  "llm_model": "deepseek-chat",
+  "n_items": 9,
+  "n_ok": 9,
+  "n_empty": 0,
+  "note": "AI 预填草稿，非最终 gold；人工核对后另存为 extraction_gold.json",
+  "items": [
+    {
+      "idx": 0,
+      "doc_id": "0ad45ef0ea1b31683f50796992f33fa874c355cba265533630981827156d9022",
+      "chunk": "Meanwhile, the surface coating material enhances the ionic conductivity of the cathode material particles and shortens the $\\mathrm{Li^{+}}$ diffusion aisle during the charge-discharge cycles. The coa",
+      "ai_gold": {
+        "material": {
+          "formula": null,
+          "composition": "surface coating material",
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [
+          {
+            "name": "ionic conductivity",
+            "value": null,
+            "unit": null,
+            "condition": "enhanced"
+          }
+        ],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 1,
+      "doc_id": "28ca565b12604ff077fa056efa32075dfa0c7f3917e9992ae2377a707f19e12d",
+      "chunk": "[3] As to doping, a variety of dopants substituted on lithium sites, transition metal sites and oxygen sites have been reported and have optimistic roles in stabilizing the structure and improving ele",
+      "ai_gold": {
+        "material": {
+          "formula": null,
+          "composition": "doping on lithium sites, transition metal sites, and oxygen sites",
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 2,
+      "doc_id": "05c1879dd04f58cd1ec29c59c59c82ccf2ed0b3e6efe6c0f904fa68594829a53",
+      "chunk": "# Insights into stable layered structure of Li-rich cathode material for Lithium-ion Batteries\n\nJuan An, $^{a}$ Liyi Shi, $^{a}$ Guorong Chen, $^{a*}$ Musen Li, $^{a}$ Hongjiang Liu, $^{a}$ Shuai Yuan",
+      "ai_gold": {
+        "material": {
+          "formula": null,
+          "composition": "Li-rich cathode material",
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": "layered"
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 3,
+      "doc_id": "9bb45154bd8f860595ba42eaa4b080257282cb6480ddb3dc77253eef8780dcff",
+      "chunk": "The data that support the findings of this study are available from the corresponding author upon reasonable request.\n\nKeywords: cathode material $\\cdot$ cycle stability $\\cdot$ lithium ion battery $\\",
+      "ai_gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 4,
+      "doc_id": "5b1ba4f240c4ec11a3518281ee7d5e3889ce8e714677c863501b61b32652e597",
+      "chunk": "And $\\mathrm{I}_{(003)}/\\mathrm{I}_{(104)}$ is increased and $\\mathrm{I}_{(006)}{+}\\mathrm{I}_{(102)}/\\mathrm{I}_{(101)}$ is decreased. Through this result, it was confirmed that the structural stabil",
+      "ai_gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 5,
+      "doc_id": "f7c89e00e84b4e97e48c62d5e0041b23c291a468f150ffd43e0d729e7a644dec",
+      "chunk": "The galvanostatic intermittent titration technique, cyclic voltammetry and electrochemical impedance spectroscopy are performed to elucidate the enhanced phase stability of Li[YEBCG].\n\nKeywords: Li-io",
+      "ai_gold": {
+        "material": {
+          "formula": null,
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [],
+        "methods": [
+          {
+            "type": "EXPERIMENT",
+            "software": null,
+            "key_params": "galvanostatic intermittent titration technique, cyclic voltammetry, electrochemical impedance spectroscopy"
+          }
+        ],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 6,
+      "doc_id": "41106767345fa4e51556ac08cbbc2a64f953f3a2ba962a5110d32af3d3363931",
+      "chunk": "Various lithium-ion battery cathode materials have been improved by chlorine doping for different reasons. The reversible capacity and cycle stability of $\\mathrm{LiNi}_{0.7}$ $\\mathrm{Co}_{0.3}\\mathr",
+      "ai_gold": {
+        "material": {
+          "formula": "LiNi0.7Co0.3",
+          "composition": "chlorine doping",
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [
+          {
+            "name": "reversible capacity",
+            "value": null,
+            "unit": null,
+            "condition": null
+          },
+          {
+            "name": "cycle stability",
+            "value": null,
+            "unit": null,
+            "condition": null
+          }
+        ],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 7,
+      "doc_id": "020bdec78e81da1c36452b1175156ffdbfbc18ec6a376c09ff75c9e4e44d7684",
+      "chunk": "fruitful cathode materials for lithium-ion batteries [10]. The cycling stability of $\\mathrm{LiNi_{0.5}Mn_{1.5}O_4}$ is meager, and cycling of this material results in the Jahn-Teller effect and Mn br",
+      "ai_gold": {
+        "material": {
+          "formula": "LiNi0.5Mn1.5O4",
+          "composition": null,
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [
+          {
+            "name": "cycling stability",
+            "value": null,
+            "unit": null,
+            "condition": "cycling results in Jahn-Teller effect and Mn dissolution"
+          }
+        ],
+        "methods": [],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    },
+    {
+      "idx": 8,
+      "doc_id": "871d4ac49ecfcc2d12bca01a8be27818c193e6224a9d3726908c9a9cf7fef34c",
+      "chunk": "The cathode materials were tested electrochemically. The incorporation of Al and Fe into the structure of lithium-enriched materials improved the cyclability and reduced the voltage fade of the cathod",
+      "ai_gold": {
+        "material": {
+          "formula": null,
+          "composition": "Al and Fe incorporated into lithium-enriched materials",
+          "structure": {
+            "space_group": null,
+            "lattice": null,
+            "phase": null
+          }
+        },
+        "properties": [
+          {
+            "name": "cyclability",
+            "value": null,
+            "unit": null,
+            "condition": "improved"
+          },
+          {
+            "name": "voltage fade",
+            "value": null,
+            "unit": null,
+            "condition": "reduced"
+          }
+        ],
+        "methods": [
+          {
+            "type": "EXPERIMENT",
+            "software": null,
+            "key_params": "electrochemical testing"
+          }
+        ],
+        "synthesis": {
+          "precursors": null,
+          "temperature": null,
+          "atmosphere": null,
+          "duration": null
+        }
+      },
+      "instruction": "人工核对：仅保留 chunk 中明确提到的信息；LLM 可能幻觉，未提及字段请改回 null/[]。核对后将 ai_gold 复制为 gold，保存为 data/eval/extraction_gold.json 后运行 python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json"
+    }
+  ]
+}

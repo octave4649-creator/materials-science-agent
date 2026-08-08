@@ -69,6 +69,49 @@ def test_rule_extract_skips_unit_finds_formula() -> None:
     assert rec.material.formula == "Ca5In2Sb6"
 
 
+# ---------- composition 提取（gold 复算 recall=0 修复） ----------
+
+
+def test_rule_extract_composition_doped() -> None:
+    """掺杂描述："Ti and Bi doped" → composition 有值。"""
+    text = "The highest ZT of 1.6 is achieved for Ti and Bi doped GeTe"
+    rec = rule_based_extract(text)
+    assert rec is not None
+    assert rec.material.composition == "Ti and Bi doped"
+
+
+def test_rule_extract_composition_single_doped() -> None:
+    """单元素掺杂："Zn-doped" → composition。"""
+    text = "The peak zT in Zn-doped Sr5In2Sb6 is lower"
+    rec = rule_based_extract(text)
+    assert rec is not None
+    assert rec.material.composition == "Zn-doped"
+
+
+def test_rule_extract_composition_or_doping() -> None:
+    """或掺杂："Pb or Ca doping" → composition。"""
+    text = "Pb or Ca doping can enhance the thermoelectric figure of merit of Bi2Te3"
+    rec = rule_based_extract(text)
+    assert rec is not None
+    assert rec.material.composition == "Pb or Ca doping"
+
+
+def test_rule_extract_composition_ptype() -> None:
+    """载流子类型："p-type" → composition。"""
+    text = "zT can be enhanced for p-type PbTe at 900 K"
+    rec = rule_based_extract(text)
+    assert rec is not None
+    assert rec.material.composition == "p-type"
+
+
+def test_rule_extract_composition_absent_none() -> None:
+    """无掺杂描述 → composition 保持 None（不引入误报）。"""
+    text = "the thermoelectric figure of merit for Ca5In2Sb6"
+    rec = rule_based_extract(text)
+    assert rec is not None
+    assert rec.material.composition is None
+
+
 def test_merge_records_same_formula() -> None:
     """同 formula 记录合并：属性并集。"""
     r1 = ExtractionRecord(

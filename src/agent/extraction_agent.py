@@ -18,7 +18,13 @@ from src.extraction.extractor import merge_records, normalize_formula, rule_base
 from src.extraction.knowledge_base import KnowledgeBase
 from src.extraction.schemas import ExtractionRecord
 
-# LLM 抽取系统提示：schema 约束 + 防幻觉要求
+# LLM 抽取系统提示：schema 约束 + 防幻觉要求。
+# 提示词与 gold 字段分布对齐（data/eval/extraction_gold.json）的 v3 版：
+# - v1 → v2 实验证明「多值逐条列出」「methods 允许 OTHER」等强化约束
+#   导致部分样本（如 p-type/n-type PbTe 片段）整条漏抽（micro F1 0.757→0.667），
+#   故 v3 恢复 v1 简洁结构，仅保留两项温和增量：
+#   * composition 给掺杂/类型描述示例（gold 5/5 有值，避免只填公式）
+#   * properties 给标准名建议（gold 使用 zT/thermal conductivity 等标准名）
 _SYSTEM_PROMPT = """你是材料科学文献信息抽取助手。从给定的文献片段中抽取结构化材料知识，
 严格输出 JSON，不要输出任何解释。
 
@@ -26,7 +32,7 @@ JSON 结构（材料知识五段式）：
 {
   "material": {
     "formula": "化学式（纯文本，如 Ge0.93Ti0.01Bi0.06Te）",
-    "composition": "组成/掺杂描述",
+    "composition": "组成/掺杂/类型描述（如 Ti and Bi doped GeTe、p-type PbTe）",
     "structure": {"space_group": "空间群", "lattice": "晶格参数", "phase": "相"}
   },
   "properties": [{"name": "性能名", "value": 数值或null, "unit": "单位", "condition": "条件"}],
@@ -37,9 +43,12 @@ JSON 结构（材料知识五段式）：
   "source": {"doi": "DOI", "page": "页码", "paragraph": "段落定位"}
 }
 
+性能名优先使用标准名：zT、band gap、Seebeck coefficient、thermal conductivity、
+electrical conductivity、power factor 等。
+
 硬性要求：
 1. 只抽取片段中明确提到的信息，严禁编造（防幻觉）
-2. formula 必须原文出现；性能值必须是原文数值
+2. formula 必须原文出现；性能值必须是原文数值；未给出绝对数值时 value 填 null 但保留 condition
 3. 未提及的字段填 null 或空数组
 4. "confidence" 字段：0-1，反映信息完整度
 """

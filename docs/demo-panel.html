@@ -1,0 +1,2830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>材料科学文献驱动的科学发现智能体 · 现场演示</title>
+<style>
+  :root {
+    --deep-blue: #1A5F9E; --ice: #F7F9FC; --mint: #4ECDC4; --warm: #FF8C42;
+    --ink: #2B3A4A; --muted: #8C9AA8; --line: #E3EAF2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+         background: var(--ice); color: var(--ink); line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, #12456F 0%, var(--deep-blue) 55%, #1E7BB5 100%);
+          color: #fff; padding: 44px 32px 36px; text-align: center; }
+  .hero h1 { font-size: 26px; font-weight: 700; letter-spacing: 1px; }
+  .hero p { margin-top: 10px; font-size: 14px; color: #D8E6F5; }
+  .stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 22px; }
+  .stat { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+          border-radius: 12px; padding: 10px 18px; min-width: 108px; }
+  .stat b { display: block; font-size: 20px; }
+  .stat span { font-size: 12px; color: #C7DAF0; }
+  nav { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 4px;
+        background: #fff; border-bottom: 1px solid var(--line); padding: 8px 16px;
+        box-shadow: 0 4px 20px rgba(26,95,158,0.06); }
+  nav button { border: none; background: transparent; color: var(--muted); font-size: 13px;
+               padding: 8px 14px; border-radius: 10px; cursor: pointer; transition: all .18s; }
+  nav button:hover { background: #EEF4FB; color: var(--deep-blue); }
+  nav button.active { background: var(--deep-blue); color: #fff; font-weight: 600; }
+  main { max-width: 1080px; margin: 24px auto 60px; padding: 0 20px; }
+  section.panel { display: none; }
+  section.panel.active { display: block; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 12px;
+          padding: 18px 20px; margin-bottom: 16px;
+          box-shadow: 0 4px 20px rgba(26,95,158,0.08); }
+  .card h2 { font-size: 16px; margin-bottom: 12px; color: var(--deep-blue); }
+  .card h3 { font-size: 14px; margin: 10px 0 6px; color: var(--ink); }
+  .tag { display: inline-block; font-size: 12px; padding: 1px 10px; border-radius: 999px;
+         margin-right: 6px; vertical-align: middle; }
+  .tag.novelty-new { background: #E4F7F5; color: #0E8F86; }
+  .tag.novelty-partial { background: #FFF1E6; color: #D9701B; }
+  .tag.novelty-unknown { background: #EEF0F4; color: var(--muted); }
+  .tag.ev { background: #E9F1FB; color: var(--deep-blue); }
+  .tag.verdict-known { background: #E4F7F5; color: #0E8F86; }
+  .tag.verdict-新知 { background: #E4F7F5; color: #0E8F86; }
+  .tag.verdict-反例 { background: #FDEBEA; color: #C73E3E; }
+  .tag.verdict-验证失败 { background: #FFF1E6; color: #D9701B; }
+  .tag.verdict-未知 { background: #EEF0F4; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--deep-blue); font-weight: 600; background: #F4F8FD; }
+  .pill { display: inline-block; min-width: 34px; text-align: center; padding: 1px 8px;
+          border-radius: 8px; font-size: 12px; font-weight: 600; }
+  .pill.good { background: #E4F7F5; color: #0E8F86; }
+  .pill.mid { background: #FFF1E6; color: #D9701B; }
+  .pill.low { background: #FDEBEA; color: #C73E3E; }
+  .flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; }
+  .flow .step { background: #EEF4FB; color: var(--deep-blue); border-radius: 10px;
+                padding: 8px 14px; font-weight: 600; }
+  .flow .arrow { color: var(--muted); }
+  .muted { color: var(--muted); font-size: 12px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .gap-item, .find-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px;
+                          margin-bottom: 10px; background: #FCFEFF; }
+  .gap-item .stmt { font-size: 13px; }
+  .find-item .rel { font-size: 13px; font-weight: 600; color: var(--deep-blue); }
+  .find-item .hyp { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .search-box { width: 100%; padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px;
+                font-size: 13px; margin-bottom: 12px; outline: none; }
+  .search-box:focus { border-color: var(--deep-blue); }
+  .note { background: #F4F8FD; border-left: 3px solid var(--deep-blue); border-radius: 8px;
+          padding: 10px 14px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 24px 0 40px; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>材料科学文献驱动的科学发现智能体</h1>
+  <p>GOAI 赛道三 · 方向三｜基本任务（文献调研四 Agent）+ 路线 A（构效关系发现）｜主攻热电材料</p>
+  <div class="stats" id="stats"></div>
+</header>
+<nav id="tabs"></nav>
+<main id="main"></main>
+<footer>演示面板数据为真实运行产物快照（gaps / knowledge_base / findings / validation / recall / ablation / ensemble），
+  由 <code>scripts/build_demo_panel.py</code> 聚合生成 · 自包含无外部依赖，双击即开</footer>
+
+<script id="demo-data" type="application/json">{
+ "domain": "热电材料 · 掺杂-性能构效关系（路线 A）",
+ "gaps": {
+  "n_gaps": 29,
+  "gaps": [
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coefficient/thermal_conductivity/electrical_conductivity/power_factor 的系统研究",
+    "novelty": "部分已知",
+    "formulas": [
+     "Ge0.93Ti0.01Bi0.06Te",
+     "GeTe"
+    ],
+    "n_evidence": 1,
+    "operability": "以 Ge0.93Ti0.01Bi0.06Te 为种子，搜索 figure_of_merit_zT/band_gap/seebeck_coefficient/thermal_conductivity/electrical_conductivity/power_factor 对应的成分-结构-性能关联"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效应缺乏系统研究",
+    "novelty": "部分已知",
+    "formulas": [
+     "PbTe"
+    ],
+    "n_evidence": 2,
+    "operability": "以 PbTe 为种子，搜索 Na/Sr/Mg 共掺杂组分-性能关联"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>2%）下的相变温度与热电性能关联空白",
+    "novelty": "部分已知",
+    "formulas": [
+     "Ge0.93Ti0.01Bi0.06Te",
+     "GeTe"
+    ],
+    "n_evidence": 1,
+    "operability": "以 GeTe 为种子，扫描 Ti 掺杂浓度与 zT 的显式构效关系"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "Bi0.5Sb1.5Te3 中 Cu 间隙掺杂的长期热稳定性（>200 小时工作）与 zT 退化机制未被研究",
+    "novelty": "新知",
+    "formulas": [
+     "Bi2Te3"
+    ],
+    "n_evidence": 1,
+    "operability": "以 Bi2Te3 为种子，评估 Cu 掺杂浓度对稳定性代理指标的影响"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+    "novelty": "新知",
+    "formulas": [
+     "SnTe"
+    ],
+    "n_evidence": 5,
+    "operability": "以 SnTe 为种子，搜索 In/Cd 共掺杂的构效关系"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "n 型 Mg3Sb2 热电材料中阳离子空位浓度与载流子迁移率的关系缺乏系统第一性原理计算",
+    "novelty": "新知",
+    "formulas": [
+     "Mg3Sb2"
+    ],
+    "n_evidence": 4,
+    "operability": "以 Mg3Sb2 为种子，评估掺杂对空位形成能与迁移率代理指标的影响"
+   },
+   {
+    "idx": null,
+    "gap_type": "缺失知识连接",
+    "statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf 替代对比缺失）",
+    "novelty": "新知",
+    "formulas": [
+     "ZrNiSn"
+    ],
+    "n_evidence": 1,
+    "operability": "以 ZrNiSn 为种子，搜索 Hf/Ti 位点掺杂的构效关系"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+    "novelty": "新知",
+    "formulas": [
+     "Cu2Se"
+    ],
+    "n_evidence": 2,
+    "operability": "以 Cu2Se 为种子，评估阴离子取代对稳定性代理指标的影响"
+   },
+   {
+    "idx": null,
+    "gap_type": "矛盾结论",
+    "statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+    "novelty": "部分已知",
+    "formulas": [
+     "CoSb3"
+    ],
+    "n_evidence": 3,
+    "operability": "以 CoSb3 为种子，扫描 Yb/Ba 填充量并做数据库交叉验证"
+   },
+   {
+    "idx": null,
+    "gap_type": "矛盾结论",
+    "statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+    "novelty": "部分已知",
+    "formulas": [
+     "SiGe"
+    ],
+    "n_evidence": 3,
+    "operability": "以 SiGe 为种子，搜索 P 掺杂浓度-性能显式关系"
+   },
+   {
+    "idx": null,
+    "gap_type": "缺失知识连接",
+    "statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+    "novelty": "部分已知",
+    "formulas": [
+     "AgSbTe2",
+     "PbTe"
+    ],
+    "n_evidence": 2,
+    "operability": "以 AgSbTe2/PbTe 为种子，搜索 LAST 合金组分-性能关联"
+   },
+   {
+    "idx": null,
+    "gap_type": "方法空白",
+    "statement": "热电材料 zT 与带隙/载流子浓度的关系多依赖经验模型，缺乏 ML 势函数覆盖 GeTe 基固溶体的声子输运计算",
+    "novelty": "新知",
+    "formulas": [
+     "GeTe",
+     "PbTe",
+     "SnTe"
+    ],
+    "n_evidence": 7,
+    "operability": "以 GeTe 基固溶体为对象，评估 ML 势函数可覆盖的描述符空间"
+   },
+   {
+    "idx": null,
+    "gap_type": "方法空白",
+    "statement": "高熵热电（GeTe-PbTe-SnTe 固溶体）组分设计依赖试错实验，尚无符号回归/主动学习驱动的高熵组分设计",
+    "novelty": "新知",
+    "formulas": [
+     "GeTe",
+     "PbTe",
+     "SnTe"
+    ],
+    "n_evidence": 7,
+    "operability": "以 GeTe/PbTe/SnTe 为种子，用 GA/SR 搜索高熵组分-性能关联"
+   },
+   {
+    "idx": null,
+    "gap_type": "矛盾结论",
+    "statement": "LAST 体系（AgPb18SbTe20）的 zT 峰位报道在 1.5-2.2 波动，峰位与合成工艺（熔融/球磨）关联未被量化",
+    "novelty": "部分已知",
+    "formulas": [
+     "PbTe",
+     "AgSbTe2"
+    ],
+    "n_evidence": 2,
+    "operability": "以 PbTe 为种子，搜索 Ag/Sb 掺杂对 zT 代理指标的影响"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+    "novelty": "新知",
+    "formulas": [
+     "Bi2Te3"
+    ],
+    "n_evidence": 1,
+    "operability": "以 Bi2Te3 为种子，评估掺杂浓度对薄膜热电代理指标的影响"
+   },
+   {
+    "idx": null,
+    "gap_type": "缺失知识连接",
+    "statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+    "novelty": "新知",
+    "formulas": [
+     "Mg3Sb2"
+    ],
+    "n_evidence": 4,
+    "operability": "以 Mg3Sb2 为种子，评估掺杂对热电-力学联合代理指标的影响"
+   },
+   {
+    "idx": null,
+    "gap_type": "矛盾结论",
+    "statement": "GeTe 的 rhombohedral-cubic 相变温度（约 700K）附近热电性能突变的实验与理论计算不一致",
+    "novelty": "部分已知",
+    "formulas": [
+     "GeTe"
+    ],
+    "n_evidence": 1,
+    "operability": "以 GeTe 为种子，搜索稳定 cubic 相的掺杂策略"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单独研究。",
+    "novelty": "部分已知",
+    "formulas": [
+     "Ge0.93Ti0.01Bi0.06Te"
+    ],
+    "n_evidence": 1,
+    "operability": "通过变温 Hall 测量和第一性原理计算有效质量，对比不同 Ti/Bi 比例。"
+   },
+   {
+    "idx": null,
+    "gap_type": "矛盾结论",
+    "statement": "Bi2Te3 基材料中，Cu 掺杂对 zT 的提升作用在块体与薄膜体系中存在相反报道，其机制未统一。",
+    "novelty": "部分已知",
+    "formulas": [
+     "Bi2Te3"
+    ],
+    "n_evidence": 1,
+    "operability": "制备相同化学计量比的块体和薄膜样品，对比电输运与缺陷表征。"
+   },
+   {
+    "idx": null,
+    "gap_type": "缺失知识连接",
+    "statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+    "novelty": "新知",
+    "formulas": [
+     "Ca5In2Sb6"
+    ],
+    "n_evidence": 1,
+    "operability": "通过控制合成条件调节 In 空位，结合 Hall 和热导率测量建立关联。"
+   },
+   {
+    "idx": null,
+    "gap_type": "方法空白",
+    "statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展。",
+    "novelty": "新知",
+    "formulas": [
+     "Ge0.93Ti0.01Bi0.06Te"
+    ],
+    "n_evidence": 1,
+    "operability": "训练 GeTe 基机器学习势，模拟不同掺杂浓度下的声子谱和自由能。"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+    "novelty": "部分已知",
+    "formulas": [
+     "Bi0.5Sb1.5Te3"
+    ],
+    "n_evidence": 1,
+    "operability": "制备不同 Te 含量的样品，结合正电子湮灭和电输运测量。"
+   },
+   {
+    "idx": null,
+    "gap_type": "矛盾结论",
+    "statement": "PbTe 中 Na 掺杂的最佳浓度报道在 0.5-2 at% 之间波动，与合成方法（SPS vs 熔融）的关联未明确。",
+    "novelty": "部分已知",
+    "formulas": [
+     "PbTe"
+    ],
+    "n_evidence": 2,
+    "operability": "对比不同工艺制备的 Na 掺杂 PbTe，系统表征 Na 分布和电性能。"
+   },
+   {
+    "idx": null,
+    "gap_type": "缺失知识连接",
+    "statement": "Ca5In2Sb6 与 Bi2Te3 形成异质结时，界面能带对齐对热电输运的影响未被研究。",
+    "novelty": "新知",
+    "formulas": [
+     "Ca5In2Sb6",
+     "Bi2Te3"
+    ],
+    "n_evidence": 2,
+    "operability": "通过第一性原理计算界面能带，并制备多层膜测量输运。"
+   },
+   {
+    "idx": null,
+    "gap_type": "方法空白",
+    "statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+    "novelty": "新知",
+    "formulas": [
+     "Ge1-x-yTixBiyTe"
+    ],
+    "n_evidence": 1,
+    "operability": "结合实验数据训练代理模型，迭代推荐新组分并验证。"
+   },
+   {
+    "idx": null,
+    "gap_type": "未探索方向",
+    "statement": "Bi2Te3 中，Te 空位对晶格热导率的贡献在 300-500K 范围内未被定量分离。",
+    "novelty": "部分已知",
+    "formulas": [
+     "Bi2Te3"
+    ],
+    "n_evidence": 1,
+    "operability": "通过控制 Te 空位浓度，测量热导率并拟合 Debye-Callaway 模型。"
+   },
+   {
+    "idx": null,
+    "gap_type": "矛盾结论",
+    "statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+    "novelty": "部分已知",
+    "formulas": [
+     "Ge1-xBixTe"
+    ],
+    "n_evidence": 1,
+    "operability": "制备不同 Bi 含量样品，用 DSC 和变温 XRD 统一表征。"
+   },
+   {
+    "idx": null,
+    "gap_type": "缺失知识连接",
+    "statement": "Ca5In2Sb6 的 zT 与带隙的关系未被建立，缺乏通过能带工程提升性能的指导。",
+    "novelty": "新知",
+    "formulas": [
+     "Ca5In2Sb6"
+    ],
+    "n_evidence": 1,
+    "operability": "通过掺杂调节带隙，测量高温 zT 并关联。"
+   },
+   {
+    "idx": null,
+    "gap_type": "方法空白",
+    "statement": "Bi0.5Sb1.5Te3 中，利用高分辨率 TEM 定量分析 Te 空位与反位缺陷的浓度分布未见报道。",
+    "novelty": "新知",
+    "formulas": [
+     "Bi0.5Sb1.5Te3"
+    ],
+    "n_evidence": 1,
+    "operability": "采用 STEM 和 EELS 对缺陷进行统计，结合 DFT 计算验证。"
+   }
+  ],
+  "novelty_dist": {
+   "部分已知": 14,
+   "新知": 15
+  },
+  "type_dist": {
+   "未探索方向": 11,
+   "缺失知识连接": 6,
+   "矛盾结论": 7,
+   "方法空白": 5
+  },
+  "n_with_evidence": 29
+ },
+ "kb": [
+  {
+   "formula": "Ge0.93Ti0.01Bi0.06Te",
+   "properties": [
+    "figure_of_merit_zT=1.6"
+   ],
+   "synthesis_temp": "623",
+   "n_evidence": 1
+  },
+  {
+   "formula": "PbTe",
+   "properties": [],
+   "synthesis_temp": "900",
+   "n_evidence": 1
+  },
+  {
+   "formula": "Bi2Te3",
+   "properties": [],
+   "synthesis_temp": null,
+   "n_evidence": 1
+  },
+  {
+   "formula": "Ca5In2Sb6",
+   "properties": [],
+   "synthesis_temp": "750, 700, 950",
+   "n_evidence": 1
+  },
+  {
+   "formula": "Bi0.5Sb1.5Te",
+   "properties": [],
+   "synthesis_temp": "600",
+   "n_evidence": 1
+  }
+ ],
+ "findings": {
+  "n_findings": 18,
+  "findings": [
+   {
+    "relation": "GeTe 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 GeTe 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.82，需实验/计算验证）",
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coeffic",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Ge0.96Ti0.04Te",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.85,
+      "rationale": "规则网格：GeTe 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge0.94Ti0.06Te",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.85,
+      "rationale": "规则网格：GeTe 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge0.92Ti0.08Te",
+      "dopant": "Ti",
+      "concentration": 8.0,
+      "score": 0.85,
+      "rationale": "规则网格：GeTe 掺 Ti 8.0%（文献常见掺杂区间）"
+     }
+    ]
+   },
+   {
+    "relation": "Ge0.93Ti0.01Bi0.06Te 热电性能与掺杂浓度的显式关系（SR 拟合，R²=0.008）：y = 0.7346*1 + -0.01076*x + 0.001082*x^2 + -3.907e-05*x^3，最优掺杂浓度 ≈ 1.0%（a + b*x + c*x^2 + d*x^3）",
+    "hypothesis": "在 Ge0.93Ti0.01Bi0.06Te 中掺杂约 1.0% 可最大化热电性能代理指标（模型预测 0.72，需实验/DFT 验证）",
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coeffic",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Ge0.96Cu0.04Te",
+      "dopant": "Cu",
+      "concentration": 4.4,
+      "score": 0.85,
+      "rationale": "规则采样：随机浓度网格"
+     },
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-La3%",
+      "dopant": "La",
+      "concentration": 2.6,
+      "score": 0.6,
+      "rationale": "规则采样：随机浓度网格"
+     },
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Sb11%",
+      "dopant": "Sb",
+      "concentration": 11.3,
+      "score": 0.8,
+      "rationale": "规则采样：随机浓度网格"
+     }
+    ]
+   },
+   {
+    "relation": "Ge0.93Ti0.01Bi0.06Te 热电性能与掺杂浓度的显式关系（SR 拟合，R²=0.286）：y = 0.6997*1 + -0.005116*x + -0.001128*x^2，最优掺杂浓度 ≈ 1.0%（a + b*x + c*x^2）",
+    "hypothesis": "在 Ge0.93Ti0.01Bi0.06Te 中掺杂约 1.0% 可最大化热电性能代理指标（模型预测 0.69，需实验/DFT 验证）",
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coeffic",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Sb2%",
+      "dopant": "Sb",
+      "concentration": 2.0,
+      "score": 0.8,
+      "rationale": "Sb掺杂可调谐载流子浓度，优化电导率与Seebeck系数的权衡，同时引入点缺陷增强声子散射，降低晶格热导率，有望提升zT"
+     },
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Pb3%",
+      "dopant": "Pb",
+      "concentration": 3.0,
+      "score": 0.7,
+      "rationale": "Pb掺杂可诱导能带收敛（价带轻重空穴带合并），提高Seebeck系数而不显著降低电导率，同时Pb原子质量较大，增强声子散"
+     },
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Cu1%",
+      "dopant": "Cu",
+      "concentration": 1.0,
+      "score": 0.6,
+      "rationale": "Cu掺杂可引入间隙原子，产生强点缺陷和应变场，有效散射中高频声子，降低晶格热导率，同时Cu可能提供额外载流子，优化电输运"
+     }
+    ]
+   },
+   {
+    "relation": "序贯决策发现：GeTe 掺 Bi（6.0%）为高置信方向（模拟评分 0.80）",
+    "hypothesis": "在 GeTe 中以 Bi 掺杂 6.0% 有望提升热电优值（需数据库/实验验证）",
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coeffic",
+    "n_candidates": 1,
+    "top_candidates": [
+     {
+      "formula": "Ge0.94Bi0.06Te",
+      "dopant": "Bi",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "MCTS 最优路径（访问 3 次，均值 0.80）"
+     }
+    ]
+   },
+   {
+    "relation": "Ge0.93Ti0.01Bi0.06Te 掺 Mn 浓度-性能关系（BO 二次代理 R²=0.039）：y = 0.576 + 0.007*x + -0.000*x²，最优浓度 ≈ 10.2%（采样最优 11.9%）",
+    "hypothesis": "Ge0.93Ti0.01Bi0.06Te 掺 Mn 10.2% 可最大化热电性能代理（BO 预测 0.61，需实验/DFT 验证）",
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coeffic",
+    "n_candidates": 1,
+    "top_candidates": [
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Mn12%",
+      "dopant": "Mn",
+      "concentration": 11.9,
+      "score": 0.7,
+      "rationale": "BO 采样最优（评估 0.70），代理峰值 10.2%"
+     }
+    ]
+   },
+   {
+    "relation": "SiGe 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 SiGe 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.82，需实验/计算验证）",
+    "gap_statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "SiGe-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.85,
+      "rationale": "规则网格：SiGe 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "SiGe-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.85,
+      "rationale": "规则网格：SiGe 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "SiGe-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.85,
+      "rationale": "交叉：SiGe-Ti4% × SiGe-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "PbTe 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 PbTe 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.82，需实验/计算验证）",
+    "gap_statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Pb0.96Ti0.04Te",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.85,
+      "rationale": "规则网格：PbTe 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Pb0.94Ti0.06Te",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.85,
+      "rationale": "规则网格：PbTe 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Pb0.95Ti0.05Te",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.85,
+      "rationale": "交叉：Pb0.96Ti0.04Te × Pb0.94Ti0.06Te"
+     }
+    ]
+   },
+   {
+    "relation": "Bi2Te3 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Bi2Te3 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Bi2Te3-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Bi2Te3 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Bi2Te3-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Bi2Te3 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Bi2Te3-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Bi2Te3-Ti4% × Bi2Te3-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "Mg3Sb2 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Mg3Sb2 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Mg3Sb2-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Mg3Sb2 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Mg3Sb2-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Mg3Sb2 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Mg3Sb2-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Mg3Sb2-Ti4% × Mg3Sb2-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "Ge0.93Ti0.01Bi0.06Te 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Ge0.93Ti0.01Bi0.06Te 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单独研究。",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ge0.93Ti0.01Bi0.06Te 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ge0.93Ti0.01Bi0.06Te 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge0.93Ti0.01Bi0.06Te-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Ge0.93Ti0.01Bi0.06Te-Ti4% × Ge0.93Ti0.01Bi0.06Te-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "Ca5In2Sb6 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Ca5In2Sb6 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Ca5In2Sb6-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ca5In2Sb6 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ca5In2Sb6-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ca5In2Sb6 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ca5In2Sb6-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Ca5In2Sb6-Ti4% × Ca5In2Sb6-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "Bi0.5Sb1.5Te3 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Bi0.5Sb1.5Te3 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Bi0.5Sb1.5Te3-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Bi0.5Sb1.5Te3 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Bi0.5Sb1.5Te3-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Bi0.5Sb1.5Te3 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Bi0.5Sb1.5Te3-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Bi0.5Sb1.5Te3-Ti4% × Bi0.5Sb1.5Te3-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "Ge1-x-yTixBiyTe 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Ge1-x-yTixBiyTe 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Ge1-x-yTixBiyTe-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ge1-x-yTixBiyTe 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge1-x-yTixBiyTe-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ge1-x-yTixBiyTe 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge1-x-yTixBiyTe-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Ge1-x-yTixBiyTe-Ti4% × Ge1-x-yTixBiyTe-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "Ge1-xBixTe 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Ge1-xBixTe 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Ge1-xBixTe-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ge1-xBixTe 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge1-xBixTe-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Ge1-xBixTe 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Ge1-xBixTe-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Ge1-xBixTe-Ti4% × Ge1-xBixTe-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "SnTe 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 SnTe 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.82，需实验/计算验证）",
+    "gap_statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Sn0.96Ti0.04Te",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.85,
+      "rationale": "规则网格：SnTe 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Sn0.94Ti0.06Te",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.85,
+      "rationale": "规则网格：SnTe 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Sn0.95Ti0.05Te",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.85,
+      "rationale": "交叉：Sn0.96Ti0.04Te × Sn0.94Ti0.06Te"
+     }
+    ]
+   },
+   {
+    "relation": "ZrNiSn 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 ZrNiSn 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.82，需实验/计算验证）",
+    "gap_statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf 替代对比缺失）",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "ZrNiSn-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.85,
+      "rationale": "规则网格：ZrNiSn 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "ZrNiSn-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.85,
+      "rationale": "规则网格：ZrNiSn 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "ZrNiSn-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.85,
+      "rationale": "交叉：ZrNiSn-Ti4% × ZrNiSn-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "Cu2Se 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 Cu2Se 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "Cu2Se-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：Cu2Se 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Cu2Se-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：Cu2Se 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "Cu2Se-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：Cu2Se-Ti4% × Cu2Se-Ti6%"
+     }
+    ]
+   },
+   {
+    "relation": "CoSb3 中 Ti 掺杂（4.0%）→ 通过能带工程/载流子优化/声子散射提升热电优值 zT",
+    "hypothesis": "在 CoSb3 中以 Ti 掺杂 4.0% 可提升 zT（预期 0.80，需实验/计算验证）",
+    "gap_statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+    "n_candidates": 5,
+    "top_candidates": [
+     {
+      "formula": "CoSb3-Ti4%",
+      "dopant": "Ti",
+      "concentration": 4.0,
+      "score": 0.8,
+      "rationale": "规则网格：CoSb3 掺 Ti 4.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "CoSb3-Ti6%",
+      "dopant": "Ti",
+      "concentration": 6.0,
+      "score": 0.8,
+      "rationale": "规则网格：CoSb3 掺 Ti 6.0%（文献常见掺杂区间）"
+     },
+     {
+      "formula": "CoSb3-Ti5%",
+      "dopant": "Ti",
+      "concentration": 5.0,
+      "score": 0.8,
+      "rationale": "交叉：CoSb3-Ti4% × CoSb3-Ti6%"
+     }
+    ]
+   }
+  ]
+ },
+ "validation": {
+  "verdict_dist": {
+   "已知": 141,
+   "反例": 10,
+   "新知": 10
+  },
+  "n_checks": 161,
+  "items": [
+   {
+    "gap_statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+    "candidate_formula": "Pb0.92Ti0.08Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+    "candidate_formula": "Pb0.94Ti0.06Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+    "candidate_formula": "Pb0.95Ti0.05Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+    "candidate_formula": "Pb0.96Bi0.04Te",
+    "host": "PbTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "AgSbTe2 与 PbTe 形成 LAST 合金的组分-性能关系未建立完整数据库，Ag/Sb 无序机制仍有争议",
+    "candidate_formula": "Pb0.96Ti0.04Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中 Cu 间隙掺杂的长期热稳定性（>200 小时工作）与 zT 退化机制未被研究",
+    "candidate_formula": "Bi2Te3-Bi4%",
+    "host": "Bi2Te3",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中 Cu 间隙掺杂的长期热稳定性（>200 小时工作）与 zT 退化机制未被研究",
+    "candidate_formula": "Bi2Te3-Ti4%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中 Cu 间隙掺杂的长期热稳定性（>200 小时工作）与 zT 退化机制未被研究",
+    "candidate_formula": "Bi2Te3-Ti5%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中 Cu 间隙掺杂的长期热稳定性（>200 小时工作）与 zT 退化机制未被研究",
+    "candidate_formula": "Bi2Te3-Ti6%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中 Cu 间隙掺杂的长期热稳定性（>200 小时工作）与 zT 退化机制未被研究",
+    "candidate_formula": "Bi2Te3-Ti8%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Bi4%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti4%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti5%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti6%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti8%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，利用高分辨率 TEM 定量分析 Te 空位与反位缺陷的浓度分布未见报道。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Bi4%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，利用高分辨率 TEM 定量分析 Te 空位与反位缺陷的浓度分布未见报道。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti4%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，利用高分辨率 TEM 定量分析 Te 空位与反位缺陷的浓度分布未见报道。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti5%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，利用高分辨率 TEM 定量分析 Te 空位与反位缺陷的浓度分布未见报道。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti6%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi0.5Sb1.5Te3 中，利用高分辨率 TEM 定量分析 Te 空位与反位缺陷的浓度分布未见报道。",
+    "candidate_formula": "Bi0.5Sb1.5Te3-Ti8%",
+    "host": "Bi0.5Sb1.5Te3",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Sb2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Bi0.5Sb1.5Te3 为分数掺杂宿主，按 A/B 位拆分解析整数母体 Sb2Te3 后重验；掺杂成分"
+   },
+   {
+    "gap_statement": "Bi2Te3 中，Te 空位对晶格热导率的贡献在 300-500K 范围内未被定量分离。",
+    "candidate_formula": "Bi2Te3-Bi4%",
+    "host": "Bi2Te3",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 中，Te 空位对晶格热导率的贡献在 300-500K 范围内未被定量分离。",
+    "candidate_formula": "Bi2Te3-Ti4%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 中，Te 空位对晶格热导率的贡献在 300-500K 范围内未被定量分离。",
+    "candidate_formula": "Bi2Te3-Ti5%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 中，Te 空位对晶格热导率的贡献在 300-500K 范围内未被定量分离。",
+    "candidate_formula": "Bi2Te3-Ti6%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 中，Te 空位对晶格热导率的贡献在 300-500K 范围内未被定量分离。",
+    "candidate_formula": "Bi2Te3-Ti8%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 基材料中，Cu 掺杂对 zT 的提升作用在块体与薄膜体系中存在相反报道，其机制未统一。",
+    "candidate_formula": "Bi2Te3-Bi4%",
+    "host": "Bi2Te3",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 基材料中，Cu 掺杂对 zT 的提升作用在块体与薄膜体系中存在相反报道，其机制未统一。",
+    "candidate_formula": "Bi2Te3-Ti4%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 基材料中，Cu 掺杂对 zT 的提升作用在块体与薄膜体系中存在相反报道，其机制未统一。",
+    "candidate_formula": "Bi2Te3-Ti5%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 基材料中，Cu 掺杂对 zT 的提升作用在块体与薄膜体系中存在相反报道，其机制未统一。",
+    "candidate_formula": "Bi2Te3-Ti6%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 基材料中，Cu 掺杂对 zT 的提升作用在块体与薄膜体系中存在相反报道，其机制未统一。",
+    "candidate_formula": "Bi2Te3-Ti8%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+    "candidate_formula": "Bi2Te3-Bi4%",
+    "host": "Bi2Te3",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+    "candidate_formula": "Bi2Te3-Ti4%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+    "candidate_formula": "Bi2Te3-Ti5%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+    "candidate_formula": "Bi2Te3-Ti6%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Bi2Te3 薄膜厚度 <1μm 时界面散射对 zT 的影响缺乏系统实验与模型",
+    "candidate_formula": "Bi2Te3-Ti8%",
+    "host": "Bi2Te3",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Bi2Te3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Bi2Te3-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 与 Bi2Te3 形成异质结时，界面能带对齐对热电输运的影响未被研究。",
+    "candidate_formula": "Ca5In2Sb6-Bi4%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 与 Bi2Te3 形成异质结时，界面能带对齐对热电输运的影响未被研究。",
+    "candidate_formula": "Ca5In2Sb6-Ti4%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 与 Bi2Te3 形成异质结时，界面能带对齐对热电输运的影响未被研究。",
+    "candidate_formula": "Ca5In2Sb6-Ti5%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 与 Bi2Te3 形成异质结时，界面能带对齐对热电输运的影响未被研究。",
+    "candidate_formula": "Ca5In2Sb6-Ti6%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 与 Bi2Te3 形成异质结时，界面能带对齐对热电输运的影响未被研究。",
+    "candidate_formula": "Ca5In2Sb6-Ti8%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+    "candidate_formula": "Ca5In2Sb6-Bi4%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti4%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti5%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti6%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与 In 空位浓度之间的定量关系未被建立，缺乏缺陷工程指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti8%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与带隙的关系未被建立，缺乏通过能带工程提升性能的指导。",
+    "candidate_formula": "Ca5In2Sb6-Bi4%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与带隙的关系未被建立，缺乏通过能带工程提升性能的指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti4%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与带隙的关系未被建立，缺乏通过能带工程提升性能的指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti5%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与带隙的关系未被建立，缺乏通过能带工程提升性能的指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti6%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ca5In2Sb6 的 zT 与带隙的关系未被建立，缺乏通过能带工程提升性能的指导。",
+    "candidate_formula": "Ca5In2Sb6-Ti8%",
+    "host": "Ca5In2Sb6",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Ca5In2Sb6 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ca5In2Sb6-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+    "candidate_formula": "Cu2Se-Bi4%",
+    "host": "Cu2Se",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "反例",
+    "reason": "母体 Cu2Se 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+    "candidate_formula": "Cu2Se-Ti4%",
+    "host": "Cu2Se",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "反例",
+    "reason": "母体 Cu2Se 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+    "candidate_formula": "Cu2Se-Ti5%",
+    "host": "Cu2Se",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "反例",
+    "reason": "母体 Cu2Se 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+    "candidate_formula": "Cu2Se-Ti6%",
+    "host": "Cu2Se",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "反例",
+    "reason": "母体 Cu2Se 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Cu2Se 中 Te 取代 Se 对 Cu 离子迁移活化能与结构稳定性的定量影响未见报道",
+    "candidate_formula": "Cu2Se-Ti8%",
+    "host": "Cu2Se",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "反例",
+    "reason": "母体 Cu2Se 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Bi4%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti4%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti5%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti6%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 中 Ti/Bi 共掺杂对载流子有效质量与 Seebeck 系数的解耦效应未被单",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti8%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.89La0.11Te",
+    "host": "GeTe",
+    "dopant": "La",
+    "concentration": 11.4,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.89La0.11Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.92Ti0.08Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Cd2%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Cd",
+    "concentration": 2.2,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Cu1%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Cu",
+    "concentration": 1.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-In2%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "In",
+    "concentration": 2.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-La3%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "La",
+    "concentration": 2.6,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Mn12%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Mn",
+    "concentration": 11.9,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Pb3%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Pb",
+    "concentration": 3.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Sb11%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Sb",
+    "concentration": 11.3,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Sb2%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Sb",
+    "concentration": 2.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti4%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti5%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti6%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti8%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.94Bi0.06Te",
+    "host": "GeTe",
+    "dopant": "Bi",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.94Bi0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.94Ti0.06Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.95Ti0.05Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.96Bi0.04Te",
+    "host": "GeTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.96Cu0.04Te",
+    "host": "GeTe",
+    "dopant": "Cu",
+    "concentration": 4.4,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Cu0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.96Ti0.04Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band",
+    "candidate_formula": "Ge0.97Ti+Bi0.03Te",
+    "host": "GeTe",
+    "dopant": "Ti+Bi",
+    "concentration": 3.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.97Ti+Bi0.03Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+    "candidate_formula": "Ge1-xBixTe-Bi4%",
+    "host": "Ge1-xBixTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-xBixTe 不在数据库中，掺杂方案 Ge1-xBixTe-Bi4% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+    "candidate_formula": "Ge1-xBixTe-Ti4%",
+    "host": "Ge1-xBixTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-xBixTe 不在数据库中，掺杂方案 Ge1-xBixTe-Ti4% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+    "candidate_formula": "Ge1-xBixTe-Ti5%",
+    "host": "Ge1-xBixTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-xBixTe 不在数据库中，掺杂方案 Ge1-xBixTe-Ti5% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+    "candidate_formula": "Ge1-xBixTe-Ti6%",
+    "host": "Ge1-xBixTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-xBixTe 不在数据库中，掺杂方案 Ge1-xBixTe-Ti6% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 中 Bi 掺杂对相变温度的影响存在相互矛盾的报道，有的显示降低，有的显示升高。",
+    "candidate_formula": "Ge1-xBixTe-Ti8%",
+    "host": "Ge1-xBixTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-xBixTe 不在数据库中，掺杂方案 Ge1-xBixTe-Ti8% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>",
+    "candidate_formula": "Ge0.92Ti0.08Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>",
+    "candidate_formula": "Ge0.94Ti0.06Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>",
+    "candidate_formula": "Ge0.95Ti0.05Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>",
+    "candidate_formula": "Ge0.96Bi0.04Te",
+    "host": "GeTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>",
+    "candidate_formula": "Ge0.96Ti0.04Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+    "candidate_formula": "Ge1-x-yTixBiyTe-Bi4%",
+    "host": "Ge1-x-yTixBiyTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-x-yTixBiyTe 不在数据库中，掺杂方案 Ge1-x-yTixBiyTe-Bi4% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+    "candidate_formula": "Ge1-x-yTixBiyTe-Ti4%",
+    "host": "Ge1-x-yTixBiyTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-x-yTixBiyTe 不在数据库中，掺杂方案 Ge1-x-yTixBiyTe-Ti4% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+    "candidate_formula": "Ge1-x-yTixBiyTe-Ti5%",
+    "host": "Ge1-x-yTixBiyTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-x-yTixBiyTe 不在数据库中，掺杂方案 Ge1-x-yTixBiyTe-Ti5% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+    "candidate_formula": "Ge1-x-yTixBiyTe-Ti6%",
+    "host": "Ge1-x-yTixBiyTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-x-yTixBiyTe 不在数据库中，掺杂方案 Ge1-x-yTixBiyTe-Ti6% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用主动学习优化 Ti/Bi 掺杂比例以最大化 zT 的研究未见报道。",
+    "candidate_formula": "Ge1-x-yTixBiyTe-Ti8%",
+    "host": "Ge1-x-yTixBiyTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "新知",
+    "reason": "母体 Ge1-x-yTixBiyTe 不在数据库中，掺杂方案 Ge1-x-yTixBiyTe-Ti8% 为库外假设，需实验/更高精度验证"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展。",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Bi4%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展。",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti4%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展。",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti5%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展。",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti6%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展。",
+    "candidate_formula": "Ge0.93Ti0.01Bi0.06Te-Ti8%",
+    "host": "Ge0.93Ti0.01Bi0.06Te",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；Ge0.93Ti0.01Bi0.06Te 为分数掺杂宿主，按 A/B 位拆分解析整数母体 GeTe 后重验；掺"
+   },
+   {
+    "gap_statement": "GeTe 的 rhombohedral-cubic 相变温度（约 700K）附近热电性能突变的实验与理论计算不一致",
+    "candidate_formula": "Ge0.92Ti0.08Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 的 rhombohedral-cubic 相变温度（约 700K）附近热电性能突变的实验与理论计算不一致",
+    "candidate_formula": "Ge0.94Ti0.06Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 的 rhombohedral-cubic 相变温度（约 700K）附近热电性能突变的实验与理论计算不一致",
+    "candidate_formula": "Ge0.95Ti0.05Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 的 rhombohedral-cubic 相变温度（约 700K）附近热电性能突变的实验与理论计算不一致",
+    "candidate_formula": "Ge0.96Bi0.04Te",
+    "host": "GeTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "GeTe 的 rhombohedral-cubic 相变温度（约 700K）附近热电性能突变的实验与理论计算不一致",
+    "candidate_formula": "Ge0.96Ti0.04Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "LAST 体系（AgPb18SbTe20）的 zT 峰位报道在 1.5-2.2 波动，峰位与合成工艺（熔融/球磨）关联未",
+    "candidate_formula": "Pb0.92Ti0.08Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "LAST 体系（AgPb18SbTe20）的 zT 峰位报道在 1.5-2.2 波动，峰位与合成工艺（熔融/球磨）关联未",
+    "candidate_formula": "Pb0.94Ti0.06Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "LAST 体系（AgPb18SbTe20）的 zT 峰位报道在 1.5-2.2 波动，峰位与合成工艺（熔融/球磨）关联未",
+    "candidate_formula": "Pb0.95Ti0.05Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "LAST 体系（AgPb18SbTe20）的 zT 峰位报道在 1.5-2.2 波动，峰位与合成工艺（熔融/球磨）关联未",
+    "candidate_formula": "Pb0.96Bi0.04Te",
+    "host": "PbTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "LAST 体系（AgPb18SbTe20）的 zT 峰位报道在 1.5-2.2 波动，峰位与合成工艺（熔融/球磨）关联未",
+    "candidate_formula": "Pb0.96Ti0.04Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效",
+    "candidate_formula": "Pb0.92Ti0.08Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效",
+    "candidate_formula": "Pb0.94Ti0.06Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效",
+    "candidate_formula": "Pb0.95Ti0.05Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效",
+    "candidate_formula": "Pb0.96Bi0.04Te",
+    "host": "PbTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效",
+    "candidate_formula": "Pb0.96Ti0.04Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂的最佳浓度报道在 0.5-2 at% 之间波动，与合成方法（SPS vs 熔融）的关联未明确。",
+    "candidate_formula": "Pb0.92Ti0.08Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂的最佳浓度报道在 0.5-2 at% 之间波动，与合成方法（SPS vs 熔融）的关联未明确。",
+    "candidate_formula": "Pb0.94Ti0.06Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂的最佳浓度报道在 0.5-2 at% 之间波动，与合成方法（SPS vs 熔融）的关联未明确。",
+    "candidate_formula": "Pb0.95Ti0.05Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂的最佳浓度报道在 0.5-2 at% 之间波动，与合成方法（SPS vs 熔融）的关联未明确。",
+    "candidate_formula": "Pb0.96Bi0.04Te",
+    "host": "PbTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "PbTe 中 Na 掺杂的最佳浓度报道在 0.5-2 at% 之间波动，与合成方法（SPS vs 熔融）的关联未明确。",
+    "candidate_formula": "Pb0.96Ti0.04Te",
+    "host": "PbTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 PbTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Pb0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+    "candidate_formula": "SiGe-Bi4%",
+    "host": "SiGe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "反例",
+    "reason": "母体 SiGe 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+    "candidate_formula": "SiGe-Ti4%",
+    "host": "SiGe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "反例",
+    "reason": "母体 SiGe 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+    "candidate_formula": "SiGe-Ti5%",
+    "host": "SiGe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "反例",
+    "reason": "母体 SiGe 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+    "candidate_formula": "SiGe-Ti6%",
+    "host": "SiGe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "反例",
+    "reason": "母体 SiGe 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "Si0.8Ge0.2 中 P 掺杂浓度与功率因子在 1100K 以上的报道区间不一致",
+    "candidate_formula": "SiGe-Ti8%",
+    "host": "SiGe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "反例",
+    "reason": "母体 SiGe 在 oqmd 中热力学不稳定（hull 或形成能为正），该掺杂方向与数据库结论矛盾，建议评估替代母体"
+   },
+   {
+    "gap_statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+    "candidate_formula": "Sn0.92Ti0.08Te",
+    "host": "SnTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 SnTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Sn0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+    "candidate_formula": "Sn0.94Ti0.06Te",
+    "host": "SnTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 SnTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Sn0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+    "candidate_formula": "Sn0.95Ti0.05Te",
+    "host": "SnTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 SnTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Sn0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+    "candidate_formula": "Sn0.96Bi0.04Te",
+    "host": "SnTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 SnTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Sn0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+    "candidate_formula": "Sn0.96Ti0.04Te",
+    "host": "SnTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 SnTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Sn0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf",
+    "candidate_formula": "ZrNiSn-Bi4%",
+    "host": "ZrNiSn",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 ZrNiSn 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 ZrNiSn-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf",
+    "candidate_formula": "ZrNiSn-Ti4%",
+    "host": "ZrNiSn",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 ZrNiSn 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 ZrNiSn-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf",
+    "candidate_formula": "ZrNiSn-Ti5%",
+    "host": "ZrNiSn",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 ZrNiSn 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 ZrNiSn-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf",
+    "candidate_formula": "ZrNiSn-Ti6%",
+    "host": "ZrNiSn",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 ZrNiSn 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 ZrNiSn-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "half-Heusler ZrNiSn 中 Ti 掺杂降低晶格热导率与功率因子的 trade-off 未被系统量化（Hf",
+    "candidate_formula": "ZrNiSn-Ti8%",
+    "host": "ZrNiSn",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 ZrNiSn 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 ZrNiSn-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "n 型 Mg3Sb2 热电材料中阳离子空位浓度与载流子迁移率的关系缺乏系统第一性原理计算",
+    "candidate_formula": "Mg3Sb2-Bi4%",
+    "host": "Mg3Sb2",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "n 型 Mg3Sb2 热电材料中阳离子空位浓度与载流子迁移率的关系缺乏系统第一性原理计算",
+    "candidate_formula": "Mg3Sb2-Ti4%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "n 型 Mg3Sb2 热电材料中阳离子空位浓度与载流子迁移率的关系缺乏系统第一性原理计算",
+    "candidate_formula": "Mg3Sb2-Ti5%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "n 型 Mg3Sb2 热电材料中阳离子空位浓度与载流子迁移率的关系缺乏系统第一性原理计算",
+    "candidate_formula": "Mg3Sb2-Ti6%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "n 型 Mg3Sb2 热电材料中阳离子空位浓度与载流子迁移率的关系缺乏系统第一性原理计算",
+    "candidate_formula": "Mg3Sb2-Ti8%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+    "candidate_formula": "CoSb3-Bi4%",
+    "host": "CoSb3",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 CoSb3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 CoSb3-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+    "candidate_formula": "CoSb3-Ti4%",
+    "host": "CoSb3",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 CoSb3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 CoSb3-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+    "candidate_formula": "CoSb3-Ti5%",
+    "host": "CoSb3",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 CoSb3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 CoSb3-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+    "candidate_formula": "CoSb3-Ti6%",
+    "host": "CoSb3",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 CoSb3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 CoSb3-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道",
+    "candidate_formula": "CoSb3-Ti8%",
+    "host": "CoSb3",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 CoSb3 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 CoSb3-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+    "candidate_formula": "Mg3Sb2-Bi4%",
+    "host": "Mg3Sb2",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Bi4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+    "candidate_formula": "Mg3Sb2-Ti4%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti4% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+    "candidate_formula": "Mg3Sb2-Ti5%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti5% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+    "candidate_formula": "Mg3Sb2-Ti6%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti6% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+    "candidate_formula": "Mg3Sb2-Ti8%",
+    "host": "Mg3Sb2",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 Mg3Sb2 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Mg3Sb2-Ti8% 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电材料 zT 与带隙/载流子浓度的关系多依赖经验模型，缺乏 ML 势函数覆盖 GeTe 基固溶体的声子输运计算",
+    "candidate_formula": "Ge0.92Ti0.08Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电材料 zT 与带隙/载流子浓度的关系多依赖经验模型，缺乏 ML 势函数覆盖 GeTe 基固溶体的声子输运计算",
+    "candidate_formula": "Ge0.94Ti0.06Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电材料 zT 与带隙/载流子浓度的关系多依赖经验模型，缺乏 ML 势函数覆盖 GeTe 基固溶体的声子输运计算",
+    "candidate_formula": "Ge0.95Ti0.05Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电材料 zT 与带隙/载流子浓度的关系多依赖经验模型，缺乏 ML 势函数覆盖 GeTe 基固溶体的声子输运计算",
+    "candidate_formula": "Ge0.96Bi0.04Te",
+    "host": "GeTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "热电材料 zT 与带隙/载流子浓度的关系多依赖经验模型，缺乏 ML 势函数覆盖 GeTe 基固溶体的声子输运计算",
+    "candidate_formula": "Ge0.96Ti0.04Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "高熵热电（GeTe-PbTe-SnTe 固溶体）组分设计依赖试错实验，尚无符号回归/主动学习驱动的高熵组分设计",
+    "candidate_formula": "Ge0.92Ti0.08Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 8.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.92Ti0.08Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "高熵热电（GeTe-PbTe-SnTe 固溶体）组分设计依赖试错实验，尚无符号回归/主动学习驱动的高熵组分设计",
+    "candidate_formula": "Ge0.94Ti0.06Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 6.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.94Ti0.06Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "高熵热电（GeTe-PbTe-SnTe 固溶体）组分设计依赖试错实验，尚无符号回归/主动学习驱动的高熵组分设计",
+    "candidate_formula": "Ge0.95Ti0.05Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 5.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.95Ti0.05Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "高熵热电（GeTe-PbTe-SnTe 固溶体）组分设计依赖试错实验，尚无符号回归/主动学习驱动的高熵组分设计",
+    "candidate_formula": "Ge0.96Bi0.04Te",
+    "host": "GeTe",
+    "dopant": "Bi",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Bi0.04Te 为库外扩展（novel_dopant）"
+   },
+   {
+    "gap_statement": "高熵热电（GeTe-PbTe-SnTe 固溶体）组分设计依赖试错实验，尚无符号回归/主动学习驱动的高熵组分设计",
+    "candidate_formula": "Ge0.96Ti0.04Te",
+    "host": "GeTe",
+    "dopant": "Ti",
+    "concentration": 4.0,
+    "verdict": "已知",
+    "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Ti0.04Te 为库外扩展（novel_dopant）"
+   }
+  ]
+ },
+ "recall": {
+  "matrix": [
+   {
+    "algo": "ga",
+    "algo_name": "GA",
+    "mode": "LLM",
+    "model": "deepseek-chat",
+    "n_facts": 3,
+    "recall@1": 0.3333,
+    "recall@3": 0.3333,
+    "recall@5": 1.0,
+    "coverage": 1.0,
+    "n_candidates_avg": 8.7,
+    "file": "recall_20260808T153913.json"
+   },
+   {
+    "algo": "mcts",
+    "algo_name": "MCTS",
+    "mode": "LLM",
+    "model": "deepseek-chat",
+    "n_facts": 3,
+    "recall@1": 0.0,
+    "recall@3": 0.3333,
+    "recall@5": 0.3333,
+    "coverage": 1.0,
+    "n_candidates_avg": 30.0,
+    "file": "recall_20260808T154211.json"
+   },
+   {
+    "algo": "bo",
+    "algo_name": "BO",
+    "mode": "LLM",
+    "model": "deepseek-chat",
+    "n_facts": 1,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "coverage": 1.0,
+    "n_candidates_avg": 50.0,
+    "file": "recall_20260805T073332.json"
+   },
+   {
+    "algo": "sr",
+    "algo_name": "SR",
+    "mode": "LLM",
+    "model": "deepseek-chat",
+    "n_facts": 3,
+    "recall@1": 0.6667,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "coverage": 1.0,
+    "n_candidates_avg": 12.0,
+    "file": "recall_20260808T154257.json"
+   },
+   {
+    "algo": "ga",
+    "algo_name": "GA",
+    "mode": "规则",
+    "model": null,
+    "n_facts": 16,
+    "recall@1": 0.0625,
+    "recall@3": 0.0625,
+    "recall@5": 0.125,
+    "coverage": 0.25,
+    "n_candidates_avg": 12.0,
+    "file": "recall_20260805T071740.json"
+   },
+   {
+    "algo": "mcts",
+    "algo_name": "MCTS",
+    "mode": "规则",
+    "model": null,
+    "n_facts": 16,
+    "recall@1": 0.0625,
+    "recall@3": 0.0625,
+    "recall@5": 0.125,
+    "coverage": 0.375,
+    "n_candidates_avg": 30.0,
+    "file": "recall_20260805T071740.json"
+   },
+   {
+    "algo": "bo",
+    "algo_name": "BO",
+    "mode": "规则",
+    "model": null,
+    "n_facts": 16,
+    "recall@1": 0.0625,
+    "recall@3": 0.0625,
+    "recall@5": 0.0625,
+    "coverage": 0.4375,
+    "n_candidates_avg": 58.4,
+    "file": "recall_20260805T072056.json"
+   },
+   {
+    "algo": "sr",
+    "algo_name": "SR",
+    "mode": "规则",
+    "model": null,
+    "n_facts": 16,
+    "recall@1": 0.0,
+    "recall@3": 0.0625,
+    "recall@5": 0.125,
+    "coverage": 0.125,
+    "n_candidates_avg": 12.0,
+    "file": "recall_20260805T071740.json"
+   }
+  ],
+  "note": "四算法召回率统一对比矩阵：同一 (algo, mode) 多份文件取 n_facts 最大者；hit@k 度量评分排序质量，coverage 度量探索覆盖率（两口径分离）"
+ },
+ "ablation": {
+  "arms": {
+   "full": {
+    "n": 8,
+    "mean_best_score": 0.8061,
+    "median_best_score": 0.8,
+    "max_best_score": 0.933,
+    "total_llm_calls": 55,
+    "total_llm_failures": 1,
+    "mean_unique_dopants": 1.5
+   },
+   "rule": {
+    "n": 8,
+    "mean_best_score": 0.8851,
+    "median_best_score": 0.933,
+    "max_best_score": 0.933,
+    "total_llm_calls": 0,
+    "total_llm_failures": 0,
+    "mean_unique_dopants": 1.0
+   },
+   "llm": {
+    "n": 8,
+    "mean_best_score": 0.7853,
+    "median_best_score": 0.8165,
+    "max_best_score": 0.933,
+    "total_llm_calls": 16,
+    "total_llm_failures": 0,
+    "mean_unique_dopants": 2.75
+   }
+  },
+  "gains": {
+   "llm_fusion_gain_pct": -8.93,
+   "ga_evolution_gain_pct": 2.65,
+   "llm_proposal_vs_rule_pct": -11.28
+  }
+ },
+ "ensemble": {
+  "n_gap_groups": 29,
+  "n_consensus": 0
+ }
+}</script>
+<script>
+const D = JSON.parse(document.getElementById("demo-data").textContent);
+
+/* ---- 顶部指标卡 ---- */
+const G = D.gaps, F = D.findings, V = D.validation, R = D.recall, A = D.ablation;
+const stats = [
+  ["文献知识库", D.kb.length + " 条"],
+  ["Research Gap", G.n_gaps + " 条"],
+  ["构效关系候选", F.n_findings + " finding"],
+  ["数据库验证", V.n_checks + " 候选"],
+  ["搜索算法", "GA/MCTS/BO/SR"],
+  ["证据可追溯", G.n_with_evidence + "/" + G.n_gaps],
+];
+document.getElementById("stats").innerHTML = stats.map(([k, v]) =>
+  `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join("");
+
+/* ---- Tab 定义 ---- */
+const TABS = [
+  ["overview", "问题与流程"],
+  ["literature", "文献与知识库"],
+  ["gaps", "Research Gap"],
+  ["findings", "构效关系"],
+  ["validation", "数据库验证"],
+  ["metrics", "评测指标"],
+  ["evidence", "证据链"],
+];
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g,
+    c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function novTag(n) {
+  const cls = n === "新知" ? "novelty-new" : n === "部分已知" ? "novelty-partial" : "novelty-unknown";
+  return `<span class="tag ${cls}">${esc(n)}</span>`;
+}
+function verdictTag(v) {
+  const cls = v === "已知" || v === "新知" ? "verdict-known" : v === "反例" ? "verdict-反例"
+    : v === "验证失败" ? "verdict-验证失败" : "verdict-未知";
+  return `<span class="tag ${cls}">${esc(v)}</span>`;
+}
+function scorePill(x) {
+  const cls = x >= 0.8 ? "good" : x >= 0.6 ? "mid" : "low";
+  return `<span class="pill ${cls}">${x.toFixed(2)}</span>`;
+}
+
+/* ---- 各面板渲染 ---- */
+function panelOverview() {
+  const arms = A.arms || {};
+  const gain = (A.gains && A.gains.llm_fusion_gain_pct != null)
+    ? A.gains.llm_fusion_gain_pct.toFixed(2) : "—";
+  return `
+  <div class="card">
+    <h2>科学问题</h2>
+    <p style="font-size:13px">热电优值 zT = S²σT/κ 的电热输运强耦合，使「掺杂 × 浓度」的组分-性能定量关联长期依赖试错实验。
+    基岩盐族热电体系（GeTe/PbTe/SnTe）存在三类瓶颈：<b>掺杂协同机制不明、矛盾结论未消解、高维组分空间无高效导航</b>。</p>
+    <p class="muted" style="margin-top:6px">AI 介入点：以文献证据驱动 + 搜索算法 × LLM 深度融合，构建「检索 → 抽取 → Gap → 搜索 → 数据库验证」自动发现闭环。</p>
+  </div>
+  <div class="card">
+    <h2>系统流程</h2>
+    <div class="flow">
+      <span class="step">检索 Agent</span><span class="arrow">→</span>
+      <span class="step">抽取 Agent</span><span class="arrow">→</span>
+      <span class="step">Gap 识别</span><span class="arrow">→</span>
+      <span class="step">搜索算法 × LLM</span><span class="arrow">→</span>
+      <span class="step">OQMD/MP 验证</span><span class="arrow">→</span>
+      <span class="step">证据链审计</span>
+    </div>
+    <p class="muted" style="margin-top:8px">LLM 三角色融合：假设种子生成器 → 科学合理性评估器 → 搜索空间引导器；Gap/构效关系/验证结果全部携带可回溯证据链。</p>
+  </div>
+  <div class="grid2">
+    <div class="card"><h2>Gap 概览</h2>
+      ${Object.entries(G.novelty_dist).map(([k, v]) => `<div>${novTag(k)} × ${v}</div>`).join("")}
+      <p class="muted" style="margin-top:6px">Gap 类型：${Object.entries(G.type_dist).map(([k, v]) => `${k} ${v}`).join("、")}</p>
+    </div>
+    <div class="card"><h2>评测速览</h2>
+      <table>
+        <tr><th>项目</th><th>结果</th></tr>
+        <tr><td>三臂消融（Oracle 真值）</td><td>full ${(arms.full?.mean_best_score ?? 0).toFixed(3)} / rule ${(arms.rule?.mean_best_score ?? 0).toFixed(3)} / llm ${(arms.llm?.mean_best_score ?? 0).toFixed(3)}</td></tr>
+        <tr><td>LLM 融合增益</td><td>${gain}%（如实记录为负，定位真值表覆盖偏置）</td></tr>
+        <tr><td>LLM 模式召回率最优</td><td>${bestRecall()}</td></tr>
+        <tr><td>融合投票</td><td>${D.ensemble.n_gap_groups} 组 Gap / ${D.ensemble.n_consensus} 组多算法共识</td></tr>
+      </table>
+    </div>
+  </div>`;
+  function bestRecall() {
+    const m = R.matrix || [];
+    const llm = m.filter(r => r.mode === "LLM");
+    if (!llm.length) return "—";
+    const best = llm.reduce((a, b) => (b["recall@3"] >= a["recall@3"] ? b : a));
+    return `${best.algo_name} recall@3=${best["recall@3"].toFixed(2)}`;
+  }
+}
+
+function panelLiterature() {
+  const rows = D.kb.map(k => `
+    <tr><td><b>${esc(k.formula)}</b></td>
+        <td>${k.properties.map(esc).join("<br>") || "—"}</td>
+        <td>${k.synthesis_temp ? esc(k.synthesis_temp) + " K" : "—"}</td>
+        <td>${k.n_evidence}</td></tr>`).join("");
+  return `
+  <div class="card">
+    <h2>文献检索与知识抽取</h2>
+    <p class="muted">检索：Sciverse 双通道（agentic-search 语义 + meta-search 结构化）｜抽取：MinerU 解析 + LLM schema 结构化 + 规则式降级</p>
+    <table>
+      <tr><th>材料体系</th><th>抽取属性</th><th>合成温度</th><th>证据数</th></tr>
+      ${rows || '<tr><td colspan="4">知识库为空</td></tr>'}
+    </table>
+    <div class="note">每条知识记录强制携带 EvidenceChain（doc_id 回链），无来源结论禁止入 Gap/构效关系输出。</div>
+  </div>`;
+}
+
+function panelGaps() {
+  return `
+  <div class="card">
+    <h2>Research Gap 清单（${G.n_gaps} 条，可搜索）</h2>
+    <input class="search-box" id="gap-search" placeholder="输入关键词过滤 Gap（如 GeTe、掺杂、热稳定性）…">
+    <div id="gap-list"></div>
+    <div class="note">Gap 识别四方法：覆盖率分析 / 矛盾检测 / 缺失连接发现 / LLM 推理 + Sciverse 回查验证；每条附证据链计数与可操作性。</div>
+  </div>`;
+}
+
+function panelFindings() {
+  const items = F.findings.map(f => `
+    <div class="find-item">
+      <div class="rel">${esc(f.relation)}</div>
+      <div class="hyp">假设：${esc(f.hypothesis || "—")}</div>
+      <table style="margin-top:6px">
+        <tr><th>候选</th><th>掺杂</th><th>浓度</th><th>科学评分</th><th>来源</th></tr>
+        ${f.top_candidates.map(c => `
+          <tr><td>${esc(c.formula)}</td><td>${esc(c.dopant)}</td>
+              <td>${c.concentration != null ? c.concentration + "%" : "—"}</td>
+              <td>${scorePill(c.score)}</td><td class="muted">${esc(c.rationale)}</td></tr>`).join("")}
+      </table>
+      <p class="muted" style="margin-top:4px">对应 Gap：${esc(f.gap_statement)}｜候选数 ${f.n_candidates}</p>
+    </div>`).join("");
+  return `<div class="card"><h2>构效关系候选（${F.n_findings} finding，每 finding 展示 Top3 候选）</h2>${items || '<p class="muted">暂无构效关系产物</p>'}</div>`;
+}
+
+function panelValidation() {
+  const dist = Object.entries(V.verdict_dist).map(([k, v]) =>
+    `${verdictTag(k)} × ${v}`).join("  ");
+  const rows = V.items.slice(0, 60).map(v => `
+    <tr><td>${esc(v.candidate_formula)}</td><td>${esc(v.host)}</td>
+        <td>${v.dopant ? esc(v.dopant) + (v.concentration != null ? " " + v.concentration + "%" : "") : "—"}</td>
+        <td>${verdictTag(v.verdict)}</td><td class="muted">${esc(v.reason)}</td>
+        <td class="muted">${esc(v.gap_statement)}</td></tr>`).join("");
+  return `
+  <div class="card">
+    <h2>数据库交叉验证（OQMD 主 + MP 增强）</h2>
+    <p style="font-size:13px">判定分布：${dist || "—"}</p>
+    <p class="muted" style="margin-top:6px">A/B 位拆分纯母体解析（Ge0.93Ti0.01Bi0.06Te → GeTe）解决分数掺杂直查失败 38→0；反例母体自动回喂搜索剪枝器。</p>
+  </div>
+  <div class="card"><h2>验证明细（前 60 条）</h2>
+    <table><tr><th>候选</th><th>母体</th><th>掺杂</th><th>判定</th><th>依据</th><th>对应 Gap</th></tr>
+    ${rows || '<tr><td colspan="6">暂无验证产物</td></tr>'}</table>
+  </div>`;
+}
+
+function panelMetrics() {
+  const rows = (R.matrix || []).map(r => `
+    <tr><td><b>${esc(r.algo_name)}</b></td><td>${esc(r.mode)}</td>
+        <td>${esc(r.model || "—")}</td><td>${r.n_facts}</td>
+        <td>${r["recall@1"].toFixed(3)}</td><td>${r["recall@3"].toFixed(3)}</td>
+        <td>${r["recall@5"].toFixed(3)}</td><td>${r.coverage.toFixed(3)}</td>
+        <td>${r.n_candidates_avg}</td></tr>`).join("");
+  const arms = A.arms || {};
+  const armRows = Object.entries(arms).map(([k, v]) => `
+    <tr><td><b>${k}</b></td><td>${v.mean_best_score.toFixed(3)}</td>
+        <td>${v.median_best_score.toFixed(3)}</td><td>${v.max_best_score.toFixed(3)}</td>
+        <td>${v.total_llm_calls}</td><td>${v.mean_unique_dopants}</td></tr>`).join("");
+  return `
+  <div class="card"><h2>已知关系召回率（四算法 × 规则/LLM 统一口径）</h2>
+    <table><tr><th>算法</th><th>模式</th><th>模型</th><th>n_facts</th>
+      <th>recall@1</th><th>recall@3</th><th>recall@5</th><th>coverage</th><th>候选均值</th></tr>
+    ${rows || '<tr><td colspan="9">暂无召回率矩阵</td></tr>'}</table>
+    <p class="muted" style="margin-top:6px">${esc(R.note || "")}</p>
+  </div>
+  <div class="card"><h2>三臂消融（VerificationOracle 真值评分代理）</h2>
+    <table><tr><th>臂</th><th>mean</th><th>median</th><th>max</th><th>LLM 调用</th><th>唯一 dopant 均值</th></tr>
+    ${armRows || '<tr><td colspan="6">暂无消融报告</td></tr>'}</table>
+    <p class="muted" style="margin-top:6px">增益：GA 演化 ${fmtGain(A.gains?.ga_evolution_gain_pct)} / LLM 融合 ${fmtGain(A.gains?.llm_fusion_gain_pct)}（负增益已定位为真值表覆盖偏置，非 LLM 无能，负结果如实记录）</p>
+  </div>
+  <div class="card"><h2>四算法融合投票</h2>
+    <p style="font-size:13px">Borda rank 加权共识：<b>${D.ensemble.n_gap_groups}</b> 组 Gap 参与，<b>${D.ensemble.n_consensus}</b> 组达成多算法共识（≥2 算法）。</p>
+    <p class="muted">复赛夜间四算法批量后产生真实共识清单；当前产物以单算法 GA 为主。</p>
+  </div>`;
+  function fmtGain(x) { return x == null ? "—" : (x >= 0 ? "+" : "") + x.toFixed(2) + "%"; }
+}
+
+function panelEvidence() {
+  const rows = G.gaps.map(g => `
+    <tr><td>${esc(g.statement)}</td><td>${novTag(g.novelty)}</td>
+        <td><span class="tag ev">证据 ${g.n_evidence}</span></td>
+        <td class="muted">${esc((g.operability || "—").slice(0, 40))}</td></tr>`).join("");
+  return `
+  <div class="card"><h2>证据链可审计性</h2>
+    <p style="font-size:13px">审计结论：Gap 可追溯 <b>${G.n_with_evidence}/${G.n_gaps}</b>（evidence_ids 六通道回填：kb_exact / kb_parent / kb_similar / retrieval / retrieval_title / retrieval_parent）。</p>
+    <p class="muted" style="margin-top:6px">每条 Gap / Finding / 验证结论强制携带 EvidenceChain；统一 JSONL 审计日志支撑五项审计（证据覆盖 / 降级留痕 / 判定分布等）。</p>
+  </div>
+  <div class="card"><h2>Gap 证据链明细（${G.gaps.length} 条）</h2>
+    <table><tr><th>Gap 陈述</th><th>新颖性</th><th>证据</th><th>可操作性</th></tr>
+    ${rows || '<tr><td colspan="4">暂无 Gap</td></tr>'}</table>
+  </div>`;
+}
+
+/* ---- 渲染器 ---- */
+const RENDER = {
+  overview: panelOverview, literature: panelLiterature, gaps: panelGaps,
+  findings: panelFindings, validation: panelValidation, metrics: panelMetrics,
+  evidence: panelEvidence,
+};
+
+function mount() {
+  const nav = document.getElementById("tabs");
+  TABS.forEach(([id, label]) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.onclick = () => switchTab(id);
+    nav.appendChild(b);
+  });
+  switchTab("overview");
+  const search = document.getElementById("gap-search");
+  if (search) search.addEventListener("input", renderGapList);
+}
+function switchTab(id) {
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  [...nav.children].forEach(b => { if (b.textContent === TABS.find(t => t[0] === id)[1]) b.classList.add("active"); });
+  document.querySelectorAll("section.panel").forEach(s => s.classList.remove("active"));
+  let panel = document.getElementById("panel-" + id);
+  if (!panel) {
+    panel = document.createElement("section");
+    panel.id = "panel-" + id;
+    panel.className = "panel";
+    document.getElementById("main").appendChild(panel);
+  }
+  panel.innerHTML = RENDER[id]();
+  panel.classList.add("active");
+  if (id === "gaps") renderGapList();
+}
+function renderGapList() {
+  const kw = (document.getElementById("gap-search")?.value || "").trim().toLowerCase();
+  const list = document.getElementById("gap-list");
+  if (!list) return;
+  const items = G.gaps.filter(g =>
+    !kw || (g.statement + " " + (g.formulas || []).join(" ")).toLowerCase().includes(kw));
+  list.innerHTML = items.map(g => `
+    <div class="gap-item">
+      <div class="stmt">${novTag(g.novelty)} ${esc(g.statement)}</div>
+      <div class="muted" style="margin-top:4px">体系：${esc((g.formulas || []).join(", ") || "—")}｜证据 ${g.n_evidence}｜${esc(g.gap_type)}</div>
+    </div>`).join("") || '<p class="muted">无匹配 Gap</p>';
+}
+document.addEventListener("DOMContentLoaded", mount);
+</script>
+</body>
+</html>

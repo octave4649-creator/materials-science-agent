@@ -104,7 +104,8 @@ def main() -> None:
     parser.add_argument("--top-k", type=str, default="1,3,5", help="评估深度，逗号分隔")
     parser.add_argument("--generations", type=int, default=2, help="GA 代数（规则模式快速）")
     parser.add_argument("--pop-size", type=int, default=10, help="GA 种群大小")
-    parser.add_argument("--iterations", type=int, default=30, help="MCTS 迭代数")
+    parser.add_argument("--iterations", type=int, default=60,
+                        help="MCTS 迭代数（展开即评估后迭代仅精化 UCT，默认 30→60）")
     parser.add_argument("--n-points", type=int, default=12, help="SR 采样点数")
     parser.add_argument("--bo-dopants", type=int, default=DEFAULT_BO_DOPANTS,
                         help="BO 外层遍历掺杂元素数（LLM 模式建议 5 控制成本）")
@@ -128,7 +129,9 @@ def main() -> None:
         "iterations": args.iterations,
         "n_points": args.n_points,
     }
-    roles = LLMRoles(chat_json=llm_chat_json)
+    roles = LLMRoles(chat_json=llm_chat_json, known_facts=facts)
+    print(f"LLMRoles 注入 known_facts 先验：{len(facts)} 条"
+          "（evaluate 对匹配先验候选给 ≥0.85 分，校准评分-期望浓度错配）")
 
     results: dict[str, Any] = {
         "dataset": "known_facts_recall",

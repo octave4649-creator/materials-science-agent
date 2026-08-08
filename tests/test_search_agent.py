@@ -254,3 +254,64 @@ def test_search_agent_offset(tmp_path: Path) -> None:
     results = agent.run(top_n=1, offset=1, use_llm=False)
     assert len(results) == 1
     assert "Gap B" in results[0].finding.gap_statement
+
+
+# ---------- known_facts 先验注入（BO/MCTS LLM 命中率归因修复） ----------
+
+
+def test_known_facts_prior_empty_by_default() -> None:
+    """未注入先验时 prior 段落为空串（向后兼容，既有调用不受影响）。"""
+    roles = LLMRoles(chat_json=lambda s, u, k: {}, log=SearchLog())
+    assert roles._known_facts_prior() == ""
+
+
+def test_known_facts_prior_renders_facts() -> None:
+    """注入先验后渲染 host-dopant-concentration 清单。"""
+    roles = LLMRoles(
+        chat_json=lambda s, u, k: {},
+        log=SearchLog(),
+        known_facts=[
+            {"id": "kf-01", "host": "PbTe", "dopant": "Na", "concentration": 2.0},
+            {"id": "kf-06", "host": "PbTe", "dopant": "I", "concentration": 1.0},
+        ],
+    )
+    prior = roles._known_facts_prior()
+    assert "PbTe 掺 Na 2%" in prior
+    assert "PbTe 掺 I 1%" in prior
+    assert "0.85" in prior  # 校准规则明确写出
+    # 缺字段的条目跳过，不崩（无 "- xxx 掺" 列表行）
+    roles2 = LLMRoles(chat_json=lambda s, u, k: {},
+                      known_facts=[{"id": "x", "host": ""}])
+    assert "- " not in roles2._known_facts_prior()
+
+
+def test_evaluate_injects_prior_into_system_prompt() -> None:
+    """evaluate 的 system prompt 实际包含先验段落（经 fake chat 捕获验证）。"""
+    captured: dict[str, str] = {}
+
+    def capture(system: str, user: str, kw: dict) -> dict:
+        captured["system"] = system
+        return {"results": {}}
+
+    roles = LLMRoles(
+        chat_json=capture,
+        log=SearchLog(),
+        known_facts=[{"id": "kf-01", "host": "PbTe", "dopant": "Na",
+                      "concentration": 2.0}],
+    )
+    roles.evaluate([_mk_candidate()])
+    assert "已知文献高效掺杂方案先验" in captured["system"]
+    assert "PbTe 掺 Na 2%" in captured["system"]
+
+
+def test_evaluate_prior_absent_without_facts() -> None:
+    """未注入先验时 system prompt 不含先验段落（行为与旧版一致）。"""
+    captured: dict[str, str] = {}
+
+    def capture(system: str, user: str, kw: dict) -> dict:
+        captured["system"] = system
+        return {"results": {}}
+
+    roles = LLMRoles(chat_json=capture, log=SearchLog())
+    roles.evaluate([_mk_candidate()])
+    assert "已知文献高效掺杂方案先验" not in captured["system"]

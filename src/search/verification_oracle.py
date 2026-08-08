@@ -114,6 +114,48 @@ class VerificationOracle:
             return None
         return any(bool(x) for x in stable_flags)
 
+    def load_oracle_truth(self, oracle_dir: str | Path) -> int:
+        """加载 OQMD 自动扩面真值表（oracle/oracle_truth_*.json）。
+
+        由 `scripts/expand_oracle_truth.py` 生成，结构与 validation 产物对齐。
+        判定直接由 verdict 字段推断 host 稳定性（已知=True / 反例=False），
+        与 validation 的 entries 推断逻辑等价。返回索引条数。
+        """
+        d = Path(oracle_dir)
+        n = 0
+        for f in sorted(d.glob("oracle_truth_*.json")):
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            for r in data.get("results", []):
+                formula = str(r.get("candidate_formula") or "").strip()
+                host = str(r.get("host") or "").strip()
+                verdict = str(r.get("verdict") or "未知")
+                if not formula:
+                    continue
+                host_stable = (
+                    True if verdict == "已知"
+                    else (False if verdict == "反例" else None)
+                )
+                v = OracleVerdict(
+                    formula=formula, verdict=verdict,
+                    host=host, host_stable=host_stable,
+                )
+                self._formula_table[formula] = v
+                parents = {host, str(r.get("parent_formula") or "").strip()} - {""}
+                for h in parents:
+                    old = self._host_table.get(h)
+                    if old is None or VERDICT_PRIORITY.get(
+                        v.verdict, 0
+                    ) > VERDICT_PRIORITY.get(old.verdict, 0):
+                        self._host_table[h] = OracleVerdict(
+                            formula=h, verdict=verdict,
+                            host=h, host_stable=host_stable,
+                        )
+                n += 1
+        return n
+
     def lookup(self, formula: str, host: str = "") -> OracleVerdict:
         """精确命中 formula 表，未命中回退 host 表。"""
         if formula in self._formula_table:

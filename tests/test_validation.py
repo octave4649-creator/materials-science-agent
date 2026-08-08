@@ -8,7 +8,7 @@ import pytest
 
 from src.agent.validation_agent import ValidationAgent, _validate_candidate
 from src.validation.oqmd_client import OQMDClient
-from src.validation.parent_parser import parse_integer_parent
+from src.validation.parent_parser import parse_integer_parent, parse_variable_parent
 from src.validation.schemas import DBEntry
 
 
@@ -75,6 +75,21 @@ def test_parent_parser_failure() -> None:
     assert parse_integer_parent("") is None
     assert parse_integer_parent("GeTe") == "GeTe"  # 整数 AX 幂等
     assert parse_integer_parent("123") is None  # 非化学式
+
+
+def test_variable_parent_parser() -> None:
+    """变量式占位下标 → 名义母体。"""
+    assert parse_variable_parent("Ge1-xBixTe") == "GeTe"
+    assert parse_variable_parent("Ge1-x-yTixBiyTe") == "GeTe"
+    assert parse_variable_parent("Pb1-xSnxTe") == "PbTe"
+
+
+def test_variable_parent_parser_failure() -> None:
+    """非变量式 / 无阴离子 → None。"""
+    assert parse_variable_parent("Bi0.5Sb1.5Te3") is None  # 非变量式
+    assert parse_variable_parent("GeTe") is None  # 无 x/y
+    assert parse_variable_parent("") is None
+    assert parse_variable_parent("Ge1-x") is None  # 末尾非阴离子
 
 
 # ---------- 三类判定 ----------
@@ -179,6 +194,64 @@ def test_oqmd_error_raises(monkeypatch: pytest.MonkeyPatch) -> None:
         raise httpx.ConnectError("down")
 
     monkeypatch.setattr("src.validation.oqmd_client.httpx.get", _boom)
+    monkeypatch.setattr("src.validation.oqmd_client.time.sleep", lambda _: None)
+    with pytest.raises(Exception, match="OQMD"):
+        c.query_formation_energy("PbTe")
+
+
+def test_oqmd_retry_recovers_after_5xx(monkeypatch: pytest.MonkeyPatch) -> None:
+    """服务端 5xx 临时故障 → 指数退避重试后成功（不中断批量扩面）。"""
+    import httpx
+
+    c = OQMDClient()
+    calls: list[int] = []
+
+    class _FakeResp:
+        def __init__(self, status: int, payload: dict | None = None) -> None:
+            self.status_code = status
+            self._payload = payload
+
+        def raise_for_status(self) -> None:
+            if self.status_code >= 400:
+                raise httpx.HTTPStatusError(
+                    f"{self.status_code}", request=httpx.Request("GET", "x"),
+                    response=httpx.Response(self.status_code),
+                )
+
+        def json(self) -> dict:
+            return self._payload or {}
+
+    def _fake_get(url: str, params: dict, timeout: float, follow_redirects: bool):
+        calls.append(1)
+        if len(calls) == 1:
+            return _FakeResp(502)
+        return _FakeResp(
+            200,
+            {"data": [{"name": "TePb", "delta_e": -0.18,
+                       "stability": 0.02, "formationenergy_id": 4061853}]},
+        )
+
+    monkeypatch.setattr("src.validation.oqmd_client.httpx.get", _fake_get)
+    monkeypatch.setattr("src.validation.oqmd_client.time.sleep", lambda _: None)
+    entries = c.query_formation_energy("PbTe")
+    assert len(entries) == 1  # 重试后成功
+    assert len(calls) == 2  # 恰好重试一次
+
+
+def test_oqmd_retry_exhausts_after_persistent_5xx(monkeypatch: pytest.MonkeyPatch) -> None:
+    """5xx 持续存在 → 重试耗尽后抛 OQMDError（如实留痕）。"""
+    import httpx
+
+    c = OQMDClient()
+
+    def _fake_get(url: str, params: dict, timeout: float, follow_redirects: bool):
+        raise httpx.HTTPStatusError(
+            "502", request=httpx.Request("GET", "x"),
+            response=httpx.Response(502),
+        )
+
+    monkeypatch.setattr("src.validation.oqmd_client.httpx.get", _fake_get)
+    monkeypatch.setattr("src.validation.oqmd_client.time.sleep", lambda _: None)
     with pytest.raises(Exception, match="OQMD"):
         c.query_formation_energy("PbTe")
 

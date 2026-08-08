@@ -22,3 +22,11 @@ venv/
 *.pdf
 *.pptx
 *.docx
+*.zip
+
+# WAYB/WAYC 原始数据（600MB+，仅本地使用，不入库）
+73e21efb-3b40-4c7e-a81c-7ced35285082/
+73e21efb-3b40-4c7e-a81c-7ced35285082.zip
+
+# 无关文件
+xiaohongshu_article.md

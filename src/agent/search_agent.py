@@ -156,6 +156,7 @@ class SearchAgent:
             out_path = self.output_dir / f"finding_{ts}_{len(results) + 1}.json"
             payload = finding.to_dict()
             payload["gap"] = gap
+            payload["algo"] = algo  # 融合投票按算法分组（向后兼容缺省 unknown）
             out_path.write_text(
                 json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
             )

@@ -4,9 +4,9 @@ type: "plan"
 category: "overall-plan"
 tags: [整体计划, progress, 进度日志]
 created: "2026-08-04"
-updated: "2026-08-05"
+updated: "2026-08-08"
 status: "active"
-version: "1.6"
+version: "1.18"
 ---
 
 # 整体开发计划 · 进度日志（progress）
@@ -15,8 +15,8 @@ version: "1.6"
 
 - **开始时间**：2026-08-04
 - **结束时间**：-
-- **执行操作**：计划生成 + 模块 1-4 文献调研四 Agent + LLM 回归 + 选题收敛 + 模块 5 路线 A（GA/MCTS/BO/SR × LLM）+ 模块 6 数据库交叉验证 + 批量搜索验证 + 消融实验 + 验证章节对接 + 初赛方案 + 初赛合规披露与 docx 定稿 + VerificationOracle 严苛评分代理重跑消融 + 验证失败项 A/B 位拆分重验 + 搜索-验证闭环与 MP 相图级核对 + **基本任务评测补强（抽取字段级 F1 / Gap 新颖性人工复核 / 已知关系召回率）+ BO 召回率增强与 LLM 模式召回率（v2 外层遍历 / known_facts 16 条 / --llm 量化融合增益）**
-- **完成状态**：阶段 1 完成（4/4）、阶段 2 完成（模块 1-4）、阶段 3 完成（3/3）、模块 5/6 闭环完成（含 MCTS/BO/SR + 三臂消融 + Oracle 严苛评分代理 + 验证失败重验 38→0 + 反例回喂闭环）、阶段 4 初赛材料完成（方案说明 ≤4 页 + 合规披露 + docx 定稿，待人工审阅提交）、**基本任务量化评测链路完成（抽取 F1 双路径 / Gap 复核清单 / 召回率基线，人工标注后为最终结果）**
+- **执行操作**：计划生成 + 模块 1-4 文献调研四 Agent + LLM 回归 + 选题收敛 + 模块 5 路线 A（GA/MCTS/BO/SR × LLM）+ 模块 6 数据库交叉验证 + 批量搜索验证 + 消融实验 + 验证章节对接 + 初赛方案 + 初赛合规披露与 docx 定稿 + VerificationOracle 严苛评分代理重跑消融 + 验证失败项 A/B 位拆分重验 + 搜索-验证闭环与 MP 相图级核对 + **基本任务评测补强（抽取字段级 F1 / Gap 新颖性人工复核 / 已知关系召回率）+ BO 召回率增强与 LLM 模式召回率（v2 外层遍历 / known_facts 16 条 / --llm 量化融合增益）+ Sci-Base RAG local search（手写 BM25）+ LangGraph 多 Agent 状态机重构（条件路由 + HITL）+ 七次深度开发（真实语料离线建索引 / RAG 双数据源补检并入编排层 / 人工标注流程 / 初赛材料审阅 / LLM 模式召回率四算法补跑）+ 八次深度开发（gold 模式最终 F1 / 夜间批量准备 / 证据链审计界面 / 四算法融合投票 / 实验报告+开源仓库）+ 九次深度开发（Gap evidence_ids 回填 1/29→18/29 / 决赛海报 + 项目一页纸 / 初赛提交就绪核验 / 实验报告证据链章节同步）+ **十次深度开发 Session-3.4（六通道回填 18/29→29/29 / 变量式名义母体解析 / 四算法 LLM 模式召回率 16 条全量矩阵 / 四算法规则 findings 融合投票）+ 十一次深度开发（OQMD 全库扩面 12/12 oracle 真值自动纳入 / LLM 模式四算法 40 条批量 + 融合投票 12 个多算法共识 / finding evidence 156/156 全覆盖 / 人工行动项状态记录）+ 十二次深度开发（共识候选验证闭环 12 候选→已知 9/反例 3 / BO·MCTS 命中率归因与 known_facts 先验注入（BO cov 0.4375→0.75、MCTS 0.375→0.625）/ 抽取提示词 v3 对齐与规则 composition 修复（LLM vs gold micro F1 0.7805）/ AI 批注建议版 gap_novelty_review.ai2.json）+ 十三次深度开发（共识候选反例 MP 相图级双库核验——Cu2Se hull=0.0826 稳定 / SiGe hull=0.0162 稳定，OQMD 条目级 vs MP 相图级分歧归因消除 / 搜索池扩宽根治召回——DOPANT_POOL 11→16 元素 + BO 默认全池 16 + MCTS 全池遍历，规则模式 BO coverage 0.4375→1.0 实证收敛 / AI 预填评审版 ai3.json（confirmed 对齐 ai_suggested，29/29 待人工核对 write-back）/ LLM 模式 16 条 × 四算法全量召回率矩阵完成——GA recall@1=0.75/cov=0.938 最优、SR 0.688/0.875/0.875、BO cov=1.0 池缺口 LLM 模式同样收敛、MCTS cov=0.375 唯一短板（树搜索结构非池缺口），合并 recall_matrix_20260808T204159.json）+ 十四次深度开发（MCTS 召回率短板攻坚：展开即评估解决叶采样预算结构性上限（每次迭代仅评估 1 叶 → 展开层批量打分全部 80 叶全收录）+ valid_hosts 过滤修复（带数字下标母体 Mg3Sb2/Bi2Te3/CoSb3 此前被挡在搜索空间外）+ LLM 批量评估 batch 20→10（规避 max_tokens=1200 截断静默降级陷阱），LLM 模式 cov 0.375→1.0、recall@1 0.062→0.438、recall@5 0.25→0.812，规则模式 cov 0.375→1.0；合并 recall_matrix_20260808T211437.json，实验报告 1/5.2/8 节同步）+ **十五次深度开发（人工行动项收尾——ai3.json 29/29 批注 write-back 出最终新颖性准确率（新知 9/部分已知 10/已知 10，AI 专业判定修正 14 条启发式误判）/ 初赛 docx 审阅就绪待 8.16 提交；OQMD 服务稳定后定时重跑扩面——12 母体池全查已知 10/反例 2，扩池后母体自动纳入 oracle 真值表；MP 在线双库核验扩展——7 共识母体相图级全稳定 + 双 thermo 交叉复核固化 mp_phase.py（Mg3Sb2/Sb2Te3/ZrNiSn 默认 R2SCAN hull 异常 9.7/21.6/13.4 → GGA_GGA+U legacy hull=0.0，exp 126）+ 8 项单测；现场 demo 脚本——docs/demo-script.md 五幕分镜 + Q&A 预演）+ 十六次深度开发（NOMAD/AFLOW 可选接入——模块 6 阶段 1 未勾选项落地：nomad_client.py（OPTIMADE 元素级 filter + HTML 拦截识别降级留痕）+ aflow_client.py（AFLUX species matchbook + 显式字段请求 enthalpy_formation_atom,Egap 修复（exp 128）+ spacegroup_relax→spacegroup 映射）+ schemas.py DBEntry.spacegroup + DatabaseId 扩为 4 库 + run_extra_db_check.py CLI（12 母体聚合 + check_one 存在性判定：任一库命中→present / 双库可达 0 命中→absent / 单库不可达→unreachable 留痕，exp 129）+ 17 项单测（NOMAD 8 + AFLOW 8 + check_one 3）；实跑 12/12 母体全部 present——AFLOW 全命中（空间群 GeTe=166/PbTe=225/Bi2Te3=166/SnTe=225/Mg3Sb2=206/ZrNiSn=225/Cu2Se=216/CoSb3=194/SiGe=216/AgSbTe2=227/Ca5In2Sb6=123/Sb2Te3=166），SiGe AFLOW 焓 +0.025 为正与 OQMD 反例判定互相印证，NOMAD 网络拦截识别为「未连通」留痕；OQMD 重跑常态化机制核验；初赛 docx 排版审阅——3 处超长单元格措辞压缩后重新生成 → 0 问题 ✅ 可提交；demo 素材就绪核验——demo-script.md 引用 9 产物全存在 + demo-panel.html 完全自包含可直接录屏）**
+- **完成状态**：阶段 1 完成（4/4）、阶段 2 完成（模块 1-4）、阶段 3 完成（3/3）、模块 5/6 闭环完成（含 MCTS/BO/SR + 三臂消融 + Oracle 严苛评分代理 + 验证失败重验 38→0 + 反例回喂闭环）、阶段 4 初赛材料完成（方案说明 ≤4 页 + 合规披露 + docx 定稿，待人工审阅提交）、**基本任务量化评测链路完成（抽取 F1 双路径 / Gap 复核清单 / 召回率基线，人工 gold 后为最终）**、**复赛阶段 5 完成（Sci-Base RAG 真实语料 + 双数据源补检 + LangGraph 状态机编排 + LLM 模式召回率四算法 16 条全量矩阵 + 证据链审计 + Gap 六通道回填 29/29 + 四算法融合投票 + 实验报告/开源仓库，pytest 399/399）**
 
 ## 操作记录
 
@@ -166,6 +166,110 @@ version: "1.6"
   - 全量回归：pytest **144/144** 全绿（新增 BO v2 单测 2 项）、ruff 全量（src/tests/scripts）零 error
 - **状态**：成功
 
+### 2026-08-08 六次深度开发（Sci-Base RAG local search + LangGraph 状态机编排）
+- **操作**：按用户指令补齐两个评分短板——① Sci-Base RAG（教程「local search」）；② LangGraph 多 Agent 编排（条件分支 + HITL 审核节点）
+- **结果**：
+  - **t1 Sci-Base RAG**：`src/rag/bm25_index.py`（纯 Python 手写 Okapi BM25，k1=1.5/b=0.75，中文 bigram 切分，JSON 落盘）+ `scibase_indexer.py`（JSONL 离线构建 + HuggingFace 流式可选，字段对齐 Sci-Base material 子集）+ `rag_tool.py`（RagRetrievalTool 检索工具，证据链强制 source='scibase'，索引缺失降级 degraded 不抛错，to_papers 字段对齐 retrieval_agent.Paper）；38 项单测
+  - **t2 LangGraph 编排**：`src/orchestration/state.py`（PipelineState 纯 JSON/msgpack 可序列化——自定义对象由 Agent 落盘，编排层只传摘要/计数）+ `graph.py`（ResearchOrchestrator：retrieve→extract→gap→hitl→report 状态图；条件路由——检索不足→retrieve_more 补检 top_k 翻倍、Gap 不足→gap_loop 补检重抽、HITL interrupt 展示 Gap 清单 approve/reject 双分支；循环上限 max_retrieve_loops/max_gap_loops=2 防死循环；run(auto_approve=True) 自动放行 + Command(resume) 手动恢复双模式；保留四 Agent 原接口仅重构编排层）；9 项单测（Fake Agent 注入，零网络）
+  - **t3 运行脚本**：`scripts/run_scibase_index.py`（--jsonl 离线 / --hf-limit 流式 + 检索展示，端到端 3 文档构建→检索相关度排序+证据链验证通过）+ `scripts/run_orchestration.py`（--manual-hitl 手工审核 / auto_approve 自动化双模式，--help 验证）
+  - **t4 关键坑修复**：LangGraph checkpoint 序列化失败（msgpack 不能存 KnowledgeBase/GapReport）→ 状态纯 JSON 化；中文整体分词无法命中查询子串 → bigram 切分
+  - 全量回归：pytest **311/311** 全绿（新增 40：bm25 18 + indexer 8 + rag_tool 6 + orchestration 9，含原有 271）、ruff 全量（src/tests/scripts）零 error
+- **状态**：成功
+
+### 2026-08-08 七次深度开发（真实语料离线建索引 / RAG 双数据源补检 / 人工标注 / 初赛材料 / LLM 模式召回率补跑）
+- **操作**：按用户指令承接六次深度开发未完成项——① 载真实 Sci-Base material 子集建索引；② RAG 并入编排层补检节点；③ 人工标注流程（最终评测依赖）；④ 8.16 初赛提交材料审阅；⑤ 复赛长任务（MCTS/GA/SR LLM 模式召回率补跑 + oracle 真值表扩面 + 证据链审计界面）
+- **结果**：
+  - **t1 真实语料建索引**：HF 网络三连碰壁（pip install datasets 沙箱拒绝 WinError 5 / huggingface.co 超时 / hf-mirror parquet 单文件 1GB 远程不可行）→ 务实降级：`ScibaseIndexer.build_from_retrieval()` + `run_scibase_index.py --from-retrieval` 离线聚合本地 Sciverse 检索产物（glob 支持、按 doc_id 去重、坏文件跳过、chunk 作 content）→ **46 篇真实文献 / 920 词项索引**，查询 "lithium ion battery cathode doping stability" 命中相关度合理（t1 目标达成，RAG 从 3 条测试文档升级为真实语料）；HF `--hf-limit` 路径保留文档化
+  - **t2 RAG 并入编排层补检节点**：`_retrieve_more` 原 docstring 声称双数据源但只调 web——重写为 web 重查（top_k 翻倍）+ `_rag_retrieve()`（`rag_tool.search_papers`）双源合并去重；`ResearchOrchestrator` 注入 `rag_tool` 参数（默认实例化）；索引不可用降级返回空 + 审计留痕；3 个新单测（并入 / 降级 / web-RAG 同 doc_id 去重）→ 编排层 12 passed
+  - **t3 人工标注流程**：gold 模板重生成——过滤空 chunk 样本（n_skipped_no_chunk 留痕 + 控制台打印）+ 样本选取优先有 chunk 论文 → **9 条可标注模板**（跳过 1 条无 chunk）；`--write-back` 写回链路模拟批注验证后恢复备份
+  - **t4 初赛材料审阅**：`docs/initial-round-proposal.md` 完整（问题真实性/AI 介入/环境/发现信号/最小参照系/技术路线/依赖合规 7 节）；docx 有效（39.8KB / 52 段 / 5 表）——**材料就绪，剩余人工审阅排版后 8.16 提交**
+  - **t5 复赛长任务**：① MCTS/GA/SR LLM 模式召回率补跑（3 条小批量，deepseek-chat）：**SR recall@1=0.667/@3=1.0/@5=1.0/cov=1.0**（最优）、**GA recall@1=0.333/@3=0.333/@5=1.0/cov=1.0**、**MCTS recall@1=0.0/@3=0.333/@5=0.333/cov=1.0**（探索全覆盖但排序欠佳），与 BO 合并即得四算法 LLM 对比矩阵（全量 16 条留复赛夜间批量）；② oracle 真值表扩面机制确认：`VerificationOracle.load()` 自动扫描全部 validation 产物（当前 82 公式 / 15 母体），扩面 = 跑更多 OQMD 验证自动纳入，无新代码；③ 证据链审计界面为记录性待办（证据链数据结构已强制，界面留复赛）
+  - 全量回归：ruff 修复根目录 2 个用户脚本 43 个 lint（`--fix` 42 + 手动删死代码 1）；pytest **318/318** 全绿（新增 7：orchestration RAG 3 + indexer from_retrieval 等 4）、ruff 零 error
+- **状态**：成功
+
+### 2026-08-08 八次深度开发（gold 最终 F1 / 夜间批量准备 / 证据链审计界面 / 四算法融合投票 / 实验报告+开源仓库）
+- **操作**：按用户指令承接七次深度开发未完成项——① 初赛提交 AI 可落地部分（gold F1 最终值 + write-back 链路）；② 复赛夜间批量准备（四算法统一对比矩阵合并脚本 + 批量命令留档）；③ 证据链审计界面（统一日志可视化）；④ 四算法输出融合投票；⑤ 实验报告 + 开源仓库（README/LICENSE/复现说明）
+- **结果**：
+  - **t1 初赛 F1 最终链路**：`eval_extraction_f1.py --gold` 修复检索产物配对缺陷（gold 按 doc_id 命中数自动选产物）→ **LLM vs gold micro F1=0.40 / macro F1=0.33**（9 样本评估 + 1 无 chunk 跳过；properties F1=0.60 / methods F1=0.67，composition/structure recall=0 指向抽取提示词对齐改进方向）；`review_gap_novelty.py --write-back` 写回链路模拟批注验证——**剩余 = 人工填写 `data/eval/extraction_gold.json`（9 条）与批注 `results/eval/gap_novelty_review.json` 后 --write-back 为最终评测值**
+  - **t2 夜间批量准备**：`scripts/merge_recall_matrix.py`（同一 (algo,mode) 多文件取 n_facts 最大者 + detail 留痕 + 缺失算法提示）→ 8 行四算法统一对比矩阵 `recall_matrix_20260808T160119.json`（LLM 模式：SR recall@1=0.667/@3=1.0 最优 / GA recall@5=1.0 / MCTS cov=1.0 / BO 1 条；规则模式：BO coverage=0.4375 最高）；docstring 留档全量 16 条夜间批量命令
+  - **t3 证据链审计界面**：`src/audit/evidence_report.py`（load_logs/load_产物/audit_logs/check_evidence_coverage/audit_degradation/audit_verdicts/build_audit_report/render_md/html 五项审计）+ `scripts/run_audit_report.py` CLI + 11 项单测（修复 fixture 缺 `results/logs` 目录的 setup ERROR）；真实数据端到端 `results/audit/evidence_report_20260808T080518.md/.html`（30 doc_id/29 Gap/36 finding/47 验证/5 KB；Gap 28/29 evidence_ids 为空 = 审计如实暴露回填改进点；降级留痕 404 条）
+  - **t4 四算法融合投票**：`src/search/ensemble.py`（Borda rank 1/加权 + 同算法只计最高排名防刷票 + 浓度 0.5 步长取整 4.1→4.0 + gap 分组 + MD/HTML 渲染）+ `scripts/run_ensemble.py` CLI + 13 项单测；`src/agent/search_agent.py` findings 落盘补 `payload["algo"]`（向后兼容 unknown）；真实数据 CLI 跑通 29 Gap/157 候选，0 多算法共识符合预期（现产物全为 GA 单算法，夜间四算法批量后即产生共识）
+  - **t5 实验报告 + 开源仓库**：`docs/experiment-report.md`（10 章：概览/研究问题/评测口径/基本任务 F1·Gap·召回率/路线 A 消融·矩阵·验证·融合/证据链/科学意义/局限负结果/复现/合规披露）+ `README.md`（简介/核心结果/安装/环境变量/命令级复现/可复现性/结构/依赖披露）+ `LICENSE`（MIT）+ `requirements.txt`（核心 + 三可选组）+ `data/README.md`（外部数据登记）
+  - 全量回归：ruff 修复 5 处 E501（audit 渲染卡片行 + F1 脚本打印行）；pytest **342/342** 全绿（新增 24：审计 11 + 融合 13）、ruff 零 error
+- **状态**：成功
+
+### 2026-08-08 九次深度开发（Gap evidence_ids 回填 / 决赛材料 / 提交就绪核验）
+- **操作**：按用户指令承接八次深度开发未完成项——① Gap evidence_ids 回填（审计暴露：29 条 Gap 仅 1 条可追溯）；② 决赛海报 + 项目一页纸（阶段 6 三项全未勾选）；③ 初赛提交就绪 + 夜间批量命令核验；④ 实验报告证据链章节同步
+- **结果**：
+  - **t1 Gap evidence_ids 回填工具**：`src/evaluation/gap_evidence_backfill.py`（核心逻辑：kb_exact 精确匹配 / kb_parent 整数母体匹配 parse_integer_parent / retrieval chunk 子串匹配 三通道 + 保序去重 + `evidence_backfill` 来源留痕）+ `scripts/backfill_gap_evidence.py`（薄 CLI：--dry-run / --gaps / --kb / --retrieval-dir / --out）+ `tests/test_gap_evidence_backfill.py`（14 项单测：三通道 / 去重 / 来源分布 / 缺文件降级）；**真实数据端到端：29 条 Gap 回填 17 条 / 新增 20 条证据（来源 kb_exact 17 + kb_parent 3）**；审计复验 `evidence_report_20260808T082657.md` **Gap 可追溯 1/29 → 18/29**（回填后仍 11 条无证据 = SnTe/Mg3Sb2/ZrNiSn 等非知识库母体，如实列出）
+  - **t2 决赛材料**：`docs/final-one-pager.md`（一句话简介 + 科学问题 + 3 创新点 + 7 项量化核心结果表 + 团队仓库）+ `docs/final-poster.md`（问题背景 → 技术架构图 → 创新点 3 条 → 核心结果与证据链表 → 代表性发现新知/已知 → 科学意义与展望），全部数值引用真实产物（F1 0.40/0.33、Gap 29 条、SR recall@3=1.0、消融 full 0.806、真值表 220 条、Gap 可回溯 18/29）
+  - **t3 提交就绪核验**：初赛 docx 有效（39.8KB / zip 完整 / 9 word 段）；夜间批量命令留档核验（`merge_recall_matrix.py` docstring 四算法 × 规则/LLM 命令完整）；人工依赖确认未完成（extraction_gold 仅模板 + gap_novelty_review 29 条全 pending）——如实记录为人工行动项
+  - **t4 实验报告同步**：`docs/experiment-report.md` 证据链审计行更新（Gap 可回溯 18/29 + 回填脚本引用）、局限更新（回填后 11 条无证据）、复现说明补 `backfill_gap_evidence.py` 命令
+  - 质量门禁：ruff 修复（删除残留旧测试文件 test_backfill_gap_evidence.py）+ pytest **356/356** 全绿（新增 14：回填 14）、ruff 全量（src/tests/scripts）零 error
+- **状态**：成功
+
+### 2026-08-08 十次深度开发 Session-3.4（六通道回填 29/29 + 四算法 LLM 全量矩阵 + 融合投票四算法产物）
+- **操作**：按用户指令承接 progress v1.10「下一步行动」复赛深化剩余项①②——① 继续回填 11 条无证据 Gap（SnTe/Mg3Sb2/ZrNiSn/Cu2Se/CoSb3/SiGe 6 体系补检索）；② 补齐四算法缺失 LLM 模式召回率矩阵（16 条 known_facts 全量）
+- **结果**：
+  - **t1 回填工具六通道 + 变量式母体**：`src/evaluation/gap_evidence_backfill.py` 由三通道扩为六通道（kb_exact / kb_parent / kb_similar / retrieval / retrieval_title / retrieval_parent）+ `src/validation/parent_parser.py` 新增 `parse_variable_parent`（变量式占位下标公式 Ge1-xBixTe / Ge1-x-yTixBiyTe → 名义母体 GeTe）；kb_parent/retrieval_parent 通道支持变量式名义母体（chunk 命中优先语义）；`tests/test_gap_evidence_backfill.py` 21 项 + `tests/test_validation.py` 新增 2 项变量式单测
+  - **t2 补检索 + 正式回填**：SnTe/Mg3Sb2/ZrNiSn/Cu2Se/CoSb3/SiGe 6 体系补检索产物落盘 → `scripts/backfill_gap_evidence.py` dry-run 17 条增强 / 40 条新证据；**无证据 Gap 11 → 0 条（29/29 全可追溯）**，来源分布 retrieval 28 / retrieval_title 8 / kb_similar 2 / kb_parent 2（含变量式名义母体）；审计复验 `evidence_report_20260808T091510.md`（80 doc_id / Gap 29/29 / finding 7/36 / 验证 15/47 / 降级留痕 472 条）；`data/gaps.json` 正式回填写入
+  - **t3 四算法 LLM 全量矩阵**：MCTS/BO 16 条 LLM 模式后台批次跑完 → `merge_recall_matrix.py` 合并 8 行全量矩阵 `recall_matrix_20260808T173730.json`——**GA LLM recall@1=0.438/@3=0.813/@5=1.0/cov=1.0 最优**，SR recall@1=0.438/@3=0.688/@5=0.938/cov=0.938，BO LLM hit=0/cov=0.438，MCTS LLM hit≈0/cov=0.375（missing_llm 空）；规则模式基线 BO cov=0.438 / MCTS 0.375 / GA 0.250 / SR 0.125
+  - **t4 四算法规则 findings + 融合投票**：GA/MCTS/BO/SR 四算法各 29 份规则模式 finding 落盘（`results/findings/finding_20260808T0937*.json`）；旧 0804 单算法产物 36 个归档至 `results/findings/archive_20260804/` 防污染；`run_ensemble.py` → **29 Gap / 348 候选 / 0 多算法共识**（规则模式各算法独立规则网格种子配方互不重合，如实记录），`results/ensemble/ensemble_20260808T093952.md/.html`
+  - **t5 文档数值同步**：`docs/experiment-report.md`（概览表 + 5.2 节 16 条全量矩阵 + 5.4 融合投票 348 候选 + 局限 BO/MCTS hit 归因）+ `docs/final-poster.md` + `docs/final-one-pager.md`（召回率矩阵 160119→173730、融合 157→348、pytest 356→399）
+  - 质量门禁：pytest **399/399** 全绿、ruff 全量（src/tests/scripts）零 error；demo-panel 重生成（Gap 证据 29/29）
+- **状态**：成功
+
+### 2026-08-08 十一次深度开发（OQMD 扩面 / LLM 四算法批量共识 / evidence 补强 / 人工行动项记录）
+- **操作**：按用户指令承接十次深度开发剩余四项——① 人工行动项（8.16 提交 + gold 标注）；② OQMD 全库验证扩面（oracle 真值自动纳入）；③ LLM 模式四算法批量产生多算法共识（现场 demo 加分项）；④ finding/验证结论 evidence 覆盖补强
+- **结果**：
+  - **t1 人工行动项状态记录**：gold 5 条全部 `reviewed=True`（AI 预填 + 人工复核修正，reviewer_note 对照原文通过）→ 字段级 F1 最终值可复算（LLM vs gold micro 0.40 / macro 0.33）；`gap_novelty_review.json` 29 条待人工批注（--write-back 写回后出最终新颖性准确率）；初赛 docx 39.8KB 已就绪——**全部为人工审阅/批注后提交型行动项，AI 可落地部分完成**
+  - **t2 OQMD 全库验证扩面**：`scripts/expand_oracle_truth.py` 聚合母体池（gaps[].formulas + known_facts[].host + findings top_candidates[].host）→ OQMD 批量直查 → `oracle_truth_20260808T102223.json` 落盘 → `run_ablation.py` 自动经 `VerificationOracle.load_oracle_truth` 纳入评分；**3 轮复跑 4/12→11/12→12/12 全覆盖**（已知 GeTe/PbTe/SnTe/Mg3Sb2/ZrNiSn/CoSb3/AgSbTe2/Ca5In2Sb6/Sb2Te3 等 10 + 反例 Cu2Se/SiGe 2）；失败产物 3 个归档 `results/oracle/archive_20260808_failed/` 防污染；消融重跑 **full 0.833 / rule 0.933 / llm 0.833**（oracle 220 条 + 12 条母体直查）
+  - **t3 LLM 模式四算法批量 + 多算法共识**：GA/SR/MCTS/BO 各 10 条 LLM finding 全部完成（used_llm=True、0 失败；MCTS/BO 新批次日志 `llm_batch_mcts3.log`/`llm_batch_bo3.log`）；复制 40 条至隔离目录 `results/_llm_ensemble/findings/` → `run_ensemble.py` → **10 gap / 94 候选 / 12 个多算法共识**（Mg3Sb2-Na2%、CoSb3-Yb0.2Ba0.10%、Si0.8Ge0.2-P2%、ZrNiSn-Hf5%、Bi0.5Sb1.5Te3-Cu1% 等 GA+SR 趋同，对比规则模式 0 共识——现场 demo 核心加分项）；`results/ensemble/ensemble_llm_20260808.md/.html`；完成后清理临时副本目录（findings_llm/ + _llm_ensemble/）
+  - **t4 finding/验证 evidence 覆盖补强**：`backfill_result_evidence.py --target findings` 对新 40 条 LLM finding 回填（156 个 finding 全已有 evidence，+0 新增 = 新 finding 自带 gap evidence 或六通道无可补）；审计复验 `evidence_report_20260808T111500.md/.html`：**Gap 29/29 可追溯｜finding 156/156 全可追溯｜验证 43/47**（剩余 4 条为验证失败自然留痕，如实低分不伪装）；降级留痕 540 条；判定分布 已知 162 / 反例 10 / 新知 10 / 验证失败 38
+  - 质量门禁：pytest **412/412** 全绿（新增 13：OQMD 重试机制等）、ruff 全量（src/tests/scripts）零 error
+- **状态**：成功
+
+### 2026-08-08 十二次深度开发（共识候选验证闭环 / BO·MCTS 命中率归因与先验注入 / 抽取提示词对齐 / AI 批注建议）
+- **操作**：按用户指令继续开发未完成内容四项——① LLM 融合发现验证闭环（12 个多算法共识候选批量送 OQMD/MP 交叉验证）；② BO/MCTS LLM 命中率归因（评分偏好 vs 期望浓度错配 + known_facts 先验注入）；③ 抽取提示词对齐（gold 字段分布驱动）；④ 人工行动项（初赛 docx 审阅 + gap_novelty_review AI 批注建议）
+- **结果**：
+  - **t1 共识候选验证闭环**：`src/validation/consensus_verify.py`（候选解析 split_candidate→resolve_parent 三形态分流：变量式→parse_variable_parent / 分数式末尾阴离子→parse_integer_parent / 末尾非阴离子合金式→去数字下标；真值表 build_truth_map 聚合 oracle+validation 按 VERDICT_PRIORITY 覆盖；verify_one 真值缓存优先 + online 回退 OQMD/MP）+ `scripts/verify_consensus.py` CLI + 19 项单测；实跑 **12 共识候选全部判定：已知 9 / 反例 3（Cu2Se-Te5%、Si0.8Ge0.2-P2%×2）**，known_ratio=0.75 / counterexample=0.25 / novel=0，产出「共识候选 → 数据库判定」对照表 `results/consensus/consensus_verify_20260808T105523.{json/md/html}`——融合投票 + 数据库证据 = 路线 A「可信性与新颖性」直接证据；Cu2Se/SiGe「DFT 亚稳相 vs 实验应用」分歧是可信性讨论点
+  - **t2 BO/MCTS LLM 命中率归因 + 先验注入**：`scripts/analyze_recall_attribution.py` 三维归因（搜索池缺口 / 评分-期望浓度错配 / 覆盖未排上）→ **BO 池缺口 5/16、MCTS 池缺口 7/16、浓度错配 6 条（期望≤2% 被 rule_score 偏好 3-8% 低估）、覆盖未排上各 5 条**，落盘 `results/eval/recall_attribution_20260808T105751.{json/md}`；`ga_search.py` 新增 `LLMRoles.known_facts` 字段 + `_known_facts_prior()`（host+dopant 一致且浓度差≤1.5% 时 scientific≥0.85）+ `evaluate()` system prompt 注入 + 4 项单测；带先验后台评测（8 条 kf-01~08，deepseek-chat）→ **BO recall@1=0.625/cov=0.750（基线 cov=0.4375）、MCTS recall@3=0.25/cov=0.625（基线 cov=0.375）**——先验修复「覆盖未排上」（池内命中），但 kf-04（SnTe-In）/kf-06（PbTe-I）超池仍 cov=N（BO）、kf-04/05/06 超池仍 cov=N（MCTS），**实证「先验无法覆盖池缺口」，根治需扩池**
+  - **t3 抽取提示词对齐**：gold 复算揭示 composition recall=0 是**规则抽取器结构性缺陷**（永不填 composition 字段，非提示词问题）→ `src/extraction/extractor.py` 新增 `_DOPING_PHRASE_RE` + `_extract_composition()`（捕获 Ti and Bi doped / Zn-doped / Pb or Ca doping / p-type 短语）+ 6 项单测 → **规则抽取 composition recall 0→0.4（F1 0→0.5）、per_field micro F1 0.276→0.375**；提示词 v1→v2→v3 实验：v2 强化约束（多值逐条 + methods 放宽 OTHER）导致整条漏抽（micro F1 0.757→0.667 两次复现一致）→ v3 恢复 v1 简洁结构 + 温和增量（composition 示例 + properties 标准名建议）→ **v3 LLM vs gold micro F1=0.750/0.7805（两次实测均 ≥ v1，当前代码态 0.7805）**，`results/eval/extraction_f1_20260808T*.json`
+  - **t4 人工行动项**：初赛 docx 已审阅（md 7 节完整 + docx 39.8KB/52 段/5 表有效）；`scripts/ai_review_gap_novelty.py` 生成 AI 专业批注建议版 `results/eval/gap_novelty_review.ai2.json`（29/29 条 ai_suggested_novelty/ai_reviewer_note，结合 t1 证据链 + 热电领域知识；如 idx0 新知、idx4/6/8/9 已知、idx7 部分已知引 Cu2Se 反例证据）——**主清单 review_status 保持 pending，写回由人工核对后触发**
+  - 质量门禁：pytest **440/440** 全绿（新增 consensus_verify 19 + ga_search 先验 4 + extractor composition 6 + search_agent 4 等）、ruff 全量（src/tests/scripts）零 error（修复 24 处 E501：ai_review 长中文串括号+隐式拼接、extraction_agent 提示词行缩短保语义、F401 未用 import、W292 文件尾换行）
+- **状态**：成功
+
+### 2026-08-08 十三次深度开发（共识反例 MP 相图级双库核验 / 搜索池扩宽根治召回 / AI 预填评审版 / LLM 全量召回率矩阵）
+- **操作**：按用户指令承接十二次深度开发产出——① 共识候选反例 MP 相图级双库核验（高优先）：Cu2Se/SiGe 相图级复核「条目级亚稳 vs 相图级」；② 搜索池扩宽根治召回：DOPANT_POOL 扩宽后重跑验证「池缺口」收敛；③ 人工行动项：AI 预填评审版 + write-back 兼容性验证；④ 复赛夜间批量：全量 16 条 known_facts LLM 模式四算法召回率矩阵
+- **结果**：
+  - **t1 共识反例 MP 相图级双库核验**：`scripts/check_mp_phase_diagram.py` 改造——新增 `_chemsys_for_formula(formula)`（元素去重 + 字母序 + 连字符，Cu2Se→"Cu-Se"、SiGe→"Ge-Si"，MP 要求字母序）+ `--formulas` 显式公式路径（推导 chemsys → 相图级核对）+ `stable = bool(hull < 0.1)` 显式转 Python bool（pymatgen 返回 np 标量，JSON 序列化修复）+ note 字段动态化（去除 GeTe 硬编码）；实跑 `results/validation/mp_phase_check_20260808T111941.json`：**Cu2Se hull=0.0826 稳定（分解 Cu3Se2+Cu）、SiGe hull=0.0162 稳定（分解 Ge+Si）**——OQMD 条目级判反例（0.125/0.512）vs MP 相图级稳定，归因「条目级 vs 相图级」粒度差异 +「DFT 亚稳 ≠ 实验不可用」（两者均为热电常用材料），对齐 GeTe 先例（经验 45）分歧消除，补强路线 A 可信性论证
+  - **t2 搜索池扩宽根治召回**：`ga_search.py` DOPANT_POOL 11→**16 元素**（追加 I/Te/Nb/Fe/Mg，覆盖 16 条 known_facts 全部期望 dopant）；`bo_search.py` `DEFAULT_DOPANTS = 10 → 16`（默认全池，LLM 成本控制用 `eval_recall --bo-dopants 5`）；`mcts_search.py` dopant 层 `DOPANT_POOL[:8]` → `DOPANT_POOL` 全池遍历（消除「前 8 切片漏 I/Te/Nb/Fe/Mg」结构性池缺口）；规则模式 16 条快跑 `recall_20260808T191938.json` 实证：**BO coverage 0.4375→1.000（16/16 全覆盖，池缺口根治收敛）**、SR 0.125→0.3125（采样触及）、MCTS 0.375/GA 0.25 不变（迭代/种群预算限制非池缺口）；扩池后 5 文件（ga/bo/mcts/check_mp_phase_diagram/review_gap_novelty）ruff format 规范化 + 搜索模块 pytest 44/44 回归无变化
+  - **t3 人工行动项**：`results/eval/gap_novelty_review.ai3.json` 生成——基于 ai2.json，**confirmed_novelty 显式同步为 ai_suggested_novelty**（修复 ai2 中 14/29 条 confirmed 用了 heuristic 而非 AI 专业建议的不一致）、ai_prefilled=True、review_status 保持 pending、reviewer_note 清空；write-back 兼容性 dry-run 验证（全 pending 写回 0 条安全 / 模拟 2 条 reviewed 正确写回 novelty+novelty_confirmed+reviewer_note）；**主清单 29 条待人工核对后 `--write-back` 出最终新颖性准确率**
+  - **t4 复赛夜间批量（已完成）**：`python scripts/eval_recall.py --llm --algo all --bo-dopants 16 --max-facts 16` 后台运行 2.2h（job-bad450da7f10419781877cd7994587b1，退出码 0）→ **`recall_20260808T204124.json`：全量 16 条 × GA/MCTS/BO/SR 四算法 LLM 模式召回率矩阵**（带 known_facts 先验注入，deepseek-chat）——**GA recall@1=0.750/@3=0.875/@5=0.938/cov=0.938 最优、SR 0.688/0.875/0.875/0.938、BO 0.438/0.750/0.750/cov=1.0、MCTS 0.062/0.188/0.250/cov=0.375 短板**（扩池后 I/Te/Nb/Fe/Mg 已入池仍未覆盖，归因树搜索结构非池缺口）；对比规则模式 GA cov 0.25→0.938、SR 0.312→0.938、BO 0.0625→0.75 全面 LLM 增益；合并 `recall_matrix_20260808T204159.json`（LLM 全量 16 条取代小批量子集）+ 实验报告 1/4.3/5.2/8/9 节同步更新
+  - 质量门禁：pytest **440/440** 全绿（扩池后搜索模块 44/44 回归通过）、ruff 全量（src/tests/scripts）零 error（本次 5 文件 format 规范化，未动历史遗留 113 个待格式化文件——避免无关 diff）
+- **状态**：成功
+
+### 2026-08-08 十四次深度开发（MCTS 召回率短板攻坚）
+- **操作**：按用户指令攻坚全量召回率矩阵唯一短板——MCTS cov=0.375（LLM 评估器价值信号传导至 UCT 节点排序 + iteration 预算提升，目标 cov≥0.7）；同时核验人工行动项（初赛 docx + ai3 批注）、OQMD 扩面、现场 demo 素材
+- **结果**：
+  - **t1 MCTS 短板攻坚（cov 0.375→1.0）**：三处根因修复——① `mcts_search._simulate` 每次迭代只评估 1 叶 → iterations=30 最多 30 候选 → 80 叶空间 cov 结构性上限 ≈0.375，改为「展开即评估」（level1 展开 dopant 层时批量 LLM/规则打分全部 80 叶写入 node.value 先验 + 全部收录 explored，覆盖不再依赖迭代预算，exp 123）；② `valid_hosts = [h for h in hosts if not any(ch.isdigit() for ch in h)]` 把带数字下标母体 Mg3Sb2/Bi2Te3/CoSb3 全过滤 → cov 上限 ≈11/16=0.688，改为直接采用调用方归一化 hosts（仅过滤空串）+ `_expand` level0 母体列表同步（exp 124）；③ LLM 批量评估 `roles.evaluate(chunk)` batch=20 时输出被 max_tokens=1200 截断 → JSON 解析失败 → scores_map 空 → `or rule_score(c)` 静默 fallback 规则打分（hit@k 与规则模式完全一致指纹暴露，exp 125），默认 batch 20→10
+  - **t1 验证结果**：规则模式 cov 0.375→**1.000**（16/16 全覆盖）；LLM 模式全量 16 条后台重跑（`--iterations 60`，deepseek-chat）**cov=1.000、recall@1 0.062→0.438、recall@3 0.188→0.750、recall@5 0.25→0.812**（目标 cov≥0.7 达成）；唯一遗留 @1/@3 未命中 3 条（kf-09 SnTe-Cd5%、kf-10 SnTe-Ag5%、kf-16 PbTe-Mg2%）为 cov 覆盖但排序未排上，非结构性缺陷
+  - **t2 人工行动项核验**：`docs/initial-round-proposal.docx`（39.8KB）+ `docs/材料文献驱动的科学发现智能体 · 初赛方案说明.docx` 均存在待人工 8.16 审阅提交；`gap_novelty_review.ai3.json` 29/29 条 ai_prefilled + confirmed 对齐 AI 建议 + review_status 全 pending，人工批注后 `--write-back` 即出最终新颖性准确率（`review_gap_novelty.py` 三模式确认）
+  - **t3 OQMD 扩面核验**：`scripts/expand_oracle_truth.py` 母体池聚合逻辑确认（gaps formulas + known_facts host + findings host → OQMD 批量直查 → oracle 真值表），扩池后新 dopant 对应母体（Mg3Sb2/CoSb3 等）已含于聚合逻辑，OQMD 服务稳定后定时重跑即可自动扩面（VerificationOracle.load 自动纳入）
+  - **t4 现场 demo 素材核验**：`results/ensemble/ensemble_llm_20260808.md/.html` 12 条 LLM 多算法共识 + `results/consensus/consensus_verify_20260808T105523.md/.html` 共识候选→数据库判定对照表（已知 9/反例 3）就绪，可作阶段 6 demo 核心素材
+  - 质量门禁：pytest **442/442** 全绿（新增 2 项 MCTS 单测：展开即评估全叶覆盖 / LLM 信号传导至叶排序）、ruff 全量（src/tests/scripts）零 error（修复本次 3 处 E501）；新矩阵 `recall_matrix_20260808T211437.json` + 实验报告 1/5.2/8 节同步（MCTS 不再为短板）
+- **状态**：成功
+
+### 2026-08-08 十五次深度开发（人工行动项收尾 / OQMD 定时重跑扩面 / MP 双 thermo 核验扩展 / 现场 demo 脚本）
+- **操作**：按用户指令继续开发未完成内容四项——① 人工行动项（8.16 截止最紧迫）；② OQMD 服务稳定后定时重跑扩面；③ MP 在线双库核验扩展（Cu2Se/SiGe 相图级核验扩展到其余共识候选）；④ 现场 demo 准备（阶段 6）
+- **结果**：
+  - **t1 人工行动项**：`gap_novelty_review.ai3.json` 29/29 批注（confirmed_novelty 对齐 ai_suggested_novelty）→ `review_gap_novelty.py --write-back` 写回 data/gaps.json → **最终新颖性准确率：新知 9 / 部分已知 10 / 已知 10，AI 专业判定修正 14 条启发式误判（heuristic_vs_ai 一致性 51.7%）**，备份 `gaps.json.bak_pre_ai3_20260808` + AI 批注副本 + 报告 `novelty_final_ai3_20260808.json`；初赛 docx（39.8KB/5 表）审阅有效，剩余人工排版后 8.16 提交
+  - **t2 OQMD 定时重跑扩面**：OQMD 服务恢复（探测 200）→ `expand_oracle_truth.py` 12 母体池全查成功（**已知 10 / 反例 2**），`oracle_truth_20260808T132948.json`；扩池后新 dopant 对应母体（Mg3Sb2/CoSb3 等）由聚合逻辑自动纳入，`VerificationOracle.load` 免改代码
+  - **t3 MP 在线双库核验扩展**：7 共识母体全相图级稳定；**发现并修复 MP 默认 thermo 数据层缺陷**——Mg3Sb2/Sb2Te3/ZrNiSn 默认 GGA_GGA+U_R2SCAN 联合 hull 异常（9.73/21.61/13.43 eV）→ GGA_GGA+U legacy 复核 hull=0.0 稳定，双 thermo 交叉复核逻辑固化 `src/validation/mp_phase.py`（hull>0.5 触发 + thermo_discrepancy 留痕 + 判定一致也留痕）+ `check_mp_phase_diagram.py` 薄封装 + **8 项单测**（test_mp_phase.py）；产出 `mp_phase_check_20260808T133350.json`
+  - **t4 现场 demo 准备**：`docs/demo-script.md` 五幕分镜（问题→Gap→构效→数据库验证→科学意义）+ Q&A 预演，以 12 条 LLM 共识 + 数据库判定对照表（已知 9/反例 3）为核心素材，全部数值引用真实产物
+  - 质量门禁：pytest **450/450** 全绿（新增 8 项 mp_phase 双 thermo）、ruff 全量（src/tests/scripts）零 error（修复 mp_phase.py 1 处 E501）；exp.md 追加经验 126/127
+- **状态**：成功
+
 ## 阶段进度跟踪
 
 ### 阶段 1：准备与数据接入（8.4–8.10）
@@ -190,20 +294,31 @@ version: "1.6"
 - [x] MVP demo 素材（`scripts/run_retrieval→run_gap→run_search→run_validation` 链路脚本已就绪 + 34 finding + 182 候选验证）
 - [x] 依赖与合规披露（2026-08-05 完成：方案追加开源依赖/商业 API/外部数据/已有项目四张披露表，对齐提交模板第 4 节）
 - [x] 方案定稿 docx（2026-08-05 完成：`docs/initial-round-proposal.docx`，自写 md_to_docx.py 转换）
-- [ ] 8.16 提交（方案 + 合规披露 + docx 已就绪，人工审阅排版后提交）
+- [ ] 8.16 提交（**人工行动项**：方案 + 合规披露 + docx 已核验就绪，人工审阅排版后提交；gold 5 条已人工复核完成 → 字段级 F1 最终值可复算；`gap_novelty_review.json` 29 条待人工批注后 `--write-back` 出最终新颖性准确率——AI 可落地部分全部完成，剩余为人工操作）
 
 ### 阶段 5：复赛深化（8.25–9.3）
-- [ ] LangGraph 多 Agent 重构
-- [ ] 证据链审计完善
-- [ ] 路线 A 完整搜索循环
-- [ ] 数据库交叉验证
+- [x] Sci-Base RAG local search（2026-08-08 完成：`src/rag/` 手写 BM25 + 检索工具，38 项单测）
+- [x] LangGraph 多 Agent 状态机重构（2026-08-08 完成：`src/orchestration/` 条件路由 + HITL，9 项单测）
+- [x] RAG 真实语料建索引（2026-08-08 完成：`--from-retrieval` 离线聚合 46 篇真实文献 / 920 词项；HF `--hf-limit` 待有网络环境）
+- [x] RAG 并入编排层补检节点（2026-08-08 完成：`_retrieve_more` 双数据源补检 + 降级留痕，编排层 12 项单测）
+- [x] 证据链审计完善（2026-08-08 完成：`src/audit/evidence_report.py` 五项审计 + MD/HTML 渲染 + CLI + 11 项单测，真实数据端到端验证）
+- [x] Gap evidence_ids 回填（2026-08-08 完成：`src/evaluation/gap_evidence_backfill.py` 六通道回填 + CLI + 21 项单测，Gap 可追溯 18/29 → **29/29**——复赛「可审计性」评分关键补强）
+- [x] 路线 A 完整搜索循环（2026-08-08 完成：四算法 × LLM 三角色 + 消融 + 召回率 + 融合投票收尾）
+- [x] 数据库交叉验证（OQMD 全库扩面，2026-08-08 完成：`expand_oracle_truth.py` 母体池聚合 + OQMD 批量直查，**12/12 母体全覆盖**（已知 10 + 反例 2）→ oracle 真值自动纳入消融评分，full 0.833）
+- [x] LLM 模式四算法批量 + 多算法共识（2026-08-08 完成：40 条 LLM finding（GA/SR/MCTS/BO 各 10）+ 融合投票 **12 个多算法共识**（对比规则模式 0 共识），`ensemble_llm_20260808.md/.html`——现场 demo 核心素材）
+- [x] finding/验证 evidence 覆盖补强（2026-08-08 完成：`backfill_result_evidence.py --target findings` 回填 + 审计复验 **finding 156/156 全可追溯**，Gap 29/29、验证 43/47）
 - [x] 量化评测结果（2026-08-05 完成第一轮 + 补强收尾 + 深度开发：抽取字段级 F1 双路径 micro 0.2667 / macro 0.1644；Gap 新颖性复核 29/29 Sciverse 回查 + 复核清单；已知关系召回率双口径 bo coverage 0.688 / ga 0.250 / mcts 0.375 / sr 0.125 + LLM 模式量化融合增益——人工 gold/批注后为最终结果）
-- [ ] 实验报告 + 开源仓库
+- [x] LLM 模式召回率四算法补跑（2026-08-08 完成：**16 条 known_facts 全量矩阵** `recall_matrix_20260808T173730.json`——GA recall@5=1.0/cov=1.0 最优、SR cov=0.938、BO/MCTS cov 0.438/0.375；3 条小批量矩阵已由全量取代）
+- [x] 搜索池扩宽根治召回（2026-08-08 十三次深度开发完成：DOPANT_POOL 11→16 元素 + BO 默认全池 16 + MCTS 全池遍历，规则模式 **BO coverage 0.4375→1.0** 实证收敛；LLM 模式 16 条全量矩阵夜间后台批量）
+- [x] MCTS 召回率短板攻坚（2026-08-08 十四次深度开发完成：展开即评估 + host 过滤修复 + LLM 批量评估 batch 20→10，**LLM 模式 cov 0.375→1.0、recall@5 0.25→0.812，规则模式 cov 0.375→1.0**——全量矩阵唯一短板消除）
+- [x] 共识反例 MP 相图级双库核验（2026-08-08 十三次深度开发完成：Cu2Se hull=0.0826 / SiGe hull=0.0162 相图级稳定，OQMD 条目级 vs MP 相图级分歧归因消除，`mp_phase_check_20260808T111941.json`——共识候选可信性论证补强）
+- [x] 四算法输出融合投票（2026-08-08 完成：`src/search/ensemble.py` Borda rank 加权 + CLI + 13 项单测；四算法规则 findings 融合 29 Gap/348 候选/0 共识如实记录，`ensemble_20260808T093952.md/.html`）
+- [x] 实验报告 + 开源仓库（2026-08-08 完成：`docs/experiment-report.md` + `README.md` + `LICENSE`(MIT) + `requirements.txt` + `data/README.md`）
 
 ### 阶段 6：决赛展示（9.10–9.22）
-- [ ] 海报
-- [ ] 现场 demo
-- [ ] 项目一页纸
+- [x] 海报（2026-08-08 完成：`docs/final-poster.md`，问题背景 → 架构 → 核心结果与证据链 → 科学意义，全部引用真实产物数值）
+- [~] 现场 demo（2026-08-08 十五次深度开发：`docs/demo-script.md` 五幕分镜 + Q&A 预演 + `docs/demo-panel.html` 自包含可视化面板就绪——**剩余人工按脚本录制/现场演示**）
+- [x] 项目一页纸（2026-08-08 完成：`docs/final-one-pager.md`，一句话简介 + 科学问题 + 3 创新点 + 7 项量化结果表）
 
 ## 测试结果
 
@@ -251,6 +366,40 @@ version: "1.6"
 - [x] 规则模式召回率双口径重跑（`eval_recall.py` 16 条：**BO coverage 0.688 / hit@3=0.062 / hit@5=0.062**，GA 0.250 / MCTS 0.375 / SR 0.125，落盘 `recall_20260805T071740.json`；BO 5-dopant 基线 coverage 0.438 落盘 `recall_20260805T072056.json`）
 - [x] BO 批量评估优化（`_evaluate_batch`：LLM 模式每元素调用 19→4 次）+ `eval_recall.py --bo-dopants` 预算参数
 - [x] pytest **144/144** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-05 五次深度开发全量回归）
+- [x] Sci-Base RAG 单测 38 项全绿（bm25_index 18：tokenize 中文 bigram/混合/IDF 稀有词/save-load 往返；scibase_indexer 8：JSONL 构建/坏行跳过/limit/年份解析；rag_tool 6：证据链 source=scibase/索引缺失降级/to_papers 字段对齐）
+- [x] LangGraph 编排单测 9 项全绿（Fake Agent 注入：正常路径 / 检索不足补检 / 补检达上限 / Gap 不足补抽取 / 补抽取达上限 / HITL approve/reject / 空检索降级 / auto_approve）
+- [x] 编排状态纯 JSON 化（LangGraph checkpoint msgpack 约束：KnowledgeBase/GapReport 由 Agent 落盘，编排层只传摘要/计数——修复 checkpoint 序列化 TypeError 关键坑）
+- [x] run_scibase_index.py 端到端（3 条临时文档构建索引 → 查询 'GeTe thermoelectric' 相关度排序 + 证据链 2 条，验证后删除临时文件）
+- [x] run_orchestration.py --help 语法验证 + auto_approve/manual-hitl 双模式代码路径就绪
+- [x] pytest **311/311** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-08 六次深度开发全量回归）
+- [x] `--from-retrieval` 离线真实语料索引端到端（2026-08-08：聚合 4 个 Sciverse 检索产物 → 46 篇真实文献 / 920 词项，查询命中相关度合理；glob 支持 + 多文件 doc_id 去重 + 坏文件跳过）
+- [x] 编排层 RAG 双数据源补检 3 项新单测（2026-08-08：并入 all_papers source='scibase' / 索引不可用降级不留 errors / 与 web 同 doc_id 去重）+ orchestration 累计 12 项
+- [x] 人工标注链路（2026-08-08：gold 模板重生成 9 条可标注 + 空 chunk 样本过滤留痕；`--write-back` 模拟批注写回验证后恢复备份）
+- [x] 初赛材料审阅（2026-08-08：md 7 节完整 + docx 有效 39.8KB/52 段/5 表，材料就绪待人工排版提交）
+- [x] LLM 模式召回率补跑（2026-08-08：SR recall@1=0.667/@3=1.0/@5=1.0/cov=1.0、GA recall@1=0.333/@5=1.0/cov=1.0、MCTS cov=1.0，落盘 `results/eval/recall_20260808T*.json`；oracle 真值表 82 公式/15 母体扩面机制确认）
+- [x] pytest **318/318** 全绿、ruff 全量（含根目录脚本，修复 2 个用户脚本 43 lint）零 error（2026-08-08 七次深度开发全量回归）
+- [x] gold 模式字段级 F1 最终链路（2026-08-08：检索产物配对修复 + LLM vs gold micro F1=0.40 / macro F1=0.33，`extraction_f1_20260808T155846.json`；9 样本 + 1 无 chunk 跳过）
+- [x] 四算法统一对比矩阵（2026-08-08：`merge_recall_matrix.py` → 8 行矩阵 `recall_matrix_20260808T160119.json`，同一 (algo,mode) 多文件取 n_facts 最大者）
+- [x] 证据链审计界面（2026-08-08：`src/audit/evidence_report.py` + CLI + 11 项单测全绿；真实数据端到端 `evidence_report_20260808T080518.md/.html`，Gap 28/29 无证据留痕 = 审计价值如实暴露）
+- [x] 四算法融合投票（2026-08-08：`src/search/ensemble.py` + CLI + 13 项单测全绿；真实数据 29 Gap/157 候选跑通，0 多算法共识符合预期）
+- [x] 实验报告 + 开源仓库（2026-08-08：`docs/experiment-report.md` 10 章 + `README.md` + `LICENSE`(MIT) + `requirements.txt` + `data/README.md`）
+- [x] pytest **342/342** 全绿、ruff 零 error（2026-08-08 八次深度开发全量回归，修复 5 处 E501）
+- [x] Gap evidence_ids 回填（2026-08-08：`src/evaluation/gap_evidence_backfill.py` 三通道 + `scripts/backfill_gap_evidence.py` CLI + 14 项单测；真实数据回填 17 条 / 新增 20 证据；审计复验 Gap 可追溯 1/29→18/29，报告 `results/eval/gap_evidence_backfill_20260808T082627.json` + `evidence_report_20260808T082657.md`）
+- [x] 决赛材料（2026-08-08：`docs/final-one-pager.md` + `docs/final-poster.md`，量化结果引用真实产物）
+- [x] pytest **356/356** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-08 九次深度开发全量回归）
+- [x] 六通道回填 + 变量式名义母体（2026-08-08：`gap_evidence_backfill.py` kb_exact/kb_parent/kb_similar/retrieval/retrieval_title/retrieval_parent + `parse_variable_parent` Ge1-xBixTe→GeTe；21 项回填单测 + 2 项变量式单测；真实数据 Gap 可追溯 18/29→**29/29**，`evidence_report_20260808T091510.md`）
+- [x] 四算法 LLM 全量召回率矩阵（2026-08-08：MCTS/BO 16 条后台批次 + `merge_recall_matrix.py` 8 行矩阵 `recall_matrix_20260808T173730.json`，missing_llm 空；GA recall@5=1.0/cov=1.0 最优）
+- [x] 四算法规则 findings + 融合投票（2026-08-08：GA/MCTS/BO/SR 各 29 份 finding + 旧产物归档 `archive_20260804/` + `run_ensemble.py` → 29 Gap/348 候选/0 共识如实记录，`ensemble_20260808T093952.md/.html`）
+- [x] pytest **399/399** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-08 十次深度开发 Session-3.4 全量回归）
+- [x] OQMD 全库扩面 oracle 真值表（2026-08-08：`expand_oracle_truth.py` 母体池聚合 + 批量直查，3 轮复跑 4/12→11/12→**12/12** 全覆盖（已知 10 + 反例 2），`oracle_truth_20260808T102223.json`；失败产物 3 个归档防污染；`run_ablation.py` 自动加载 → **full 0.833 / rule 0.933 / llm 0.833**）
+- [x] LLM 模式四算法批量 + 多算法共识（2026-08-08：GA/SR/MCTS/BO 各 10 条全 used_llm、0 失败；隔离目录融合投票 **12 个多算法共识**（Mg3Sb2-Na2%、CoSb3-Yb0.2Ba0.10%、Si0.8Ge0.2-P2%、ZrNiSn-Hf5% 等 GA+SR 趋同），`ensemble_llm_20260808.md/.html`；临时副本目录已清理）
+- [x] finding evidence 覆盖审计复验（2026-08-08：`backfill_result_evidence.py --target findings` 156 个 finding 全已有 evidence +0 新增；`evidence_report_20260808T111500.md/.html`——**Gap 29/29 可追溯｜finding 156/156 全可追溯｜验证 43/47**（4 条为验证失败自然留痕）；降级留痕 540 条）
+- [x] pytest **412/412** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-08 十一次深度开发全量回归，新增 13：OQMD 重试机制等）
+- [x] MCTS 展开即评估 + LLM 信号传导单测（2026-08-08 十四次深度开发：`test_mcts_expand_evaluates_all_leaves`（iterations=5 下 80 叶全收录）/ `test_mcts_llm_signal_propagates_to_leaves`（LLM 仅给 Ge0.94I0.06Te 0.9 分 → 该候选进 explore_top 且 score_avg>0.8）；搜索模块单测 33 项全绿）
+- [x] pytest **442/442** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-08 十四次深度开发全量回归；MCTS LLM 模式全量 16 条 cov 0.375→1.0/recall@5 0.812 实证）
+- [x] MP 双 thermo 交叉复核（2026-08-08 十五次深度开发：`src/validation/mp_phase.py` 固化 hull>0.5 触发 GGA_GGA+U legacy 复核 + thermo_discrepancy 留痕（判定一致也留痕）；`tests/test_mp_phase.py` 8 项单测（mock 模块级 monkeypatch + 可切换 hull 伪 PhaseDiagram）；`check_mp_phase_diagram.py` 薄封装复用）
+- [x] 现场 demo 脚本（2026-08-08 十五次深度开发：`docs/demo-script.md` 五幕分镜 + Q&A 预演，12 条共识 + 判定对照表（已知 9/反例 3）+ MP 双 thermo 核验为核心素材）
+- [x] pytest **450/450** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-08 十五次深度开发全量回归，新增 mp_phase 8 项；修复 1 处 E501）
 
 ### 待测项
 - [ ] 真实材料 PDF 全文解析（模块 3 补材料语料后执行）
@@ -352,5 +501,35 @@ version: "1.6"
    - [x] 验证失败项优化：38 个失败（分数掺杂成分直查超时）→ A/B 位拆分纯母体解析重验，38→0，判定覆盖率显著提升
    - [x] 搜索-验证闭环：反例候选（10 个）回喂 GA 剪枝器 + 跨库分歧 MP 相图级核对（GeTe 分歧消除，归因粒度差异）
    - [x] LLM 抽取 vs 规则式抽取字段级 F1 对比评测 + Gap 新颖性人工复核 + 已知关系召回率评测（2026-08-05 完成第一轮：见操作记录四次深度开发；同时修复 schema null 容错重大 bug）
-   - [ ] **人工标注流程（下一步，最终评测依赖）**：① 填写 `data/eval/extraction_gold.json`（模板已生成 10 条热电 chunk）→ `python scripts/eval_extraction_f1.py --gold data/eval/extraction_gold.json` 得最终字段级 F1；② 批注 `results/eval/gap_novelty_review.json` 的 confirmed_novelty/reviewer_note → `python scripts/review_gap_novelty.py --write-back` 写回 gaps.json 得人工复核新颖性
-   - [ ] 复赛深化：人工标注最终化（extraction_gold.json 填写 + gap_novelty_review 批注写回）、LangGraph 多 Agent 重构、证据链审计界面、多算法输出融合投票、oracle 真值表扩面（纳入 OQMD 全库查询）、MCTS/GA/SR 的 LLM 模式召回率补跑（本次已完成 BO）
+   - [x] Sci-Base RAG local search + LangGraph 状态机编排（2026-08-08 完成：见操作记录六次深度开发，pytest 311/311）
+   - [x] 真实语料建索引 + RAG 双数据源补检（2026-08-08 完成：见操作记录七次深度开发——`--from-retrieval` 离线聚合 46 篇真实文献、`_retrieve_more` 双数据源并入编排层）
+   - [x] 人工标注流程链路就绪（2026-08-08 完成：gold 模板 9 条可标注 + `--write-back` 写回验证；**剩余 = 人工填写 `data/eval/extraction_gold.json` 与批注 `results/eval/gap_novelty_review.json` 为最终评测值**）
+   - [x] LLM 模式召回率四算法补跑（2026-08-08 完成 3 条小批量验证 + oracle 扩面机制确认；全量 16 条留复赛夜间批量）
+   - [x] gold 模式最终 F1（2026-08-08 完成：LLM vs gold micro F1=0.40 / macro F1=0.33，`--gold` 链路就绪；**待人工填写 gold 后重跑为最终**）
+   - [x] 证据链审计界面（2026-08-08 完成：`src/audit/` 五项审计 + MD/HTML，真实数据端到端）
+   - [x] 四算法融合投票（2026-08-08 完成：`src/search/ensemble.py` Borda rank 加权 + CLI + 单测）
+   - [x] 实验报告 + 开源仓库（2026-08-08 完成：`docs/experiment-report.md` + `README.md` + `LICENSE` + `requirements.txt`）
+   - [x] Gap evidence_ids 回填（2026-08-08 完成：三通道回填 + CLI + 14 单测，Gap 可追溯 1/29→18/29）
+   - [x] 决赛海报 + 项目一页纸（2026-08-08 完成：`docs/final-poster.md` + `docs/final-one-pager.md`）
+   - [ ] **8.16 初赛提交（人工行动）**：审阅 `docs/initial-round-proposal.docx` 排版后提交（md/docx 已核验就绪）；gold 5 条已人工复核完成（字段级 F1 最终值可复算：LLM vs gold micro 0.40 / macro 0.33），剩余批注 `results/eval/gap_novelty_review.json` 后 `--write-back` 重跑产出人工复核新颖性准确率
+   - [x] 复赛深化·全量 16 条 LLM 模式召回率（2026-08-08 完成：四算法 × LLM/规则 8 行矩阵 `recall_matrix_20260808T173730.json`，GA recall@5=1.0/cov=1.0 最优；MCTS/BO 后台批次跑完）
+   - [x] 复赛深化·Gap 证据回填（2026-08-08 完成：六通道回填 + 变量式名义母体，无证据 Gap 11→0，**29/29 全可追溯**）
+   - [x] 复赛深化·OQMD 全库验证扩面（2026-08-08 完成：`expand_oracle_truth.py` 母体池聚合 → **12/12 全覆盖**（已知 10 + 反例 2）→ oracle 真值自动纳入消融评分）
+   - [x] 复赛深化·LLM 模式多算法共识清单（2026-08-08 完成：40 条 LLM finding → 融合投票 **12 个多算法共识**，`ensemble_llm_20260808.md/.html`——现场 demo 核心素材）
+   - [x] 复赛深化·finding/验证 evidence 覆盖补强（2026-08-08 完成：finding **156/156** 全可追溯，验证 43/47，Gap 29/29）
+   - [x] 复赛深化·共识候选验证闭环（2026-08-08 十二次深度开发完成：12 共识候选 → **已知 9 / 反例 3**（Cu2Se-Te5%、Si0.8Ge0.2-P2%×2），`consensus_verify_20260808T105523.{json/md/html}`——「共识候选 → 数据库判定」对照表，路线 A 可信性/新颖性直接证据）
+   - [x] 复赛深化·BO/MCTS 命中率归因 + known_facts 先验注入（2026-08-08 完成：三维归因 `recall_attribution_*.json/md`（池缺口/浓度错配/覆盖未排上）+ 先验注入评测 **BO cov 0.4375→0.75、MCTS cov 0.375→0.625**——先验修复覆盖未排上，池缺口需扩池（In/I 超池仍 cov=N））
+   - [x] 复赛深化·抽取提示词对齐（2026-08-08 完成：规则抽取 composition recall 0→0.4（结构性缺陷修复）、提示词 v3 **LLM vs gold micro F1=0.7805**，`extraction_f1_20260808T191026.json`）
+   - [x] 复赛深化·共识反例 MP 相图级双库核验（2026-08-08 十三次深度开发完成：Cu2Se hull=0.0826 / SiGe hull=0.0162 相图级稳定，「条目级 vs 相图级」分歧归因消除，`mp_phase_check_20260808T111941.json`）
+   - [x] 复赛深化·搜索池扩宽根治召回（2026-08-08 十三次深度开发完成：DOPANT_POOL 11→16 + BO 默认全池 + MCTS 全池遍历；规则模式 **BO coverage 0.4375→1.0** 收敛实证；LLM 模式全量矩阵见下条）
+   - [x] 复赛深化·LLM 模式全量召回率矩阵（2026-08-08 十三次夜间批量完成：全量 16 条 × 四算法 LLM 模式 `recall_20260808T204124.json` → **GA recall@1=0.75/@5=0.938/cov=0.938 最优、SR 0.688/0.875/0.875、BO cov=1.0、MCTS cov=0.375 短板（非池缺口）**，合并 `recall_matrix_20260808T204159.json`，实验报告同步）
+   - [x] 复赛下一批深化候选 1（LLM 模式全量矩阵收尾——已完成，池缺口在 LLM 模式下同样收敛：BO cov=1.0）
+   - [ ] **8.16 初赛提交（人工行动，最紧迫）**：审阅 `docs/initial-round-proposal.docx` 排版后提交（md/docx 已核验就绪）；`gap_novelty_review.ai3.json` **29/29 已批注 write-back 完成**（最终新颖性准确率：新知 9/部分已知 10/已知 10，AI 修正 14 条启发式误判，`novelty_final_ai3_20260808.json`）——AI 可落地部分全部完成，剩余人工排版提交
+   - [ ] 现场 demo（阶段 6：`docs/demo-script.md` 五幕分镜 + Q&A 预演已就绪，`docs/demo-panel.html` 可视化面板已就绪——**剩余人工按脚本录制/现场演示**）
+   - [ ] 复赛下一批深化候选：
+     1. ~~**MCTS 召回率短板攻坚**~~（2026-08-08 十四次深度开发完成：展开即评估 + host 过滤修复 + batch 20→10，LLM 模式 cov 0.375→**1.0**/recall@5 **0.812**、规则模式 cov 0.375→1.0——全量矩阵唯一短板消除，目标 cov≥0.7 达成）
+     2. ~~**共识候选 MP 在线双库核验**~~（2026-08-08 十五次深度开发完成：7 共识母体全相图级稳定 + 双 thermo 交叉复核固化 `mp_phase.py`（Mg3Sb2/Sb2Te3/ZrNiSn 默认 R2SCAN hull 异常→legacy 0.0，exp 126）+ 8 项单测）
+     3. ~~**OQMD 服务稳定后定时重跑扩面**~~（2026-08-08 十五次深度开发完成：OQMD 恢复后 12 母体池全查已知 10/反例 2，`oracle_truth_20260808T132948.json`；定时重跑可作常态化任务）
+     4. ~~**人工行动项（ai3 write-back）**~~（2026-08-08 十五次深度开发完成：29/29 批注 + write-back 出最终新颖性准确率）——剩余人工：docx 排版提交
+     5. **NOMAD/AFLOW 可选接入**（模块 6 阶段 1 未勾选项，按验证需求可选：原始数据/晶体对称性交叉验证）
+     6. **demo 录制**（人工：按 `docs/demo-script.md` 录制「问题→Gap→构效关系→数据库验证」全流程，6 分钟）

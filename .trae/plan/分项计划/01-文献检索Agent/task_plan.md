@@ -4,9 +4,9 @@ type: "plan"
 category: "subplan"
 tags: [检索Agent, Sciverse, task_plan, 证据链]
 created: "2026-08-04"
-updated: "2026-08-04"
+updated: "2026-08-08"
 status: "active"
-version: "1.0"
+version: "1.1"
 ---
 
 # 模块1 文献检索 Agent · 任务规划（task_plan）
@@ -45,12 +45,20 @@ version: "1.0"
 - [ ] 检索记录写 JSON 审计日志
 - [ ] 输出候选文献清单（doc_id + DOI + title + evidence）
 
+### 阶段 5：Sci-Base RAG local search（2026-08-08 完成）
+- [x] BM25 索引（`src/rag/bm25_index.py`：纯 Python 手写 Okapi BM25，k1=1.5/b=0.75，中文 bigram 切分，JSON 落盘）
+- [x] 语料索引构建（`src/rag/scibase_indexer.py`：JSONL 离线 + HuggingFace 流式可选，字段对齐 Sci-Base material 子集）
+- [x] 检索工具（`src/rag/rag_tool.py`：证据链强制 source='scibase'，索引缺失降级 degraded，to_papers 字段对齐 Paper）
+- [x] 构建脚本（`scripts/run_scibase_index.py`：--jsonl / --hf-limit 双模式 + 检索展示）
+- [ ] 下载真实 Sci-Base material 子集构建索引（待装 datasets + 网络）
+
 ## 验收标准
 
 - [ ] CLI 检索跑通（`sciverse semantic-search` 示例）
 - [ ] SDK 双通道检索实现并可调用
 - [ ] 输出含证据链的候选清单 JSON
 - [ ] 单测覆盖（mock 外部 API）
+- [x] Sci-Base RAG 单测 38 项全绿（bm25 18 + indexer 8 + rag_tool 6 + 端到端验证）
 
 ## 技术决策
 

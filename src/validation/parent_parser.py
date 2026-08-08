@@ -23,6 +23,9 @@ _ANIONS = {"Te", "Se", "S", "As", "P", "Br", "Cl", "I", "F", "O", "N"}
 # 元素 + 可选下标（整数或小数，如 0.93 / 3）
 _TOKEN_RE = re.compile(r"([A-Z][a-z]?)(\d*\.?\d*)")
 
+# 变量式占位下标（如 Ge1-xBixTe / Ge1-x-yTixBiyTe）：主体阳离子后跟 1-x / 1-x-y
+_VAR_MAIN_RE = re.compile(r"([A-Z][a-z]?)\s*[0-9.]*1\s*-\s*[xy](?:\s*-\s*[xy])?")
+
 # 计量型判定的容差（浮点下标误差）
 _EPS = 0.02
 
@@ -72,3 +75,29 @@ def parse_integer_parent(formula: str) -> str | None:
         return f"{main}2{anion}3"
     # 其余计量型暂不支持（保守，避免生成错误母体）
     return None
+
+
+def parse_variable_parent(formula: str) -> str | None:
+    """从变量式成分解析名义母体（如 Ge1-x-yTixBiyTe → GeTe）。
+
+    背景：Gap 识别 LLM 常用「占位下标」表达掺杂体系（Ge1-xBixTe、
+    Ge1-x-yTixBiyTe），此类公式无法被 `parse_integer_parent` 解析，导致
+    证据回填时匹配不到知识库母体。本函数提取「主体阳离子（1-x 占位下标前的
+    元素）+ 末尾阴离子」作为名义母体，供证据回填/验证按母体匹配。
+
+    参数:
+        formula: 变量式成分（含 x/y 占位下标）
+
+    返回:
+        名义母体化学式（如 GeTe）；非变量式或无法解析返回 None。
+    """
+    if not formula or ("x" not in formula and "y" not in formula):
+        return None
+    m = _VAR_MAIN_RE.search(formula)
+    if not m:
+        return None
+    cation = m.group(1)
+    tokens = _tokenize(formula)
+    if not tokens or tokens[-1][0] not in _ANIONS:
+        return None
+    return f"{cation}{tokens[-1][0]}"

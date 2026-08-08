@@ -174,7 +174,55 @@ NOMAD（Novel Materials Discovery）是计算材料科学数据仓库，强调**
 - 热力学稳定性排序（hull 距离）
 - 相图预测与实验相图对比
 
-## 8. 扩展数据源
+## 8. 生物材料/蛋白质组学数据库（新增）
+
+针对 WAYB/WAYC 酵母蛋白质组学数据集的验证需求，补充以下生物材料数据库：
+
+### 8.1 数据库对比
+
+| 数据库 | 规模 | 数据内容 | 强项 | 访问方式 |
+|--------|------|---------|------|---------|
+| UniProt | 2.5 亿+ 蛋白条目 | 蛋白序列、功能注释、分类 | 蛋白功能注释、序列比对 | REST API / `bioservices` Python 包 |
+| YeastMine | ~6000 酵母基因 | 基因-蛋白-表型关联、菌株信息 | 酵母特异性数据整合 | Web UI + API |
+| Proteome Atlas (PXD) | 海量蛋白质组数据 | 蛋白表达谱、实验条件、仪器信息 | 表达量验证、跨数据集对比 | PRIDE Archive API |
+| OMIM | 基因-疾病关联 | 基因型-表型关系 | 功能突变验证 | Web / API |
+| SGD (Saccharomyces Genome Database) | 酵母基因组 | 基因功能、通路、表型 | 酵母基因功能金标准 | Web / API |
+
+### 8.2 WAYB/WAYC 数据集映射
+
+| 数据集中的字段 | 映射数据库字段 | 验证用途 |
+|---------------|---------------|---------|
+| 基因名（如 AAC1、ZWF1） | UniProt/YeastMine 的基因 ID | 确认蛋白功能注释 |
+| Strains（BAI/BAH/DHY210/CEK/CGD） | YeastMine/SGD 菌株 ID | 菌株基因型-表型关联验证 |
+| Temperature (30/37°C) | 培养条件参数 | 温度响应文献验证 |
+| Medium（葡萄糖/半乳糖） | 碳源条件 | 代谢通路文献验证 |
+| pert_id (#1-#41) | 化学扰动/药物 ID | 扰动响应数据库交叉验证 |
+| 5243 维蛋白表达量 | Proteome Atlas 表达数据 | 表达量基准验证 |
+
+### 8.3 验证策略（生物材料版）
+
+```python
+# 示例：用 bioservices 查询 UniProt 验证蛋白功能
+from bioservices import UniProt
+
+u = UniProt(verbose=False)
+# 查询 AAC1 基因（酵母氨酰-tRNA合成酶）的功能
+result = u.query('AAC1+AND+Saccharomyces+cerevisiae')
+
+# 示例：查询 YeastMine 验证菌株-表型关联
+# BAI 菌株在 37°C + 葡萄糖条件下的生长特性
+```
+
+### 8.4 选型建议
+
+> 生物材料验证优先级：UniProt（蛋白功能）→ YeastMine（酵母特异性）→ SGD（金标准）→ Proteome Atlas（表达量）
+
+- 蛋白功能注释 → UniProt + YeastMine
+- 菌株基因型验证 → SGD + YeastMine
+- 表达量基准验证 → Proteome Atlas (PRIDE)
+- 通路/代谢验证 → KEGG + Reactome
+
+## 9. 扩展数据源
 
 | 数据源 | 内容 | 用途 |
 |--------|------|------|

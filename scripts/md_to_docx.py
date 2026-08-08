@@ -98,10 +98,11 @@ def convert(md_text: str) -> Document:
         if stripped.startswith(">"):
             p = doc.add_paragraph()
             p.paragraph_format.left_indent = Pt(18)
-            run = p.add_run(stripped.lstrip("> ").strip())
-            run.italic = True
-            run.font.size = Pt(9)
-            run.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+            _add_rich_text(p, stripped.lstrip("> ").strip())
+            for run in p.runs:
+                run.italic = True
+                run.font.size = Pt(9)
+                run.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
             i += 1
             continue
         # 列表

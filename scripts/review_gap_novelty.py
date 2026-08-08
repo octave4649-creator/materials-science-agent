@@ -25,6 +25,7 @@
         [--gaps data/gaps.json] [--out results/eval/gap_novelty_review.json]
     python scripts/review_gap_novelty.py --write-back results/eval/gap_novelty_review.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -69,11 +70,17 @@ def _load_gaps(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def build_review(gaps: dict) -> dict:
-    """gaps.json → 人工复核清单。"""
+def build_review(gaps: dict, ai_prefill: bool = False) -> dict:
+    """gaps.json → 人工复核清单。
+
+    参数:
+        ai_prefill: True 时用启发式建议预填 confirmed_novelty（标注 ai_prefilled），
+                    人工仅需核对确认；False 时 confirmed_novelty 全空待人工批注。
+    """
     items: list[dict] = []
     for idx, g in enumerate(gaps.get("gaps", [])):
         suggestion, reason = _heuristic(g)
+        confirmed = suggestion if ai_prefill and suggestion != "需人工确认" else None
         items.append(
             {
                 "idx": idx,
@@ -87,7 +94,8 @@ def build_review(gaps: dict) -> dict:
                 "heuristic_suggestion": suggestion,
                 "suggestion_reason": reason,
                 "review_status": "pending",
-                "confirmed_novelty": None,
+                "confirmed_novelty": confirmed,
+                "ai_prefilled": ai_prefill,
                 "reviewer_note": None,
             }
         )
@@ -101,6 +109,12 @@ def build_review(gaps: dict) -> dict:
         ),
         "gaps_path": str(DEFAULT_GAPS),
         "n_gaps": len(gaps.get("gaps", [])),
+        "ai_prefilled_note": (
+            "本清单为 AI 预填版：confirmed_novelty 已按启发式建议预填，"
+            "人工仅需核对修正后改 review_status=reviewed 即可"
+            if ai_prefill
+            else None
+        ),
         "items": items,
     }
 
@@ -128,10 +142,7 @@ async def verify_gaps(gaps: dict) -> tuple[dict, int, int]:
             continue
         hits = result.get("hits", [])
         formula = g.get("formulas") or [None]
-        matched = sum(
-            1 for hit in hits
-            if formula[0] and formula[0] in (hit.get("chunk") or "")
-        )
+        matched = sum(1 for hit in hits if formula[0] and formula[0] in (hit.get("chunk") or ""))
         g["verification"] = (
             f"Sciverse 回查 top5：{matched} 条片段含 {formula[0] or '无化学式'}，"
             "判定仅供参考，需人工复核"
@@ -168,10 +179,22 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Gap 新颖性人工复核")
     parser.add_argument("--gaps", type=str, default=str(DEFAULT_GAPS), help="gaps.json 路径")
     parser.add_argument("--out", type=str, default=str(DEFAULT_REVIEW), help="复核清单输出路径")
-    parser.add_argument("--verify", action="store_true",
-                        help="先对每条 Gap 跑 Sciverse 回查，verification 写回 gaps.json")
-    parser.add_argument("--write-back", type=str, default=None,
-                        help="读取已批注清单并写回 gaps.json（人工批注后执行）")
+    parser.add_argument(
+        "--verify",
+        action="store_true",
+        help="先对每条 Gap 跑 Sciverse 回查，verification 写回 gaps.json",
+    )
+    parser.add_argument(
+        "--ai-prefill",
+        action="store_true",
+        help="用启发式建议预填 confirmed_novelty（AI 建议版，人工核对后写回）",
+    )
+    parser.add_argument(
+        "--write-back",
+        type=str,
+        default=None,
+        help="读取已批注清单并写回 gaps.json（人工批注后执行）",
+    )
     args = parser.parse_args()
 
     gaps_path = Path(args.gaps)
@@ -179,17 +202,13 @@ def main() -> None:
 
     if args.write_back:
         gaps, updated = write_back(Path(args.write_back), gaps)
-        gaps_path.write_text(
-            json.dumps(gaps, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        gaps_path.write_text(json.dumps(gaps, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"已写回 {updated} 条复核判定 → {gaps_path}")
         return
 
     if args.verify:
         gaps, n_ok, n_failed = asyncio.run(verify_gaps(gaps))
-        gaps_path.write_text(
-            json.dumps(gaps, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        gaps_path.write_text(json.dumps(gaps, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Sciverse 回查完成：成功 {n_ok} 条，失败 {n_failed} 条 → 已写回 {gaps_path}")
         # 打印启发式判定分布（含失败降级条数）
         dist: dict[str, int] = {}
@@ -198,7 +217,7 @@ def main() -> None:
             dist[sug] = dist.get(sug, 0) + 1
         print(f"启发式判定分布：{dist}（仅供参考，需人工复核）")
 
-    review = build_review(gaps)
+    review = build_review(gaps, ai_prefill=args.ai_prefill)
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(review, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -214,6 +233,9 @@ def main() -> None:
     print(f"Gap 总数：{review['n_gaps']}")
     print(f"当前新颖性分布：{current}")
     print(f"启发式建议分布：{suggested}")
+    if args.ai_prefill:
+        prefilled = sum(1 for i in review["items"] if i["confirmed_novelty"])
+        print(f"AI 预填：{prefilled} 条已填 confirmed_novelty（启发式建议，人工核对后写回）")
     print(f"复核清单已生成：{out_path}")
     print("人工批注后执行：python scripts/review_gap_novelty.py --write-back <review.json>")
 

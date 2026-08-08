@@ -232,6 +232,69 @@ def test_mcts_explore_top_default_single_best() -> None:
     assert multi.search_log.steps[-1].n_candidates == 5
 
 
+def test_mcts_expand_evaluates_all_leaves() -> None:
+    """展开即评估：dopant 层一次展开全部叶子（16 dopant × 5 conc = 80 个）。
+
+    回归防护：此前「每迭代只评估 1 个叶子」导致 explored 候选数 ≈ iterations，
+    覆盖率受采样预算限制（cov 0.375 短板）；本测试断言 explore_top 输出覆盖
+    全部 80 个叶子的 formula（LLM/规则先验信号传导至全叶子）。
+    """
+    from src.search.mcts_search import CONC_GRID, DOPANT_POOL, mcts_search
+
+    roles = LLMRoles(chat_json=lambda s, u, k: {}, log=SearchLog())
+    finding = mcts_search(
+        gap_statement="GeTe 掺杂浓度寻优",
+        hosts=["GeTe"],
+        roles=roles,
+        iterations=5,  # 迭代数极小：若展开即评估，覆盖率不依赖迭代预算
+        llm_on=False,
+        explore_top=10000,
+    )
+    cands = finding.top_candidates
+    exp_n = len(DOPANT_POOL) * len(CONC_GRID)
+    # 全部叶子 formula 应被评估收录（不同 dopant×conc 组合）
+    seen = {(c.dopant, c.concentration) for c in cands}
+    assert len(seen) == exp_n, (
+        f"展开即评估应覆盖全部 {exp_n} 个叶子组合，实际 {len(seen)}"
+    )
+    assert finding.search_log.steps[-1].n_candidates == exp_n
+
+
+def test_mcts_llm_signal_propagates_to_leaves() -> None:
+    """LLM 评估器价值信号传导至叶子排序：高分候选进入 explore_top 前列。
+
+    回归防护：此前 LLM 只评估被 UCT 采样路径的叶子，未采样叶子无信号
+    （LLM 价值信号传导不足，hit@k 低）；本测试断言 LLM 打分（known_facts
+    先验匹配候选 ≥0.85）能抬升对应叶子在探索轨迹中的排序位置。
+    """
+    from src.search.mcts_search import mcts_search
+
+    log = SearchLog()
+
+    def responder(role: str) -> dict:
+        if role == "evaluate":
+            # 仅给期望候选打高分，其余规则兜底
+            return {"results": {"Ge0.94I0.06Te": {"scientific": 0.9,
+                                                  "feasibility": 0.9}}}
+        return {"drop": []}
+
+    roles = LLMRoles(chat_json=_fake_chat(responder), log=log)
+    finding = mcts_search(
+        gap_statement="GeTe 掺杂 I 提升 zT",
+        hosts=["GeTe"],
+        roles=roles,
+        iterations=20,
+        llm_on=True,
+        explore_top=10,
+    )
+    assert roles.log.used_llm
+    assert roles.log.llm_calls > 0
+    # LLM 高分候选应排进前 10（信号传导），且分数保留
+    target = next((c for c in finding.top_candidates if c.dopant == "I"), None)
+    assert target is not None, "I 掺杂候选应被展开即评估收录"
+    assert target.score_avg() > 0.8, f"LLM 信号未传导至 I 候选：{target.score_avg()}"
+
+
 def test_explore_top_algo_consistent() -> None:
     """四算法 explore_top 口径一致：输出数 = min(explore_top, 探索候选数)。"""
     from src.search.bo_search import bo_search

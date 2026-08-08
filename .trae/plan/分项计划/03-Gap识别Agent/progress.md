@@ -4,9 +4,9 @@ type: "plan"
 category: "subplan"
 tags: [Gap识别, progress]
 created: "2026-08-04"
-updated: "2026-08-05"
+updated: "2026-08-08"
 status: "active"
-version: "1.3"
+version: "1.4"
 ---
 
 # 模块3 Research Gap 识别 Agent · 进度日志（progress）
@@ -36,6 +36,7 @@ version: "1.3"
 - [x] Gap 清单结构（GapReport/GapCandidate schema，含 verification 字段）
 - [x] 证据链关联（kb_entry_ids 回映射真实 doc_id，无证据 Gap 禁止输出）
 - [x] 新颖性人工复核链路（2026-08-05：`scripts/review_gap_novelty.py` 三模式——默认生成清单 / `--verify` Sciverse 回查写回 / `--write-back` 人工批注回写；29 条全部回查成功，启发式建议「新知 20 / 已知 9」）
+- [x] Gap 证据链回填（2026-08-08 九次深度开发：`src/evaluation/gap_evidence_backfill.py` 三通道匹配——kb_exact 公式精确 / kb_parent 分数掺杂公式整数母体 / retrieval chunk 子串；29 条 Gap 回填 17 条 / 新增 20 条证据 / 可追溯 1→18，审计复验不可追溯 0）
 - [ ] 准确率评测（人工标注小集：29 条复核清单待人工批注 `confirmed_novelty` 后 `--write-back` 写回 gaps.json）
 
 ## 操作记录
@@ -64,6 +65,17 @@ version: "1.3"
   - 复核清单落盘 `results/eval/gap_novelty_review.json`（含 instruction / 证据计数 / 启发式建议 / 建议理由）
 - **状态**：成功
 
+### 2026-08-08 九次深度开发（Gap evidence_ids 回填 + 审计复验）
+- **操作**：修复审计暴露的「29 条 Gap 仅 1 条可追溯」证据链缺口——实现三通道证据回填工具
+- **结果**：
+  - `src/evaluation/gap_evidence_backfill.py`：`normalize_formula` 化学式归一化 + `parse_integer_parent` 整数母体解析（AX 型 `Ge0.93Ti0.01Bi0.06Te`→`GeTe`、A2X3 型 `Bi0.5Sb1.5Te3`→`Sb2Te3`）+ `match_evidence_for_formula` 三通道匹配（kb_exact 公式精确 / kb_parent 知识库分数公式的整数母体 / retrieval 检索产物 chunk 子串）+ `backfill_gaps`（已有证据保序在前、并集去重、`evidence_backfill` 字段留痕来源）+ `render_report`
+  - `scripts/backfill_gap_evidence.py` 薄 CLI（--gaps/--kb/--retrieval-dir/--out/--dry-run 预览）；`tests/test_gap_evidence_backfill.py` 14 项单测
+  - **真实数据端到端**：29 条 Gap 回填 **17 条 / 新增 20 条证据**（kb_exact 17 + kb_parent 3）、n_unchanged=1、回填后仍 11 条无证据（SnTe/Mg3Sb2/ZrNiSn/Cu2Se/CoSb3 等非知识库母体，需补检索证据）；`results/eval/gap_evidence_backfill_20260808T082627.json` 留痕
+  - **审计复验**：`evidence_report_20260808T082657.md` 显示 Gap 可追溯 **1/29 → 18/29**、无证据 11、不可追溯 0；`src/audit/evidence_report.py` 侧 `n_traceable` 字段透出
+  - 实验报告同步：`docs/experiment-report.md` 证据链审计行更新（18/29 + 回填工具引用 + 复现命令 `python scripts/backfill_gap_evidence.py`）
+  - 全量回归：pytest **356/356** 全绿、ruff 零 error
+- **状态**：成功
+
 ## 测试结果
 
 ### 已通过 ✅
@@ -75,6 +87,9 @@ version: "1.3"
 - [x] pytest 47/47 全绿（含新增 test_gap_agent 7 条）
 - [x] `scripts/run_gap.py` 端到端（DeepSeek LLM 4 条 + coverage 1 条 + Sciverse 验证 5 条）
 - [x] 新颖性复核链路 `--verify`（2026-08-05：29/29 回查成功，verification 写回 gaps.json + 清单落盘）
+- [x] Gap 证据链回填（2026-08-08：`test_gap_evidence_backfill.py` 14 项全绿——kb_exact/kb_parent/retrieval/no_match/empty + 索引加载去重 + 回填保序去重 + source_dist + evidence_backfill 留痕）
+- [x] 审计复验端到端（2026-08-08：`evidence_report_20260808T082657.md` 可追溯 1/29 → 18/29、不可追溯 0）
+- [x] pytest **356/356** 全绿、ruff 零 error（2026-08-08 九次深度开发全量回归）
 
 ### 待测项
 - [ ] Gap 新颖性人工评估（Sciverse 回查为启发式，最终需人工复核）

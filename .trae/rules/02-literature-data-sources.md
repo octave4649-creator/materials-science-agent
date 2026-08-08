@@ -177,6 +177,24 @@ print(result.equations[0].latex)    # 公式 LaTeX 源码
 - 结合学科术语：如构效关系（Structure-Property Relationship）、材料基因（Materials Genome）、高通量（High-throughput）等
 - 使用布尔组合与近义词扩展
 
+### 4.5 生物材料/蛋白质组学检索策略（新增）
+
+针对 WAYB/WAYC 酵母蛋白质组学数据集，检索关键词需扩展到生物材料领域：
+
+| 关键词类别 | 英文关键词 | 中文关键词 |
+|-----------|-----------|-----------|
+| 模式生物 | Saccharomyces cerevisiae, yeast | 酿酒酵母，酵母 |
+| 组学技术 | proteomics, mass spectrometry, TMT | 蛋白质组学，质谱，TMT标记 |
+| 数据来源 | WAYB, WAYC, Yeast Proteome Atlas | WAYB，WAYC，酵母蛋白质组图谱 |
+| 扰动实验 | chemical perturbation, drug response, perturbation | 化学扰动，药物响应，扰动反应 |
+| 构效关系 | gene expression-phenotype, protein-function, strain performance | 基因表达-表型，蛋白功能，菌株性能 |
+| 条件控制 | temperature response, carbon source, galactose, glucose | 温度响应，碳源，半乳糖，葡萄糖 |
+| 数据库 | Proteome Atlas, UniProt, YeastMine | 蛋白质组图谱，UniProt，YeastMine |
+
+**检索示例**：
+- `("Saccharomyces cerevisiae" OR "yeast") AND (proteomics OR "gene expression") AND ("chemical perturbation" OR "drug response")`
+- `WAYB WAYC yeast proteome strain temperature galactose`
+
 ---
 
 > 相关文档：[[赛题规则与要求]]、[[基础任务·文献调研 Agent]]、[[材料数据库]]

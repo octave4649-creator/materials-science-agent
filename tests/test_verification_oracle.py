@@ -111,6 +111,52 @@ def test_load_indexes_parent_formula(tmp_path) -> None:
     assert s > 0.7
 
 
+def test_load_oracle_truth_indexes_verdict(tmp_path) -> None:
+    """load_oracle_truth：OQMD 自动扩面真值表（oracle_truth_*.json）并入索引。
+
+    verdict 字段直接推断 host 稳定性（已知=True / 反例=False），
+    母体候选命中扩面真值表后按判定评分（已知高分 / 反例低分）。
+    """
+    truth_dir = tmp_path / "oracle"
+    truth_dir.mkdir()
+    (truth_dir / "oracle_truth_1.json").write_text(
+        json.dumps(
+            {
+                "source": "oracle_expansion",
+                "results": [
+                    {
+                        "candidate_formula": "Mg3Sb2", "host": "Mg3Sb2",
+                        "parent_formula": "Mg3Sb2", "verdict": "已知",
+                        "entries": [{"db": "oqmd", "is_stable": True}],
+                    },
+                    {
+                        "candidate_formula": "Cu2Se", "host": "Cu2Se",
+                        "parent_formula": "Cu2Se", "verdict": "反例",
+                        "entries": [{"db": "oqmd", "is_stable": False}],
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    oracle = VerificationOracle(tmp_path)
+    assert oracle.load_oracle_truth(truth_dir) == 2
+    assert "Mg3Sb2" in oracle._host_table
+    assert oracle._host_table["Mg3Sb2"].host_stable is True
+    assert oracle._host_table["Cu2Se"].host_stable is False
+    # 母体宿主候选命中扩面真值表 → 已知高分
+    s_known = oracle.mean_score(_candidate("Mg3Sb2-Zn3%", "Mg3Sb2"))
+    s_counter = oracle.mean_score(_candidate("Cu2Se-Te3%", "Cu2Se"))
+    assert s_known > 0.7
+    assert s_counter < 0.6
+
+
+def test_load_oracle_truth_empty_dir(tmp_path) -> None:
+    """扩面真值表目录不存在/无产物 → 返回 0 不崩溃。"""
+    oracle = VerificationOracle(tmp_path)
+    assert oracle.load_oracle_truth(tmp_path / "missing") == 0
+
+
 def test_collect_metrics_uses_oracle(tmp_path) -> None:
     """collect_metrics 提供 oracle 时 best_score 用真值分（公平可比）。"""
     _write_validation(tmp_path, "1", [

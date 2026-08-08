@@ -8,6 +8,7 @@ LLM 天然适配为「节点扩展器」（生成候选子节点）与「价值�
     level 0 选母体 host → level 1 选掺杂元素 dopant → level 2 选掺杂浓度
 四阶段循环（选择 UCT → 扩展 → 模拟评估 → 回传），LLM 失败降级规则。
 """
+
 from __future__ import annotations
 
 import json
@@ -34,6 +35,7 @@ class MCTSNode:
     children: list["MCTSNode"] = field(default_factory=list)
     visits: int = 0
     value: float = 0.0  # 累计评估值（用于 UCT 回传）
+    assessed: bool = False  # 展开即评估标记：叶子已批量打分（先验信号）
 
     def is_leaf(self) -> bool:
         """叶子节点（host+dopant+concentration 已确定，level≥2）。"""
@@ -69,20 +71,31 @@ def _expand(
     gap: str,
     rng: Any,
     llm_on: bool,
+    explored: dict[str, Candidate] | None = None,
 ) -> list[MCTSNode]:
     """扩展子节点：level 0 扩母体、level 1 扩掺杂元素、level 2 扩浓度（叶）。
 
     三层决策树实现（对齐 docstring 设计）：host → dopant → concentration，
     浓度维度真正进入树（此前固定 CONC_GRID[2]，浓度无法被搜索发现）。
+
+    2026-08-08 十四次深度开发（MCTS 召回率短板攻坚）：level 1 展开 dopant 层
+    时「展开即评估」——批量 LLM/规则打分全部叶子（80 个），写入先验分并全部
+    收录 explored。解决「每次迭代只评估 1 个叶子 → iterations=30 最多 30 个
+    候选 → coverage 结构性上限 ≈0.375」短板；LLM 价值信号传导至全部叶子节点
+    排序（known_facts 先验匹配候选 ≥0.85），而非仅被 UCT 采样路径（exp 123）。
     """
+    explored = explored if explored is not None else {}
     children: list[MCTSNode] = []
     if node.level == 0:
-        for host in (["PbTe", "GeTe", "Bi2Te3", "SnTe"] if node.host is None else [node.host]):
+        # 2026-08-08 十四次深度开发：母体默认列表含带下标热电母体（Mg3Sb2/Bi2Te3/
+        # CoSb3），与 mcts_search 中 root.children 的 valid_hosts 语义一致（exp 124）。
+        _DEFAULT_HOSTS = ["PbTe", "GeTe", "Bi2Te3", "SnTe", "Mg3Sb2", "CoSb3"]
+        for host in (_DEFAULT_HOSTS if node.host is None else [node.host]):
             children.append(MCTSNode(host=host, level=1))
         if llm_on:
             # LLM 生成器补充候选母体/掺杂方向（融合：LLM 引导搜索空间）
             try:
-                seeds = roles.generate_seeds(gap, ["PbTe", "GeTe", "Bi2Te3", "SnTe"])
+                seeds = roles.generate_seeds(gap, _DEFAULT_HOSTS)
                 if seeds:
                     for s in seeds[:3]:
                         h = s.get("host")
@@ -92,19 +105,70 @@ def _expand(
                 pass
     elif node.level == 1:
         # dopant 层：为每个掺杂元素展开浓度网格（叶节点）
-        for dopant in DOPANT_POOL[:8]:
+        # 2026-08-08 十三次深度开发：全池遍历（16 元素）覆盖 known_facts 期望 dopant，
+        # 消除「前 8 切片漏 I/Te/Nb/Fe/Mg」结构性池缺口（exp 114）
+        for dopant in DOPANT_POOL:
             for conc in CONC_GRID:
                 children.append(
                     MCTSNode(host=node.host, dopant=dopant, concentration=conc, level=2)
                 )
+        # 展开即评估：批量打分全部叶子 → 先验分 + explored 全收录（LLM 价值信号传导）
+        _evaluate_leaves(children, roles, gap, llm_on, explored)
     return children
 
 
-def _simulate(
-    node: MCTSNode, roles: LLMRoles, gap: str, llm_on: bool
-) -> tuple[Candidate, float]:
+def _evaluate_leaves(
+    leaves: list[MCTSNode],
+    roles: LLMRoles,
+    gap: str,
+    llm_on: bool,
+    explored: dict[str, Candidate],
+    batch: int = 10,
+) -> None:
+    """批量评估叶子节点（展开即评估）：LLM 评估器或规则打分。
+
+    全部叶子一次性获得分数（写入节点 value 先验 + visits=1），并全部收录
+    explored（探索轨迹全集）——coverage 不再受「每迭代 1 次模拟」的采样
+    预算限制；LLM 打分顺序即 UCT exploitation 排序依据（信号传导）。
+
+    参数:
+        batch: LLM 批量评估分块大小。2026-08-08 十四次深度开发实测：batch=20
+            时 LLM 输出被 max_tokens=1200 截断 → JSON 解析失败 → scores_map
+            空 → 全部 fallback 规则打分（hit@k 与规则模式完全一致，LLM 信号
+            未生效）；batch≤12 稳定完整返回。取 10（80 叶分 8 批，exp 125）。
+    """
+    cands = [n.to_candidate() for n in leaves]
+    scores_map: dict[str, dict[str, float]] = {}
+    if llm_on:
+        for i in range(0, len(cands), batch):
+            chunk = cands[i : i + batch]
+            results = roles.evaluate(chunk)
+            if results:
+                for c in chunk:
+                    r = results.get(c.formula)
+                    if isinstance(r, dict):
+                        scr = {
+                            k: float(v)
+                            for k, v in r.items()
+                            if k in ("scientific", "feasibility", "support")
+                            and isinstance(v, (int, float))
+                        }
+                        if scr:
+                            scores_map[c.formula] = scr
+    for node, c in zip(leaves, cands):
+        c.scores = scores_map.get(c.formula) or rule_score(c)
+        node.value = c.score_avg()
+        node.visits = 1  # 先验访问：评估过一次（UCT explore 项据此区分）
+        node.assessed = True
+        explored.setdefault(c.formula, c)
+
+
+def _simulate(node: MCTSNode, roles: LLMRoles, gap: str, llm_on: bool) -> tuple[Candidate, float]:
     """模拟评估：对叶节点候选打分（LLM 评估器或规则），返回 (候选, 0-1 分数)。"""
     cand = node.to_candidate()
+    if node.assessed:
+        # 展开即评估先验信号：复用节点先验分（不重复 LLM 调用，保持 explored 一致）
+        return cand, node.value
     if llm_on:
         results = roles.evaluate([cand])
         if results and cand.formula in results:
@@ -141,12 +205,13 @@ def mcts_search(
     """
     rng = random.Random(7)
     log = roles.log
-    log.add(generation=0, action="mcts_start", n_candidates=0,
-            detail="MCTS：序贯掺杂决策树搜索")
+    log.add(generation=0, action="mcts_start", n_candidates=0, detail="MCTS：序贯掺杂决策树搜索")
 
     root = MCTSNode(level=0)
-    # 用可验证母体优先（hosts 为 Gap 携带的 formula 中的纯母体）
-    valid_hosts = [h for h in hosts if not any(ch.isdigit() for ch in h)] or ["PbTe"]
+    # 2026-08-08 十四次深度开发（MCTS 召回率短板攻坚）：直接采用调用方归一化后的
+    # hosts（含带下标母体 Mg3Sb2/Bi2Te3/CoSb3 等）。此前「不含数字=纯母体」过滤
+    # 把带下标期望母体挡在搜索空间外 → coverage 结构性上限 ≈11/16=0.688（exp 124）。
+    valid_hosts = [h for h in hosts if h] or ["PbTe"]
     root.children = [MCTSNode(host=h, level=1) for h in valid_hosts[:4]]
 
     # 探索轨迹：formula → 评估过的候选（去重，供召回率评测）
@@ -159,7 +224,7 @@ def mcts_search(
         path: list[MCTSNode] = [node]
         while not node.is_leaf():
             if not node.children:
-                node.children = _expand(node, roles, gap_statement, rng, llm_on)
+                node.children = _expand(node, roles, gap_statement, rng, llm_on, explored)
             if not node.children:
                 break
             node = max(node.children, key=lambda c: _ucb(c, node.visits))
@@ -171,9 +236,12 @@ def mcts_search(
         else:
             # 未到叶：用中间节点规则先验
             score = rule_score(
-                Candidate(host=node.host or "PbTe", dopant=node.dopant or "Bi",
-                          concentration=CONC_GRID[2],
-                          formula=f"{node.host or 'PbTe'}-{node.dopant or 'Bi'}")
+                Candidate(
+                    host=node.host or "PbTe",
+                    dopant=node.dopant or "Bi",
+                    concentration=CONC_GRID[2],
+                    formula=f"{node.host or 'PbTe'}-{node.dopant or 'Bi'}",
+                )
             )["scientific"]
         # 3. 回传
         for n in path:
@@ -186,9 +254,7 @@ def mcts_search(
     top: list[Candidate] = []
     relation, hypothesis, mechanism = "", "", ""
     if explore_top > 0 and explored:
-        top = sorted(
-            explored.values(), key=lambda c: c.score_avg(), reverse=True
-        )[:explore_top]
+        top = sorted(explored.values(), key=lambda c: c.score_avg(), reverse=True)[:explore_top]
         cand = top[0]
         best_conc = cand.concentration
         relation = (
@@ -230,12 +296,19 @@ def mcts_search(
         mechanism = "迭代不足或候选空间贫瘠"
     confidence = round(min(best_score, 1.0), 2) if best_leaf else 0.0
 
-    log.add(generation=1, action="done", n_candidates=len(top),
-            detail=f"MCTS 完成 {iterations} 次迭代，探索候选 {len(explored)} 个，"
-                   f"输出 {len(top)} 个"
-                   + (f"（最优 {best_leaf.host if best_leaf else '-'}/"
-                      f"{best_leaf.dopant if best_leaf else '-'}，{best_score:.2f}）"
-                      if best_leaf else ""))
+    log.add(
+        generation=1,
+        action="done",
+        n_candidates=len(top),
+        detail=f"MCTS 完成 {iterations} 次迭代，探索候选 {len(explored)} 个，"
+        f"输出 {len(top)} 个"
+        + (
+            f"（最优 {best_leaf.host if best_leaf else '-'}/"
+            f"{best_leaf.dopant if best_leaf else '-'}，{best_score:.2f}）"
+            if best_leaf
+            else ""
+        ),
+    )
     if logger:
         logger(json.dumps(log.steps[-1].model_dump(), ensure_ascii=False))
 

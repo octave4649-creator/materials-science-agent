@@ -1,0 +1,115 @@
+{
+  "dataset": "extraction_f1",
+  "created_at": "2026-08-08T08:45:00+00:00",
+  "source_retrieval": "results/retrieval_20260804T152611.json",
+  "instruction": "热电领域人工 gold（5 条，由 AI 预填初稿 + 人工复核修正产出）。只保留 chunk 明确提及的信息；properties.name 使用 zT/band gap/Seebeck coefficient/thermal conductivity/electrical conductivity/power factor 等标准名。",
+  "n_items": 5,
+  "items": [
+    {
+      "idx": 0,
+      "doc_id": "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c",
+      "chunk": "The highest ZT of 1.6 is achieved for Ge0.93Ti0.01Bi0.06Te at 623 K, much higher than that of pristine GeTe.",
+      "gold": {
+        "material": {
+          "formula": "Ge0.93Ti0.01Bi0.06Te",
+          "composition": "Ti and Bi doped GeTe",
+          "structure": {"space_group": null, "lattice": null, "phase": null}
+        },
+        "properties": [
+          {"name": "zT", "value": 1.6, "unit": null, "condition": "at 623 K"}
+        ],
+        "methods": [],
+        "synthesis": {"precursors": null, "temperature": null, "atmosphere": null, "duration": null}
+      },
+      "ai_prefilled": true,
+      "reviewed": true,
+      "reviewer_note": "对照原文复核通过：zT=1.6@623K 与 Ge0.93Ti0.01Bi0.06Te 公式正确"
+    },
+    {
+      "idx": 1,
+      "doc_id": "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+      "chunk": "zT can be enhanced to above 3 for p-type PbTe, and above 2 for n-type PbTe at 900 K with minority carrier blocking.",
+      "gold": {
+        "material": {
+          "formula": "PbTe",
+          "composition": "p-type PbTe and n-type PbTe",
+          "structure": {"space_group": null, "lattice": null, "phase": null}
+        },
+        "properties": [
+          {"name": "zT", "value": 3.0, "unit": null, "condition": "p-type PbTe at 900 K with minority carrier blocking"},
+          {"name": "zT", "value": 2.0, "unit": null, "condition": "n-type PbTe at 900 K with minority carrier blocking"}
+        ],
+        "methods": [
+          {"type": "OTHER", "software": null, "key_params": "minority carrier blocking, suppression of bipolar thermal conductivity"}
+        ],
+        "synthesis": {"precursors": null, "temperature": null, "atmosphere": null, "duration": null}
+      },
+      "ai_prefilled": true,
+      "reviewed": true,
+      "reviewer_note": "对照原文复核通过：zT>3(p-type)/>2(n-type)@900K；方法为理论方案，保留 OTHER"
+    },
+    {
+      "idx": 2,
+      "doc_id": "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc",
+      "chunk": "Pb or Ca doping can enhance the thermoelectric figure of merit ZT to values up to ZT ~1.7, based on an experimentally determined tau.",
+      "gold": {
+        "material": {
+          "formula": "Bi2Te3",
+          "composition": "Pb or Ca doping",
+          "structure": {"space_group": null, "lattice": null, "phase": null}
+        },
+        "properties": [
+          {"name": "zT", "value": 1.7, "unit": null, "condition": "based on experimentally determined tau"}
+        ],
+        "methods": [
+          {"type": "OTHER", "software": null, "key_params": "thermal conductivity calculations"}
+        ],
+        "synthesis": {"precursors": null, "temperature": null, "atmosphere": null, "duration": null}
+      },
+      "ai_prefilled": true,
+      "reviewed": true,
+      "reviewer_note": "修正：方法类型 DFT→OTHER（chunk 仅提 thermal conductivity calculations，未明确 DFT）；zT~1.7 为上限"
+    },
+    {
+      "idx": 3,
+      "doc_id": "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd",
+      "chunk": "The peak zT in Zn-doped Sr5In2Sb6 (~0.4 at 700 K) is lower than the peak zT of the Ca analogue (~0.7 at 950 K). kappa_min = 0.42 Wm-1K-1.",
+      "gold": {
+        "material": {
+          "formula": "Sr5In2Sb6",
+          "composition": "Zn-doped",
+          "structure": {"space_group": null, "lattice": null, "phase": null}
+        },
+        "properties": [
+          {"name": "zT", "value": 0.4, "unit": null, "condition": "at 700 K"},
+          {"name": "thermal conductivity", "value": 0.42, "unit": "W/mK", "condition": "minimum kappa"}
+        ],
+        "methods": [],
+        "synthesis": {"precursors": null, "temperature": null, "atmosphere": null, "duration": null}
+      },
+      "ai_prefilled": true,
+      "reviewed": true,
+      "reviewer_note": "对照原文复核通过：zT~0.4@700K；kappa_min=0.42 为最低晶格热导率估算"
+    },
+    {
+      "idx": 4,
+      "doc_id": "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811",
+      "chunk": "The TE figure of merit ZT increases up to six times relative to the undoped starting Bi0.5Sb1.5Te3 alloy over a wide temperature range of 400-600 K.",
+      "gold": {
+        "material": {
+          "formula": "Bi0.5Sb1.5Te3",
+          "composition": "fullerene-doped nanostructured Bi0.5Sb1.5Te3",
+          "structure": {"space_group": null, "lattice": null, "phase": null}
+        },
+        "properties": [
+          {"name": "zT", "value": null, "unit": null, "condition": "increases up to six times relative to undoped starting Bi0.5Sb1.5Te3 over 400-600 K"}
+        ],
+        "methods": [],
+        "synthesis": {"precursors": null, "temperature": null, "atmosphere": null, "duration": null}
+      },
+      "ai_prefilled": true,
+      "reviewed": true,
+      "reviewer_note": "对照原文复核通过：ZT 提升 6 倍（无绝对数值，value=null）"
+    }
+  ]
+}

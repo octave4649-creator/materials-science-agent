@@ -16,6 +16,7 @@
 3. UCB 采集函数推荐下一批浓度点（探索-利用平衡）
 4. 全部 dopant 收敛后：全局最优 dopant + 浓度 + 代理公式 + 构效关系假设
 """
+
 from __future__ import annotations
 
 import json
@@ -32,8 +33,10 @@ INIT_CONC_GRID = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0]
 ROUNDS = 3  # BO 迭代轮数
 ACQ_PER_ROUND = 3  # 每轮推荐采集点数
 KAPPA = 1.5  # UCB 探索系数
-# 默认外层遍历的掺杂元素数（DOPANT_POOL 前 10 覆盖 Cd/Se，含 16 条 known_facts 期望元素）
-DEFAULT_DOPANTS = 10
+# 默认外层遍历的掺杂元素数（= len(DOPANT_POOL) 16，全池覆盖 16 条 known_facts
+# 期望 dopant——2026-08-08 十三次深度开发由 10 提至全池，消除池缺口；LLM 模式
+# 成本控制用 eval_recall --bo-dopants 5）
+DEFAULT_DOPANTS = 16
 
 
 def _quad_eval(coefs: list[float], x: float) -> float:
@@ -44,9 +47,7 @@ def _quad_eval(coefs: list[float], x: float) -> float:
     return c0 + c1 * x + c2 * x * x
 
 
-def _acquisition_ucb(
-    coefs: list[float], residuals: list[tuple[float, float]], x: float
-) -> float:
+def _acquisition_ucb(coefs: list[float], residuals: list[tuple[float, float]], x: float) -> float:
     """UCB 采集函数：均值 + κ·残差标准差（探索-利用平衡）。"""
     mean = _quad_eval(coefs, x)
     if len(residuals) < 2:
@@ -76,9 +77,12 @@ def _evaluate_batch(
     """
     cands = [
         Candidate(
-            host=host, dopant=dopant, concentration=conc,
+            host=host,
+            dopant=dopant,
+            concentration=conc,
             formula=_nominal_formula(host, dopant, conc),
-            rationale="BO 采样点", source="random",
+            rationale="BO 采样点",
+            source="random",
         )
         for conc in concs
     ]
@@ -118,9 +122,7 @@ def _bo_one_dopant(
     explored: dict[str, Candidate] = {}
     # 1. 初始点采样 + 评估：常见掺杂浓度网格全覆盖（保证浓度轴触达，
     #    避免 rng 抽样漏掉期望浓度——v2 评测暴露「抽样不覆盖浓度 4.0」问题）
-    for cand, y in _evaluate_batch(
-        host, dopant, sorted(INIT_CONC_GRID), roles, gap, llm_on
-    ):
+    for cand, y in _evaluate_batch(host, dopant, sorted(INIT_CONC_GRID), roles, gap, llm_on):
         samples.append((cand.concentration, y))
         explored.setdefault(cand.formula, cand)
     # 2. BO 迭代：代理拟合 → UCB 采集 → 评估
@@ -128,11 +130,11 @@ def _bo_one_dopant(
         coefs, _ = _least_squares(
             [x for x, _ in samples], [y for _, y in samples], "a + b*x + c*x^2"
         )
-        grid = [round(CONC_MIN + i * 0.2, 1)
-                for i in range(int((CONC_MAX - CONC_MIN) / 0.2) + 1)]
+        grid = [round(CONC_MIN + i * 0.2, 1) for i in range(int((CONC_MAX - CONC_MIN) / 0.2) + 1)]
         candidates = [
             (x, _acquisition_ucb(coefs, samples, x))
-            for x in grid if not any(abs(x - xx) < 0.01 for xx, _ in samples)
+            for x in grid
+            if not any(abs(x - xx) < 0.01 for xx, _ in samples)
         ]
         candidates.sort(key=lambda t: t[1], reverse=True)
         picks = [candidates[i][0] for i in range(min(ACQ_PER_ROUND, len(candidates)))]
@@ -170,35 +172,43 @@ def bo_search(
     log = roles.log
     host = hosts[0] if hosts else "PbTe"
     dopant_pool = dopants if dopants is not None else DOPANT_POOL[:DEFAULT_DOPANTS]
-    log.add(generation=0, action="bo_start", n_candidates=0,
-            detail=f"BO：{host} 掺 {dopant_pool} 浓度寻优 [{CONC_MIN}, {CONC_MAX}]")
+    log.add(
+        generation=0,
+        action="bo_start",
+        n_candidates=0,
+        detail=f"BO：{host} 掺 {dopant_pool} 浓度寻优 [{CONC_MIN}, {CONC_MAX}]",
+    )
 
     # 1. dopant 外层遍历 × 浓度 BO 内层寻优（探索轨迹合并）
     all_explored: dict[str, Candidate] = {}
     per_dopant: dict[str, list[tuple[float, float]]] = {}  # dopant → samples
     per_coefs: dict[str, list[float]] = {}  # dopant → 代理系数
     for dopant in dopant_pool:
-        samples, explored = _bo_one_dopant(
-            host, dopant, roles, gap_statement, llm_on
-        )
+        samples, explored = _bo_one_dopant(host, dopant, roles, gap_statement, llm_on)
         per_dopant[dopant] = samples
         coefs, _ = _least_squares(
             [x for x, _ in samples], [y for _, y in samples], "a + b*x + c*x^2"
         )
         per_coefs[dopant] = coefs
         all_explored.update(explored)
-        log.add(generation=1, action="dopant_done", n_candidates=len(samples),
-                llm_role="evaluator",
-                detail=f"{host} 掺 {dopant}：评估 {len(samples)} 点，"
-                       f"最优 {max(y for _, y in samples):.2f}")
-    log.add(generation=1, action="bo_dopants_done", n_candidates=len(dopant_pool),
-            detail=f"dopant 外层遍历完成：{len(dopant_pool)} 个掺杂元素，"
-                   f"探索轨迹 {len(all_explored)} 个候选")
+        log.add(
+            generation=1,
+            action="dopant_done",
+            n_candidates=len(samples),
+            llm_role="evaluator",
+            detail=f"{host} 掺 {dopant}：评估 {len(samples)} 点，"
+            f"最优 {max(y for _, y in samples):.2f}",
+        )
+    log.add(
+        generation=1,
+        action="bo_dopants_done",
+        n_candidates=len(dopant_pool),
+        detail=f"dopant 外层遍历完成：{len(dopant_pool)} 个掺杂元素，"
+        f"探索轨迹 {len(all_explored)} 个候选",
+    )
 
     # 2. 全局最优：跨 dopant 找最高分候选（其所在 dopant 的样本为最终代理依据）
-    best_dopant = max(
-        per_dopant, key=lambda d: max(y for _, y in per_dopant[d])
-    )
+    best_dopant = max(per_dopant, key=lambda d: max(y for _, y in per_dopant[d]))
     samples = per_dopant[best_dopant]
     coefs = per_coefs[best_dopant]
     best_conc, best_y = max(samples, key=lambda t: t[1])
@@ -208,12 +218,12 @@ def bo_search(
     peak = -b / (2 * c2) if c2 < -1e-12 else best_conc
     peak = min(max(peak, CONC_MIN), CONC_MAX)
     # 代理 R²（用全局最优 dopant 的样本）
-    _, r2 = _least_squares(
-        [x for x, _ in samples], [y for _, y in samples], "a + b*x + c*x^2"
-    )
+    _, r2 = _least_squares([x for x, _ in samples], [y for _, y in samples], "a + b*x + c*x^2")
 
     top = Candidate(
-        host=host, dopant=best_dopant, concentration=round(best_conc, 1),
+        host=host,
+        dopant=best_dopant,
+        concentration=round(best_conc, 1),
         formula=_nominal_formula(host, best_dopant, round(best_conc, 1)),
         rationale=f"BO 采样最优（评估 {best_y:.2f}），代理峰值 {peak:.1f}%",
         source="random",
@@ -222,9 +232,9 @@ def bo_search(
     # 评测模式：输出探索轨迹全部采样候选（排序按评分）
     if explore_top > 0 and all_explored:
         all_explored.setdefault(top.formula, top)
-        top_out = sorted(
-            all_explored.values(), key=lambda c: c.score_avg(), reverse=True
-        )[:explore_top]
+        top_out = sorted(all_explored.values(), key=lambda c: c.score_avg(), reverse=True)[
+            :explore_top
+        ]
         n_out = len(top_out)
     else:
         top_out = [top]
@@ -243,9 +253,13 @@ def bo_search(
         f"掺杂元素、内层 UCB 采集寻优浓度；{best_dopant} 最优代理二次项系数 "
         f"{coefs[2]:+.3f} 表明性能-浓度呈非线性（载流子增益 vs 声子散射回落的竞争）"
     )
-    log.add(generation=ROUNDS + 1, action="done", n_candidates=n_out,
-            detail=f"输出最优 {host}-{best_dopant} {best_conc:.1f}%"
-                   f"（采样 {len(all_explored)} 点，R²={r2:.3f}）")
+    log.add(
+        generation=ROUNDS + 1,
+        action="done",
+        n_candidates=n_out,
+        detail=f"输出最优 {host}-{best_dopant} {best_conc:.1f}%"
+        f"（采样 {len(all_explored)} 点，R²={r2:.3f}）",
+    )
     if logger:
         logger(json.dumps(log.steps[-1].model_dump(), ensure_ascii=False))
 

@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import re
+import time
 from typing import Any
 
 import httpx
@@ -19,6 +20,8 @@ from .schemas import DBEntry
 OQMD_BASE = "https://oqmd.org/oqmdapi"
 TIMEOUT = 15.0
 STABILITY_THRESHOLD = 0.1  # energy above hull (eV/atom) 稳定性阈值
+MAX_RETRIES = 3  # 服务端 5xx/超时临时故障重试次数（指数退避）
+RETRY_BASE_DELAY = 2.0  # 首次退避等待秒数
 
 # 命中整数成分（含小数点的分数成分不直接查询，避免 OQMD 超时）
 _FRACTION_RE = re.compile(r"\d\.\d")
@@ -69,17 +72,27 @@ class OQMDClient:
         cached = self._cache.get(comp)
         if cached is not None:
             return cached
-        try:
-            resp = httpx.get(
-                f"{self.base_url}/formationenergy",
-                params={"composition": comp, "limit": limit},
-                timeout=self.timeout,
-                follow_redirects=True,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-        except (httpx.HTTPError, ValueError) as exc:
-            raise OQMDError(f"OQMD 查询失败（{comp}）: {exc}") from exc
+        last_exc: Exception | None = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                resp = httpx.get(
+                    f"{self.base_url}/formationenergy",
+                    params={"composition": comp, "limit": limit},
+                    timeout=self.timeout,
+                    follow_redirects=True,
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                break
+            except (httpx.HTTPError, ValueError) as exc:
+                last_exc = exc
+                # 仅对可恢复的临时故障重试（5xx / 超时）；4xx 参数错误直接抛出
+                if isinstance(exc, httpx.HTTPStatusError) and 400 <= exc.response.status_code < 500:
+                    raise OQMDError(f"OQMD 查询失败（{comp}）: {exc}") from exc
+                if attempt < MAX_RETRIES - 1:
+                    time.sleep(RETRY_BASE_DELAY * (2**attempt))
+        else:
+            raise OQMDError(f"OQMD 查询失败（{comp}）: {last_exc}") from last_exc
         entries = self._normalize(comp, data)
         self._cache[comp] = entries
         return entries

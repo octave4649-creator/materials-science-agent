@@ -14,8 +14,8 @@ from pydantic import BaseModel, Field
 # 判定类型：已知 / 新知 / 反例 / 验证失败
 VerdictType = Literal["已知", "新知", "反例", "验证失败"]
 
-# 数据库标识
-DatabaseId = Literal["oqmd", "mp"]
+# 数据库标识（主库 oqmd/mp；可选增强 nomad/aflow，见 nomad_client/aflow_client）
+DatabaseId = Literal["oqmd", "mp", "nomad", "aflow"]
 
 
 def _utc_now() -> str:
@@ -33,6 +33,7 @@ class DBEntry(BaseModel):
     stability: float | None = Field(default=None, description="energy above hull eV/atom")
     band_gap: float | None = Field(default=None, description="带隙 eV")
     is_stable: bool | None = Field(default=None, description="稳定性标记（按各库口径）")
+    spacegroup: str | None = Field(default=None, description="晶体空间群（AFLOW 提供）")
     source_url: str | None = Field(default=None, description="可回溯链接")
 
 

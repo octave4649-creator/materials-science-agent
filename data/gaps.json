@@ -14,11 +14,20 @@
       "evidence_ids": [
         "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
       ],
-      "novelty": "部分已知",
+      "novelty": "新知",
       "operability": "以 Ge0.93Ti0.01Bi0.06Te 为种子，搜索 figure_of_merit_zT/band_gap/seebeck_coefficient/thermal_conductivity/electrical_conductivity/power_factor 对应的成分-结构-性能关联",
       "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Ge0.93Ti0.01Bi0.06Te 特定配比报道极少（c1 验证 GeTe 族母体已知，但该三元配比的系统性能研究缺失）；heuristic 建议一致"
     },
     {
       "gap_type": "未探索方向",
@@ -27,12 +36,26 @@
       "formulas": [
         "PbTe"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+        "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa"
+      ],
       "novelty": "部分已知",
       "operability": "以 PbTe 为种子，搜索 Na/Sr/Mg 共掺杂组分-性能关联",
       "verification": "Sciverse 回查 top5：4 条片段含 PbTe，判定仅供参考，需人工复核",
       "confidence": 0.7,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 1,
+        "sources": {
+          "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "PbTe 掺 Na 已知充分（c1 验证 PbTe 族候选多为已知），但 Na 与 Sr/Mg 共掺杂的 600-800K 协同效应仅少量文献；heuristic 建议「已知」过于激进"
     },
     {
       "gap_type": "未探索方向",
@@ -42,12 +65,23 @@
         "Ge0.93Ti0.01Bi0.06Te",
         "GeTe"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      ],
+      "novelty": "新知",
       "operability": "以 GeTe 为种子，扫描 Ti 掺杂浓度与 zT 的显式构效关系",
       "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "高 Ti 含量（>2%）GeTe 的相变-性能关联确实空白；GeTe 已知不覆盖该浓度区间"
     },
     {
       "gap_type": "未探索方向",
@@ -56,12 +90,23 @@
       "formulas": [
         "Bi2Te3"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+      ],
+      "novelty": "部分已知",
       "operability": "以 Bi2Te3 为种子，评估 Cu 掺杂浓度对稳定性代理指标的影响",
       "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Cu 掺杂 Bi2Te3 提升 zT 有文献，但 >200h 长期热稳定性与退化机制缺系统研究；Sciverse 0 命中主要因 chunk 语料覆盖有限"
     },
     {
       "gap_type": "未探索方向",
@@ -70,12 +115,33 @@
       "formulas": [
         "SnTe"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "05b30ea6b40836cdba619194885aa10d727163c6dd53894f416c69013e0a05b4",
+        "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa",
+        "4da89aaf1e250e6008c71bd61517f4b88f06d222984bc2e5366b9ab4f260ee29",
+        "dc8247c682dbff749dd8d900bfc54c4ce7ffceee5c4b1a0dbc7720117dc40a9d",
+        "e5f2aa438653f14d9490824089c1244f1711cf289a5ea9f0ab50f974c6a25621"
+      ],
+      "novelty": "已知",
       "operability": "以 SnTe 为种子，搜索 In/Cd 共掺杂的构效关系",
       "verification": "Sciverse 回查 top5：5 条片段含 SnTe，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 5,
+        "sources": {
+          "05b30ea6b40836cdba619194885aa10d727163c6dd53894f416c69013e0a05b4": "retrieval",
+          "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa": "retrieval",
+          "4da89aaf1e250e6008c71bd61517f4b88f06d222984bc2e5366b9ab4f260ee29": "retrieval",
+          "dc8247c682dbff749dd8d900bfc54c4ce7ffceee5c4b1a0dbc7720117dc40a9d": "retrieval",
+          "e5f2aa438653f14d9490824089c1244f1711cf289a5ea9f0ab50f974c6a25621": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "SnTe 中 In 掺杂（能带收敛）与 Cd 共掺杂均有文献（c1 验证 SnTe 母体已知）；heuristic 命中 5 条一致"
     },
     {
       "gap_type": "未探索方向",
@@ -84,12 +150,31 @@
       "formulas": [
         "Mg3Sb2"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "e5086f308cbb649a791d99af9380f2433b174eebaebdc70b66c49900b9f8eba2",
+        "ea13a317d17d39f57da7b68147ce0fa5418151b5fb6d6a59dd7d240ed97a2069",
+        "f2faf30826c9fe639032c0612b0bb4dc2813baa034cd29d852ae6366c4ecd128",
+        "e2f6558a7663aa03823802cac19a5c576600f561374b9a32890523c29abba82d"
+      ],
+      "novelty": "部分已知",
       "operability": "以 Mg3Sb2 为种子，评估掺杂对空位形成能与迁移率代理指标的影响",
       "verification": "Sciverse 回查 top5：0 条片段含 Mg3Sb2，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 4,
+        "sources": {
+          "e5086f308cbb649a791d99af9380f2433b174eebaebdc70b66c49900b9f8eba2": "retrieval_title",
+          "ea13a317d17d39f57da7b68147ce0fa5418151b5fb6d6a59dd7d240ed97a2069": "retrieval_title",
+          "f2faf30826c9fe639032c0612b0bb4dc2813baa034cd29d852ae6366c4ecd128": "retrieval_title",
+          "e2f6558a7663aa03823802cac19a5c576600f561374b9a32890523c29abba82d": "retrieval_title"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "n 型 Mg3Sb2 空位-载流子迁移率有第一性原理工作（c1 验证 Mg3Sb2-Na2% 已知），但阳离子空位浓度的系统扫描缺失"
     },
     {
       "gap_type": "缺失知识连接",
@@ -98,12 +183,25 @@
       "formulas": [
         "ZrNiSn"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "f218881e193f73532f57642debe06f0cd6198ad89e0bccd2114197cde3f79ea2"
+      ],
+      "novelty": "已知",
       "operability": "以 ZrNiSn 为种子，搜索 Hf/Ti 位点掺杂的构效关系",
       "verification": "Sciverse 回查 top5：2 条片段含 ZrNiSn，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 1,
+        "sources": {
+          "f218881e193f73532f57642debe06f0cd6198ad89e0bccd2114197cde3f79ea2": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "half-Heusler ZrNiSn 的 Ti/Hf 掺杂文献极多（c1 验证 ZrNiSn-Hf5%/Ti5% 均判定已知）；trade-off 虽未完全量化但已被充分研究"
     },
     {
       "gap_type": "未探索方向",
@@ -112,12 +210,27 @@
       "formulas": [
         "Cu2Se"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "ccffca845fd57dff5181e95b8d36772f091c467c11e4e9549e54e7e851e7f0e1",
+        "f98bc4a0b0760e75d8711b6e3ad56ad8a711e33a23cb33ca29894ad9c6fc399c"
+      ],
+      "novelty": "部分已知",
       "operability": "以 Cu2Se 为种子，评估阴离子取代对稳定性代理指标的影响",
       "verification": "Sciverse 回查 top5：0 条片段含 Cu2Se，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 2,
+        "sources": {
+          "ccffca845fd57dff5181e95b8d36772f091c467c11e4e9549e54e7e851e7f0e1": "retrieval",
+          "f98bc4a0b0760e75d8711b6e3ad56ad8a711e33a23cb33ca29894ad9c6fc399c": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Cu2(Se,Te) 固溶体研究存在（c1 验证 Cu2Se-Te5% 被判「反例」——OQMD hull=0.125 亚稳，提示 DFT 稳定性存疑），Te 取代对迁移活化能的定量影响未被系统覆盖"
     },
     {
       "gap_type": "矛盾结论",
@@ -126,12 +239,29 @@
       "formulas": [
         "CoSb3"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "c11e2f0fb8f774b90bf02b50b2dbbd4a72e4474da8e9edf1f32f537bacf257bc",
+        "bf062b368c1c446334ddd150556722098bfc3c554d4bef1cd07d276a85f3cf02",
+        "9586e0f1ae6a4fa2f6340a6eeccfbfca4900f93b723b76e895bdd7771ed7d958"
+      ],
+      "novelty": "已知",
       "operability": "以 CoSb3 为种子，扫描 Yb/Ba 填充量并做数据库交叉验证",
       "verification": "Sciverse 回查 top5：0 条片段含 CoSb3，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 3,
+        "sources": {
+          "c11e2f0fb8f774b90bf02b50b2dbbd4a72e4474da8e9edf1f32f537bacf257bc": "retrieval",
+          "bf062b368c1c446334ddd150556722098bfc3c554d4bef1cd07d276a85f3cf02": "retrieval",
+          "9586e0f1ae6a4fa2f6340a6eeccfbfca4900f93b723b76e895bdd7771ed7d958": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "填充方钴矿 CoSb3 的 Yb/Ba 双填充文献海量（c1 验证 CoSb3-Yb0.2Ba0.10% 判定已知）；矛盾结论恰说明已被充分研究，属「争议集中点」而非空白"
     },
     {
       "gap_type": "矛盾结论",
@@ -140,12 +270,29 @@
       "formulas": [
         "SiGe"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "286dac410e805f750c80936c90c0d649c70c77c5083cb137efdbf64bf479ec36",
+        "6b95e61571de5283474ce30f95675d1b8ed4833f1fd9684a0c1858b75ef23603",
+        "e38bdc2531e9cb4d5d7258528111062a68c075b9cf6a2e9c2b7ad6e4dfda4ecf"
+      ],
+      "novelty": "已知",
       "operability": "以 SiGe 为种子，搜索 P 掺杂浓度-性能显式关系",
       "verification": "Sciverse 回查 top5：3 条片段含 SiGe，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 3,
+        "sources": {
+          "286dac410e805f750c80936c90c0d649c70c77c5083cb137efdbf64bf479ec36": "retrieval",
+          "6b95e61571de5283474ce30f95675d1b8ed4833f1fd9684a0c1858b75ef23603": "retrieval",
+          "e38bdc2531e9cb4d5d7258528111062a68c075b9cf6a2e9c2b7ad6e4dfda4ecf": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "SiGe 基合金 P 掺杂是成熟体系（c1 验证 Si0.8Ge0.2-P2%×2 均判定反例——hull=0.512 亚稳）；1100K 报道区间不一致属已知争议"
     },
     {
       "gap_type": "缺失知识连接",
@@ -155,12 +302,26 @@
         "AgSbTe2",
         "PbTe"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+        "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa"
+      ],
+      "novelty": "已知",
       "operability": "以 AgSbTe2/PbTe 为种子，搜索 LAST 合金组分-性能关联",
       "verification": "Sciverse 回查 top5：0 条片段含 AgSbTe2，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 1,
+        "sources": {
+          "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "LAST（AgPb18SbTe20/AgSbTe2-PbTe）体系 2004 年起大量研究，组分-性能数据库已建立；无序机制争议存在但非空白"
     },
     {
       "gap_type": "方法空白",
@@ -171,12 +332,35 @@
         "PbTe",
         "SnTe"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c",
+        "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+        "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa",
+        "05b30ea6b40836cdba619194885aa10d727163c6dd53894f416c69013e0a05b4",
+        "4da89aaf1e250e6008c71bd61517f4b88f06d222984bc2e5366b9ab4f260ee29",
+        "dc8247c682dbff749dd8d900bfc54c4ce7ffceee5c4b1a0dbc7720117dc40a9d",
+        "e5f2aa438653f14d9490824089c1244f1711cf289a5ea9f0ab50f974c6a25621"
+      ],
+      "novelty": "部分已知",
       "operability": "以 GeTe 基固溶体为对象，评估 ML 势函数可覆盖的描述符空间",
       "verification": "Sciverse 回查 top5：2 条片段含 GeTe，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 2,
+        "n_added": 5,
+        "sources": {
+          "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa": "retrieval",
+          "05b30ea6b40836cdba619194885aa10d727163c6dd53894f416c69013e0a05b4": "retrieval",
+          "4da89aaf1e250e6008c71bd61517f4b88f06d222984bc2e5366b9ab4f260ee29": "retrieval",
+          "dc8247c682dbff749dd8d900bfc54c4ce7ffceee5c4b1a0dbc7720117dc40a9d": "retrieval",
+          "e5f2aa438653f14d9490824089c1244f1711cf289a5ea9f0ab50f974c6a25621": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "ML 势函数（MACE/NequIP 等）已应用于热电声子输运，但 GeTe 基固溶体的完整覆盖缺失；heuristic 命中 2 条偏保守"
     },
     {
       "gap_type": "方法空白",
@@ -187,12 +371,35 @@
         "PbTe",
         "SnTe"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c",
+        "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+        "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa",
+        "05b30ea6b40836cdba619194885aa10d727163c6dd53894f416c69013e0a05b4",
+        "4da89aaf1e250e6008c71bd61517f4b88f06d222984bc2e5366b9ab4f260ee29",
+        "dc8247c682dbff749dd8d900bfc54c4ce7ffceee5c4b1a0dbc7720117dc40a9d",
+        "e5f2aa438653f14d9490824089c1244f1711cf289a5ea9f0ab50f974c6a25621"
+      ],
+      "novelty": "部分已知",
       "operability": "以 GeTe/PbTe/SnTe 为种子，用 GA/SR 搜索高熵组分-性能关联",
       "verification": "Sciverse 回查 top5：3 条片段含 GeTe，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 2,
+        "n_added": 5,
+        "sources": {
+          "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa": "retrieval",
+          "05b30ea6b40836cdba619194885aa10d727163c6dd53894f416c69013e0a05b4": "retrieval",
+          "4da89aaf1e250e6008c71bd61517f4b88f06d222984bc2e5366b9ab4f260ee29": "retrieval",
+          "dc8247c682dbff749dd8d900bfc54c4ce7ffceee5c4b1a0dbc7720117dc40a9d": "retrieval",
+          "e5f2aa438653f14d9490824089c1244f1711cf289a5ea9f0ab50f974c6a25621": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "高熵热电设计已有主动学习工作（如 NPJ Comput Mater），但符号回归驱动的组分设计少见"
     },
     {
       "gap_type": "矛盾结论",
@@ -202,12 +409,26 @@
         "PbTe",
         "AgSbTe2"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+        "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa"
+      ],
+      "novelty": "已知",
       "operability": "以 PbTe 为种子，搜索 Ag/Sb 掺杂对 zT 代理指标的影响",
       "verification": "Sciverse 回查 top5：5 条片段含 PbTe，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 1,
+        "sources": {
+          "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "LAST 体系 zT 峰位 1.5-2.2 波动是公认文献现象（熔融/球磨工艺差异已被报道）；heuristic 命中 5 条一致"
     },
     {
       "gap_type": "未探索方向",
@@ -216,12 +437,23 @@
       "formulas": [
         "Bi2Te3"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+      ],
+      "novelty": "部分已知",
       "operability": "以 Bi2Te3 为种子，评估掺杂浓度对薄膜热电代理指标的影响",
       "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Bi2Te3 薄膜界面散射研究较多，但 <1μm 厚度的系统 zT 模型仍缺"
     },
     {
       "gap_type": "缺失知识连接",
@@ -230,12 +462,31 @@
       "formulas": [
         "Mg3Sb2"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "e5086f308cbb649a791d99af9380f2433b174eebaebdc70b66c49900b9f8eba2",
+        "ea13a317d17d39f57da7b68147ce0fa5418151b5fb6d6a59dd7d240ed97a2069",
+        "f2faf30826c9fe639032c0612b0bb4dc2813baa034cd29d852ae6366c4ecd128",
+        "e2f6558a7663aa03823802cac19a5c576600f561374b9a32890523c29abba82d"
+      ],
       "novelty": "新知",
       "operability": "以 Mg3Sb2 为种子，评估掺杂对热电-力学联合代理指标的影响",
       "verification": "Sciverse 回查 top5：0 条片段含 Mg3Sb2，判定仅供参考，需人工复核",
       "confidence": 0.4,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 4,
+        "sources": {
+          "e5086f308cbb649a791d99af9380f2433b174eebaebdc70b66c49900b9f8eba2": "retrieval_title",
+          "ea13a317d17d39f57da7b68147ce0fa5418151b5fb6d6a59dd7d240ed97a2069": "retrieval_title",
+          "f2faf30826c9fe639032c0612b0bb4dc2813baa034cd29d852ae6366c4ecd128": "retrieval_title",
+          "e2f6558a7663aa03823802cac19a5c576600f561374b9a32890523c29abba82d": "retrieval_title"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Mg3Sb2 基 zT-断裂韧性联合优化确实未见报道（c1 验证 Mg3Sb2 母体已知，但力学-热电耦合维度空白）"
     },
     {
       "gap_type": "矛盾结论",
@@ -244,12 +495,23 @@
       "formulas": [
         "GeTe"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      ],
+      "novelty": "已知",
       "operability": "以 GeTe 为种子，搜索稳定 cubic 相的掺杂策略",
       "verification": "Sciverse 回查 top5：5 条片段含 GeTe，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "coverage"
+      "source": "coverage",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "GeTe 约 700K 相变附近的输运反常被大量实验与计算研究（c1 验证 GeTe 母体已知）；理论-实验不一致本身是被反复讨论的主题"
     },
     {
       "gap_type": "未探索方向",
@@ -258,12 +520,23 @@
       "formulas": [
         "Ge0.93Ti0.01Bi0.06Te"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      ],
+      "novelty": "新知",
       "operability": "通过变温 Hall 测量和第一性原理计算有效质量，对比不同 Ti/Bi 比例。",
       "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
       "confidence": 0.8,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Ge0.93Ti0.01Bi0.06Te 有效质量- Seebeck 解耦的单独研究缺失（与 idx0/2 同一三元配比空白族）"
     },
     {
       "gap_type": "矛盾结论",
@@ -272,12 +545,23 @@
       "formulas": [
         "Bi2Te3"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+      ],
+      "novelty": "已知",
       "operability": "制备相同化学计量比的块体和薄膜样品，对比电输运与缺陷表征。",
       "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
       "confidence": 0.7,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Cu 掺杂 Bi2Te3 在块体（增强）与薄膜（抑制/相反）的相反报道已被文献记录，属已知争议"
     },
     {
       "gap_type": "缺失知识连接",
@@ -286,12 +570,23 @@
       "formulas": [
         "Ca5In2Sb6"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd"
+      ],
       "novelty": "新知",
       "operability": "通过控制合成条件调节 In 空位，结合 Hall 和热导率测量建立关联。",
       "verification": "Sciverse 回查 top5：0 条片段含 Ca5In2Sb6，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Ca5In2Sb6 研究总量少，In 空位- zT 定量关系空白"
     },
     {
       "gap_type": "方法空白",
@@ -300,12 +595,23 @@
       "formulas": [
         "Ge0.93Ti0.01Bi0.06Te"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      ],
       "novelty": "新知",
       "operability": "训练 GeTe 基机器学习势，模拟不同掺杂浓度下的声子谱和自由能。",
       "verification": "Sciverse 回查 top5：0 条片段含 Ge0.93Ti0.01Bi0.06Te，判定仅供参考，需人工复核",
       "confidence": 0.7,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "ML 势函数预测掺杂 GeTe 相变温度的声子计算尚未开展（与 idx11 互补，聚焦相变温度）"
     },
     {
       "gap_type": "未探索方向",
@@ -314,12 +620,25 @@
       "formulas": [
         "Bi0.5Sb1.5Te3"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811"
+      ],
       "novelty": "部分已知",
       "operability": "制备不同 Te 含量的样品，结合正电子湮灭和电输运测量。",
       "verification": "Sciverse 回查 top5：0 条片段含 Bi0.5Sb1.5Te3，判定仅供参考，需人工复核",
       "confidence": 0.8,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 1,
+        "sources": {
+          "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811": "kb_similar"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Bi2Te3 系反位缺陷与 Te 化学计量已有文献，但 Bi0.5Sb1.5Te3 特定体系的系统扫描缺失"
     },
     {
       "gap_type": "矛盾结论",
@@ -328,12 +647,26 @@
       "formulas": [
         "PbTe"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "528cc1af2209ecebb9f579d42441c6615cfd11674932ed51cfbd857c34b845f1",
+        "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa"
+      ],
+      "novelty": "已知",
       "operability": "对比不同工艺制备的 Na 掺杂 PbTe，系统表征 Na 分布和电性能。",
       "verification": "Sciverse 回查 top5：4 条片段含 PbTe，判定仅供参考，需人工复核",
       "confidence": 0.7,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 1,
+        "sources": {
+          "bd0abe370a733e298e9d2756fc49204ad5f76bdf1040f0375e815b5c6eafe0fa": "retrieval"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "PbTe 掺 Na 最优浓度 0.5-2at% 波动是成熟争议（SPS vs 熔融工艺差异已知）；heuristic 命中 4 条一致"
     },
     {
       "gap_type": "缺失知识连接",
@@ -343,12 +676,24 @@
         "Ca5In2Sb6",
         "Bi2Te3"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd",
+        "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+      ],
       "novelty": "新知",
       "operability": "通过第一性原理计算界面能带，并制备多层膜测量输运。",
       "verification": "Sciverse 回查 top5：0 条片段含 Ca5In2Sb6，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 2,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Ca5In2Sb6/Bi2Te3 异质结界面能带对齐未见报道（Ca5In2Sb6 本属少研究体系）"
     },
     {
       "gap_type": "方法空白",
@@ -357,12 +702,25 @@
       "formulas": [
         "Ge1-x-yTixBiyTe"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      ],
       "novelty": "新知",
       "operability": "结合实验数据训练代理模型，迭代推荐新组分并验证。",
       "verification": "Sciverse 回查 top5：0 条片段含 Ge1-x-yTixBiyTe，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 1,
+        "sources": {
+          "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c": "kb_parent"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "主动学习优化 GeTe 基 Ti/Bi 掺杂比例的研究未见报道（与 idx12 同类但聚焦 GeTe）"
     },
     {
       "gap_type": "未探索方向",
@@ -371,12 +729,23 @@
       "formulas": [
         "Bi2Te3"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "934f300f56cee4ed7ca264f50bf2816d99c6d73b38e4bb77747e1ced3eff52cc"
+      ],
       "novelty": "部分已知",
       "operability": "通过控制 Te 空位浓度，测量热导率并拟合 Debye-Callaway 模型。",
       "verification": "Sciverse 回查 top5：0 条片段含 Bi2Te3，判定仅供参考，需人工复核",
       "confidence": 0.7,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Te 空位对 Bi2Te3 κL 的贡献有报道，但 300-500K 定量分离缺系统研究"
     },
     {
       "gap_type": "矛盾结论",
@@ -385,12 +754,25 @@
       "formulas": [
         "Ge1-xBixTe"
       ],
-      "evidence_ids": [],
-      "novelty": "部分已知",
+      "evidence_ids": [
+        "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c"
+      ],
+      "novelty": "已知",
       "operability": "制备不同 Bi 含量样品，用 DSC 和变温 XRD 统一表征。",
       "verification": "Sciverse 回查 top5：0 条片段含 Ge1-xBixTe，判定仅供参考，需人工复核",
       "confidence": 0.8,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 1,
+        "sources": {
+          "0559a86982971e3b0355beca913565f4fd4c01f9fa57236ca460dafd00ae8c0c": "kb_parent"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "GeTe 掺 Bi 对相变温度影响的矛盾报道（升降之争）已被文献记录，属已知争议"
     },
     {
       "gap_type": "缺失知识连接",
@@ -399,12 +781,23 @@
       "formulas": [
         "Ca5In2Sb6"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "5650fbb92ffab93e89d14e9f344809997a5f8669fbfa36caf00216d5071dd2bd"
+      ],
       "novelty": "新知",
       "operability": "通过掺杂调节带隙，测量高温 zT 并关联。",
       "verification": "Sciverse 回查 top5：0 条片段含 Ca5In2Sb6，判定仅供参考，需人工复核",
       "confidence": 0.5,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 1,
+        "n_added": 0,
+        "sources": {}
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "Ca5In2Sb6 的 zT-带隙关系未建立（少研究体系）"
     },
     {
       "gap_type": "方法空白",
@@ -413,12 +806,25 @@
       "formulas": [
         "Bi0.5Sb1.5Te3"
       ],
-      "evidence_ids": [],
-      "novelty": "新知",
+      "evidence_ids": [
+        "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811"
+      ],
+      "novelty": "部分已知",
       "operability": "采用 STEM 和 EELS 对缺陷进行统计，结合 DFT 计算验证。",
       "verification": "Sciverse 回查 top5：0 条片段含 Bi0.5Sb1.5Te3，判定仅供参考，需人工复核",
       "confidence": 0.6,
-      "source": "llm"
+      "source": "llm",
+      "evidence_backfill": {
+        "filled_at": "2026-08-08T09:15:03.753372+00:00",
+        "n_existing": 0,
+        "n_added": 1,
+        "sources": {
+          "5dd7d3422d5adae668b51f98575ad94fd96cb5fad7fe400fa0024c4378ca5811": "kb_similar"
+        }
+      },
+      "novelty_confirmed": true,
+      "reviewed_at": "2026-08-08T13:28:47.457940+00:00",
+      "reviewer_note": "高分辨 STEM/TEM 对 Bi2Te3 系反位缺陷已有直接成像工作，但浓度定量统计（Te 空位 vs 反位）未见系统报道"
     }
   ],
   "known_facts": [
@@ -617,5 +1023,6 @@
       "note": "已知关系召回率评测期望集：Mg 不在 DOPANT_POOL（超池测点，与 kf-01 Na 同母体 p 型对照）"
     }
   ],
-  "generated_at": "2026-08-04T21:45:24+00:00"
+  "generated_at": "2026-08-04T21:45:24+00:00",
+  "novelty_reviewed": 29
 }
