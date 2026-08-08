@@ -6,7 +6,7 @@ description: "各模块开发过程中积累的实测经验、踩坑与解决方
 created: "2026-08-04"
 updated: "2026-08-08"
 status: "active"
-version: "1.27"
+version: "1.28"
 ---
 
 # 开发经验记录（exp）
@@ -778,3 +778,20 @@ version: "1.27"
 - **现象**：首次运行 `scripts/verify_demo_pipeline.py` 报 `AssertionError: 右键应前进到步骤2`——页面逻辑正常（flowbar 6 步、6 步骤逐一点击切换、上一步/下一步循环、自动播放开/关全部通过），**是测试脚本自身的导航前置条件错了**：测试在步骤 6 点了「上一步」注释说「回到步骤1」，但 prev 从步骤 6 实际回到步骤 5，后续键盘断言期望值随之错位
 - **解决**：① 键盘测试前置改为「直接点击步骤 1 的 flowbar 按钮」回到确定起点再按 ←→ 断言（1→2、2→1），消除对按钮循环路径的隐式依赖；② 每个断言带语义化消息（「应回到步骤1」「右键应前进到步骤2」）；③ 页面全 6 步交互 + 0 console 错误验证通过后，再做公网版验证脚本 `verify_demo_pipeline_online.py`（对 http://120.53.11.211/demo-pipeline.html 逐一点击 6 步 + 截图留痕）
 - **注意**：① 测试脚本与页面 bug 要分开归因——先看是「断言失败的信息是哪一步」再判断是页面还是测试问题，本次 6 步导航全过、唯独键盘断言错，显然是测试脚本自身状态机算错；② 本地 file:// 验证通过 ≠ 公网部署正常，必须加在线验证脚本（静态部署的路径/权限/缓存问题只能在线暴露，呼应 exp 132）；③ 截图选最有代表性的步骤（步骤 4 搜索×LLM）而非首屏，便于演示时展示核心融合卖点
+
+## 2026-08-08 · 真实在线流水线部署（FastAPI 后端 + 训练好的模型资产）
+
+### 经验 137：真实可用 demo 的形态决策——静态快照 vs 在线流水线，训练好的「模型」指本地索引/真值表资产
+- **现象**：用户反馈「示例演示看着挺好的，更希望有真实使用体验」——静态 demo-panel/pipeline 是产物快照（编好的数据），赛事组无法自由输入、无法看到系统真实跑一遍
+- **解决**：部署**真实在线流水线**：Web 页自由输入研究问题 → FastAPI 后端线程池真实执行六阶段（检索=本地 BM25 索引优先 + Sciverse 在线可选合并 / 抽取=LLM schema 约束+规则降级 / Gap=覆盖率+矛盾+LLM 推理 / 搜索=GA/SR/MCTS/BO×LLM 三角色 / 验证=oracle 真值表本地降级 / 审计=产物汇总）；「训练好的模型」落地为**随仓库上传的资产**——`data/cache/scibase/scibase_index.json`（46 篇真实文献 BM25 索引）+ `results/oracle/oracle_truth_*.json`（12 母体 OQMD 验证真值表）
+- **注意**：① 服务器 2 核 3.5G 内存——**不装 langgraph/pymatgen/mp-api**（重依赖省内存），后端手动顺序编排六阶段，搜索模块纯 Python（math/random）无需重依赖；② 在线能力按凭据自动升级（.env 有 SCIVERSE_API_TOKEN → 检索升级在线；有 DEEPSEEK_API_KEY → 抽取/Gap/搜索真实走 LLM），无凭据时全部静默降级不中断；③ /api/health 三探针（llm_available/index_ready/oracle_ready）让赛事组一眼看到「模型就绪状态」，也便于部署验证
+
+### 经验 138：FastAPI 部署两大坑——① uvicorn 入口模块必须与应用根目录同层；② 部署脚本 upload 的 rm -rf 误删 venv/.env
+- **现象**：① systemd 服务反复 `Could not import module "run_live_api"`（status=3）——uvicorn 从 WorkingDirectory import 入口，而入口放在 `{APP}/scripts/` 子目录，PYTHONPATH={APP} 找不到；② 修复后又报 `status=203/EXEC` + `venv/bin/uvicorn: No such file or directory`——deploy 脚本 upload 阶段 `rm -rf {APP}` 把已装好的 venv 和 .env 全删了，且服务 restart 计数器狂飙到 19
+- **解决**：① 后端入口文件放**应用根目录**（与 src 同级），uvicorn `run_live_api:app` + `Environment=PYTHONPATH={APP}` 同时覆盖入口与 src 包；② upload 改为**只清源码/资产/入口**（`rm -rf {APP}/src {APP}/data {APP}/results {APP}/scripts {APP}/run_live_api.py *.pyc`），保留 venv 与 .env——装依赖只此一次，之后改代码可反复 upload 不重装
+- **注意**：① 部署脚本各动作要**幂等且互相不破坏**——upload 不应动 deps/env 的产物（venv/.env），否则动作顺序颠倒就全炸；② 服务反复 restart 要立刻 `journalctl -u <svc> -n 50` 看 exit code 语义（3=import 失败、203/EXEC=可执行文件不存在），别等 timeout；③ systemd `Environment=PYTHONPATH={app}` + `WorkingDirectory={app}` 后，`Path(__file__).resolve().parents[2]`（config.py 的 PROJECT_ROOT）在服务器上自动指向 {APP}，本地/服务器路径解析天然一致，无需改代码
+
+### 经验 139：公网端到端验证复用本地 playwright 脚本——`--online` 参数切 URL/截图名，轮询等待真实流水线完成
+- **现象**：本地验证脚本 `verify_demo_live.py` 已验证六阶段渲染（14 文献/9 Gap/2 发现/10 验证），但公网部署后不能直接复用——BASE URL 写死 127.0.0.1、截图名写死 live_local_shot.png，且 nginx 反代 + 公网访问路径（/demo-live.html）与本地挂载（/demo/demo-live.html）不同
+- **解决**：脚本加 `--online` 参数——`base = ONLINE_BASE if args.online else LOCAL_BASE`，截图名按参数切换（live_online_shot.png / live_local_shot.png）；页面加载 `wait_until="networkidle"` + timeout 60s，轮询最长 240s 等真实流水线跑完（检索 14 篇 → LLM 抽取 → 9 Gap → GA×LLM 2 发现 → 9 验证判定）再断言各区块渲染；console/pageerror 双监听收集 JS 错误
+- **注意**：① 真实流水线是**异步任务**（线程池 + 2s 轮询），验证脚本必须轮询 `#statusLine` 状态文本变化（抽取中→Gap 识别中→搜索中→流水线完成），直接 sleep 固定时长不靠谱（LLM 调用耗时不定）；② 公网验证通过才代表「真正部署成功」——本地 API 通 + nginx 200 只是必要不充分，必须浏览器端到端提交一次真实问题；③ 退出码 1 可能是 SogouPY 日志沙箱噪音（TRAE Sandbox Error: hit restricted SogouPY\LOG）与部署无关，看页面断言输出判断真伪

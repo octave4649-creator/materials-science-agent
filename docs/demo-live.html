@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>在线流水线 · 真实使用体验</title>
+<style>
+  :root {
+    --deep-blue: #1A5F9E; --ice: #F7F9FC; --mint: #4ECDC4; --warm: #FF8C42;
+    --ink: #2B3A4A; --muted: #8C9AA8; --line: #E3EAF2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+         background: var(--ice); color: var(--ink); line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, #12456F 0%, var(--deep-blue) 55%, #1E7BB5 100%);
+          color: #fff; padding: 38px 32px 30px; text-align: center; }
+  .hero h1 { font-size: 25px; font-weight: 700; letter-spacing: 1px; }
+  .hero p { margin-top: 10px; font-size: 14px; color: #D8E6F5; }
+  .hero .backlink { display: inline-block; margin-top: 16px; color: #C7DAF0; font-size: 13px;
+                    text-decoration: none; border: 1px solid rgba(255,255,255,0.3);
+                    padding: 6px 16px; border-radius: 999px; transition: all .18s; }
+  .hero .backlink:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  main { max-width: 1060px; margin: 22px auto 60px; padding: 0 20px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 12px;
+          padding: 18px 20px; margin-bottom: 16px;
+          box-shadow: 0 4px 20px rgba(26,95,158,0.08); }
+  .card h2 { font-size: 16px; margin-bottom: 12px; color: var(--deep-blue); }
+  .muted { color: var(--muted); font-size: 12px; }
+
+  /* 输入区 */
+  .input-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .field { flex: 1; min-width: 200px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .field input, .field select { width: 100%; border: 1px solid var(--line); border-radius: 10px;
+                                 padding: 9px 12px; font-size: 13px; color: var(--ink);
+                                 background: #FCFEFF; outline: none; }
+  .field input:focus, .field select:focus { border-color: var(--deep-blue); }
+  .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px;
+                    padding: 10px 12px; font-size: 13px; color: var(--ink);
+                    background: #FCFEFF; outline: none; resize: vertical; min-height: 64px; }
+  .field textarea:focus { border-color: var(--deep-blue); }
+  .btn { border: none; background: var(--deep-blue); color: #fff; font-size: 14px; font-weight: 600;
+         padding: 11px 26px; border-radius: 10px; cursor: pointer; transition: all .18s; }
+  .btn:hover { background: #12456F; }
+  .btn:disabled { background: #B8C9DC; cursor: not-allowed; }
+  .suggest { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .suggest .lbl { font-size: 12px; color: var(--muted); }
+  .suggest button { border: 1px solid var(--line); background: #fff; color: var(--deep-blue);
+                    font-size: 12px; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+                    transition: all .18s; }
+  .suggest button:hover { background: #EEF4FB; border-color: var(--deep-blue); }
+
+  /* 阶段进度条 */
+  .stages { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 14px 0 6px; }
+  .stage { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted);
+           background: #F4F8FD; border: 1px solid var(--line); border-radius: 999px;
+           padding: 6px 12px; transition: all .2s; }
+  .stage .dot { width: 16px; height: 16px; border-radius: 50%; background: #D6E2EF;
+                text-align: center; line-height: 16px; font-size: 10px; color: #fff; }
+  .stage.active { background: var(--deep-blue); color: #fff; border-color: var(--deep-blue); }
+  .stage.done { background: #E4F7F5; color: #0E8F86; border-color: #BFE9E4; }
+  .stage.done .dot { background: var(--mint); }
+  .stage .arrow { margin-left: 2px; color: var(--muted); }
+  .progress-track { background: #EEF0F4; border-radius: 999px; height: 8px; margin: 10px 0 4px; overflow: hidden; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--deep-blue), var(--mint));
+                  border-radius: 999px; transition: width .5s ease; width: 0; }
+  .status-line { font-size: 13px; color: var(--deep-blue); margin: 8px 0 0; min-height: 20px; }
+
+  /* 结果区 */
+  .hidden { display: none; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--deep-blue); font-weight: 600; background: #F4F8FD; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 12px; padding: 1px 10px; border-radius: 999px; margin-right: 6px; }
+  .tag.ok { background: #E4F7F5; color: #0E8F86; }
+  .tag.warn { background: #FFF1E6; color: #D9701B; }
+  .tag.info { background: #E9F1FB; color: var(--deep-blue); }
+  .tag.llm { background: #EFEAF8; color: #6B4FA3; }
+  .stat-bars { display: flex; flex-wrap: wrap; gap: 14px; margin: 8px 0 4px; }
+  .stat-bar { flex: 1; min-width: 120px; background: #fff; border: 1px solid var(--line);
+              border-radius: 12px; padding: 12px 16px; text-align: center; }
+  .stat-bar b { display: block; font-size: 22px; color: var(--deep-blue); }
+  .stat-bar span { font-size: 12px; color: var(--muted); }
+  .gap-item, .find-item, .verdict-item { padding: 11px 14px; border: 1px solid var(--line);
+    border-radius: 10px; margin-bottom: 10px; background: #FCFEFF; }
+  .gap-item .stmt, .find-item .rel { font-size: 13px; }
+  .find-item .hyp { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .chunk { background: #F4F8FD; border-left: 3px solid var(--deep-blue); border-radius: 8px;
+           padding: 8px 12px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; font-size: 13px; }
+  .kv b { color: var(--deep-blue); white-space: nowrap; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 24px 0 40px; }
+  footer code { background: #EEF0F4; padding: 1px 6px; border-radius: 6px; }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 20px; }
+    main { padding: 0 12px; }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>在线流水线 · 真实使用体验</h1>
+  <p>输入研究问题，真实运行：检索 → 抽取 → Gap 识别 → 搜索算法 × LLM → 数据库验证 → 证据链审计</p>
+  <a class="backlink" href="demo-panel.html">← 返回数据面板</a>
+</header>
+
+<main>
+  <!-- 输入区 -->
+  <div class="card">
+    <h2>发起研究</h2>
+    <div class="input-row">
+      <div class="field" style="flex: 3;">
+        <label>研究问题（自由输入，真实跑完整流水线）</label>
+        <textarea id="question" placeholder="例如：PbTe 热电材料 Na 掺杂优化 zT"></textarea>
+      </div>
+      <div class="field" style="min-width: 140px;">
+        <label>领域</label>
+        <select id="domain">
+          <option value="thermoelectric">热电材料</option>
+          <option value="materials">通用材料</option>
+          <option value="battery">电池材料</option>
+          <option value="catalysis">催化材料</option>
+        </select>
+      </div>
+      <div class="field" style="min-width: 120px;">
+        <label>搜索算法</label>
+        <select id="algo">
+          <option value="ga" selected>遗传算法 GA</option>
+          <option value="sr">符号回归 SR</option>
+          <option value="mcts">蒙特卡洛树 MCTS</option>
+          <option value="bo">贝叶斯优化 BO</option>
+        </select>
+      </div>
+      <div class="field" style="min-width: 90px;">
+        <label>top_k</label>
+        <input type="number" id="topk" value="8" min="1" max="20">
+      </div>
+      <button class="btn" id="runBtn">运行流水线</button>
+    </div>
+    <div class="suggest">
+      <span class="lbl">试试：</span>
+      <button data-q="PbTe 热电材料 Na 掺杂优化 zT">PbTe Na 掺杂</button>
+      <button data-q="GeTe 热电材料 Bi 掺杂优化">GeTe Bi 掺杂</button>
+      <button data-q="热电材料晶格热导率调控机制">晶格热导率机制</button>
+      <button data-q="半赫斯勒合金热电性能优化">半赫斯勒合金</button>
+    </div>
+  </div>
+
+  <!-- 进度区 -->
+  <div class="card hidden" id="progressCard">
+    <h2>流水线进度</h2>
+    <div class="stages" id="stages"></div>
+    <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="status-line" id="statusLine">等待任务…</div>
+  </div>
+
+  <!-- 结果区 -->
+  <div class="card hidden" id="resultCard">
+    <h2>运行结果</h2>
+    <div class="stat-bars" id="statBars"></div>
+    <h2 style="margin-top:14px;">一、检索到的文献（真实 Sci-Base / Sciverse）</h2>
+    <div id="papersBox"></div>
+    <h2 style="margin-top:14px;">二、知识抽取</h2>
+    <div id="extractBox"></div>
+    <h2 style="margin-top:14px;">三、Research Gap 清单</h2>
+    <div id="gapBox"></div>
+    <h2 style="margin-top:14px;">四、构效关系发现（搜索算法 × LLM）</h2>
+    <div id="searchBox"></div>
+    <h2 style="margin-top:14px;">五、数据库交叉验证（oracle 真值表）</h2>
+    <div id="verifyBox"></div>
+  </div>
+
+  <div class="card hidden" id="errorCard">
+    <h2 style="color:#C73E3E;">运行失败</h2>
+    <div id="errorMsg" class="chunk"></div>
+  </div>
+</main>
+
+<footer>
+  六阶段：检索 → 抽取 → Gap → 搜索 × LLM → 验证 → 审计 · 真实模型运行中（Sci-Base BM25 + OQMD oracle 真值表）
+</footer>
+
+<script>
+const STAGE_NAMES = ["检索", "抽取", "Gap", "搜索×LLM", "验证", "审计"];
+let pollTimer = null;
+
+const $ = (id) => document.getElementById(id);
+
+document.querySelectorAll('.suggest button').forEach(btn => {
+  btn.addEventListener('click', () => { $('question').value = btn.dataset.q; });
+});
+
+function renderStages(currentStage, done) {
+  const box = $('stages');
+  box.innerHTML = '';
+  STAGE_NAMES.forEach((name, i) => {
+    const key = ['retrieve','extract','gap','search','verify','audit'][i];
+    const cls = done >= i ? 'done' : (currentStage === key ? 'active' : '');
+    const arrow = i < STAGE_NAMES.length - 1 ? '<span class="arrow">›</span>' : '';
+    box.insertAdjacentHTML('beforeend',
+      `<span class="stage ${cls}"><span class="dot">${done >= i ? '✓' : i + 1}</span>${name}</span>${arrow}`);
+  });
+}
+
+function renderPapers(papers) {
+  if (!papers || !papers.length) return '<p class="muted">未检索到文献</p>';
+  let html = '<table><tr><th>#</th><th>标题</th><th>来源</th><th>得分</th></tr>';
+  papers.forEach((p, i) => {
+    const src = p.source === 'sciverse' ? '<span class="tag info">Sciverse</span>' : '<span class="tag llm">Sci-Base</span>';
+    html += `<tr><td>${i + 1}</td><td>${(p.title || '')}<div class="chunk">${(p.doi || '无 DOI')}</div></td><td>${src}</td><td>${(p.score || 0).toFixed(2)}</td></tr>`;
+  });
+  return html + '</table>';
+}
+
+function renderExtract(ex) {
+  if (!ex || ex.n_records === 0) return '<p class="muted">无抽取记录</p>';
+  const mode = ex.mode === 'llm'
+    ? '<span class="tag llm">LLM 抽取</span>' : '<span class="tag warn">规则式（LLM 未配置/失败降级）</span>';
+  let html = `<p>${mode} 输入 ${ex.n_papers} 篇文献 → 抽取 ${ex.n_records} 条记录（LLM ${ex.n_llm} / 规则 ${ex.n_rule}），合并减少 ${ex.n_merged} 条</p>`;
+  if (ex.records_preview && ex.records_preview.length) {
+    html += '<table><tr><th>化学式</th><th>置信度</th><th>证据数</th></tr>';
+    ex.records_preview.forEach(r => {
+      html += `<tr><td>${r.formula || '-'}</td><td>${(r.confidence ?? '-')}</td><td>${(r.evidence_ids || []).length}</td></tr>`;
+    });
+    html += '</table>';
+  }
+  return html;
+}
+
+function renderGaps(gap) {
+  if (!gap || !gap.n_gaps) return '<p class="muted">未识别到 Gap</p>';
+  let html = `<p><span class="tag info">覆盖率 ${gap.n_coverage}</span><span class="tag llm">LLM 推理 ${gap.n_llm}</span><span class="tag warn">矛盾检测 ${gap.n_contradiction}</span></p>`;
+  (gap.gaps || []).forEach(g => {
+    const t = g.gap_type === '矛盾结论' ? 'warn' : 'info';
+    html += `<div class="gap-item"><span class="tag ${t}">${g.gap_type}</span>
+      <span class="stmt">${g.statement}</span>
+      <div class="chunk">体系：${(g.formulas || []).join(' / ')} · 置信度 ${g.confidence}</div></div>`;
+  });
+  return html;
+}
+
+function renderSearch(s) {
+  if (!s || !s.n_findings) return '<p class="muted">无构效关系发现</p>';
+  const llm = s.llm_on ? `<span class="tag llm">LLM 三角色开启（${s.model}）</span>` : '<span class="tag warn">规则评估模式</span>';
+  let html = `<p>算法 <span class="tag info">${s.algo.toUpperCase()}</span>${llm} 共 ${s.n_findings} 条发现</p>`;
+  (s.findings || []).forEach(f => {
+    const nv = f.novelty === '已知' ? 'ok' : (f.novelty === '新知' ? 'llm' : 'warn');
+    html += `<div class="find-item">
+      <div class="rel">${f.relation}</div>
+      <div class="hyp">假设：${f.hypothesis}</div>
+      <div style="margin-top:6px;"><span class="tag ${nv}">${f.novelty}</span>
+        <span class="tag info">置信度 ${f.confidence}</span>
+        <span class="tag llm">LLM 调用 ${f.llm_calls} / 失败 ${f.llm_failures}</span></div>
+      ${f.mechanism ? `<div class="chunk">机制：${f.mechanism.slice(0, 160)}…</div>` : ''}
+      <div class="chunk">Gap 种子：${f.gap_statement}</div></div>`;
+  });
+  return html;
+}
+
+function renderVerify(v) {
+  if (!v) return '<p class="muted">无验证结果</p>';
+  let html = `<p><span class="tag ok">已知 ${v.n_known}</span><span class="tag llm">新知 ${v.n_novel}</span><span class="tag warn">未命中 ${v.n_unknown}</span>
+    <span class="muted">（oracle 真值表 ${(v.oracle_meta && v.oracle_meta.n_hosts) || '-'} 母体，${(v.oracle_meta && v.oracle_meta.generated_at) || ''}）</span></p>`;
+  (v.verdicts || []).forEach(x => {
+    const t = x.verdict === '已知' ? 'ok' : (x.verdict === '新知' ? 'llm' : 'warn');
+    html += `<div class="verdict-item"><span class="tag ${t}">${x.verdict}</span>
+      <b>${x.host}</b> → ${x.formula} <span class="muted">${x.relation.slice(0, 40)}…</span></div>`;
+  });
+  return html;
+}
+
+function renderResult(r) {
+  $('resultCard').classList.remove('hidden');
+  // 统计条
+  $('statBars').innerHTML = [
+    ['n_papers', r.n_papers, '检索文献'],
+    ['extract_n', (r.extract || {}).n_records || 0, '抽取记录'],
+    ['gap_n', (r.gap || {}).n_gaps || 0, 'Gap 数量'],
+    ['find_n', (r.search || {}).n_findings || 0, '构效发现'],
+    ['llm', r.llm_on ? 'ON' : 'OFF', 'LLM 模式'],
+  ].map(([k, v, l]) => `<div class="stat-bar"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('papersBox').innerHTML = renderPapers(r.papers);
+  $('extractBox').innerHTML = renderExtract(r.extract);
+  $('gapBox').innerHTML = renderGaps(r.gap);
+  $('searchBox').innerHTML = renderSearch(r.search);
+  $('verifyBox').innerHTML = renderVerify(r.verify);
+}
+
+async function submitRun() {
+  const question = $('question').value.trim();
+  if (!question) { alert('请输入研究问题'); return; }
+  $('runBtn').disabled = true;
+  $('errorCard').classList.add('hidden');
+  $('resultCard').classList.add('hidden');
+  $('progressCard').classList.remove('hidden');
+  renderStages('', -1);
+  $('progressBar').style.width = '2%';
+  $('statusLine').textContent = '正在提交任务…';
+  try {
+    const resp = await fetch('/api/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question,
+        domain: $('domain').value,
+        algo: $('algo').value,
+        top_k: parseInt($('topk').value || '8', 10),
+        use_llm: true,
+      }),
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    startPoll(data.job_id);
+  } catch (e) {
+    $('statusLine').textContent = '提交失败：' + e.message;
+    $('runBtn').disabled = false;
+  }
+}
+
+function startPoll(jobId) {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    try {
+      const resp = await fetch('/api/jobs/' + jobId);
+      const d = await resp.json();
+      if (d.error) throw new Error(d.error);
+      const stageIdx = ['retrieve','extract','gap','search','verify','audit'].indexOf(d.stage);
+      renderStages(d.stage, d.status === 'done' ? 6 : stageIdx);
+      $('progressBar').style.width = Math.round(d.progress * 100) + '%';
+      $('statusLine').textContent = d.message || d.status;
+      if (d.status === 'done') {
+        clearInterval(pollTimer);
+        $('runBtn').disabled = false;
+        renderResult(d.result);
+      } else if (d.status === 'failed') {
+        clearInterval(pollTimer);
+        $('runBtn').disabled = false;
+        $('errorCard').classList.remove('hidden');
+        $('errorMsg').textContent = d.error || '未知错误';
+      }
+    } catch (e) {
+      clearInterval(pollTimer);
+      $('runBtn').disabled = false;
+      $('statusLine').textContent = '轮询失败：' + e.message;
+    }
+  }, 2000);
+}
+
+$('runBtn').addEventListener('click', submitRun);
+</script>
+</body>
+</html>
