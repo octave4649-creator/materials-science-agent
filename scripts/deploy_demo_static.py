@@ -125,23 +125,31 @@ def stage_cleanup(c: paramiko.SSHClient) -> None:
 
 
 def stage_upload(c: paramiko.SSHClient) -> None:
-    print("========== UPLOAD demo-panel.html -> /var/www/html/ ==========")
+    print("========== UPLOAD demo-panel.html + demo-pipeline.html -> /var/www/html/ ==========")
     if not DEMO_SRC.exists():
         raise RuntimeError(f"demo 文件不存在: {DEMO_SRC}")
+    pipeline_src = LOCAL_ROOT / "docs" / "demo-pipeline.html"
+    if not pipeline_src.exists():
+        raise RuntimeError(f"流水线演示文件不存在: {pipeline_src}")
     # /var/www/html 归 root 所有，SFTP 直写需要权限；先传 /tmp 再 sudo 拷贝
     tmp_dir = "/tmp/demo_upload"
     run(c, f"rm -rf {tmp_dir}; mkdir -p {tmp_dir}")
-    # 上传为 index.html（直接访问 http://IP/ 即渲染 demo），并保留原名副本
-    for target in ("index.html", "demo-panel.html"):
+    # 上传为 index.html（直接访问 http://IP/ 即渲染 demo），并保留原名副本 + 流水线演示页
+    files = {
+        "index.html": DEMO_SRC,
+        "demo-panel.html": DEMO_SRC,
+        "demo-pipeline.html": pipeline_src,
+    }
+    for target, src in files.items():
         sftp = c.open_sftp()
         try:
             with sftp.file(f"{tmp_dir}/{target}", "wb") as f:
-                with DEMO_SRC.open("rb") as src:
-                    f.write(src.read())
-            print(f"uploaded -> {tmp_dir}/{target} ({DEMO_SRC.stat().st_size} bytes)")
+                with src.open("rb") as fsrc:
+                    f.write(fsrc.read())
+            print(f"uploaded -> {tmp_dir}/{target} ({src.stat().st_size} bytes)")
         finally:
             sftp.close()
-    run(c, f"sudo mkdir -p {WEB_ROOT} && sudo cp {tmp_dir}/index.html {tmp_dir}/demo-panel.html {WEB_ROOT}/ && sudo chown -R ubuntu:ubuntu {WEB_ROOT} && rm -rf {tmp_dir}")
+    run(c, f"sudo mkdir -p {WEB_ROOT} && sudo cp {tmp_dir}/index.html {tmp_dir}/demo-panel.html {tmp_dir}/demo-pipeline.html {WEB_ROOT}/ && sudo chown -R ubuntu:ubuntu {WEB_ROOT} && rm -rf {tmp_dir}")
     run(c, f"ls -la {WEB_ROOT}")
 
 

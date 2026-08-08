@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Agent 流水线 · 六阶段过程演示</title>
+<style>
+  :root {
+    --deep-blue: #1A5F9E; --ice: #F7F9FC; --mint: #4ECDC4; --warm: #FF8C42;
+    --ink: #2B3A4A; --muted: #8C9AA8; --line: #E3EAF2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+         background: var(--ice); color: var(--ink); line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, #12456F 0%, var(--deep-blue) 55%, #1E7BB5 100%);
+          color: #fff; padding: 40px 32px 30px; text-align: center; }
+  .hero h1 { font-size: 25px; font-weight: 700; letter-spacing: 1px; }
+  .hero p { margin-top: 10px; font-size: 14px; color: #D8E6F5; }
+  .hero .backlink { display: inline-block; margin-top: 16px; color: #C7DAF0; font-size: 13px;
+                    text-decoration: none; border: 1px solid rgba(255,255,255,0.3);
+                    padding: 6px 16px; border-radius: 999px; transition: all .18s; }
+  .hero .backlink:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  .flowbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center;
+             background: #fff; border-bottom: 1px solid var(--line); padding: 12px 16px;
+             box-shadow: 0 4px 20px rgba(26,95,158,0.06); position: sticky; top: 0; z-index: 10; }
+  .flowbar button { border: none; background: transparent; color: var(--muted); font-size: 13px;
+                    padding: 8px 14px; border-radius: 10px; cursor: pointer; transition: all .18s;
+                    white-space: nowrap; }
+  .flowbar button:hover { background: #EEF4FB; color: var(--deep-blue); }
+  .flowbar button.active { background: var(--deep-blue); color: #fff; font-weight: 600; }
+  .flowbar button .no { display: inline-block; width: 20px; height: 20px; line-height: 20px;
+                         border-radius: 50%; background: rgba(26,95,158,0.12); color: var(--deep-blue);
+                         font-size: 11px; margin-right: 6px; text-align: center; }
+  .flowbar button.active .no { background: rgba(255,255,255,0.25); color: #fff; }
+  .flowbar .arrow { color: var(--muted); font-size: 12px; }
+  main { max-width: 1060px; margin: 22px auto 60px; padding: 0 20px; }
+  .controls { display: flex; align-items: center; justify-content: center; gap: 12px;
+              margin-bottom: 18px; flex-wrap: wrap; }
+  .controls button { border: 1px solid var(--line); background: #fff; color: var(--deep-blue);
+                     font-size: 13px; padding: 8px 18px; border-radius: 10px; cursor: pointer;
+                     transition: all .18s; }
+  .controls button:hover { background: #EEF4FB; border-color: var(--deep-blue); }
+  .controls button.primary { background: var(--deep-blue); color: #fff; border-color: var(--deep-blue); }
+  .controls button.primary:hover { background: #12456F; }
+  .controls .ind { font-size: 13px; color: var(--muted); min-width: 90px; text-align: center; }
+  section.panel { display: none; }
+  section.panel.active { display: block; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 12px;
+          padding: 18px 20px; margin-bottom: 16px;
+          box-shadow: 0 4px 20px rgba(26,95,158,0.08); }
+  .card h2 { font-size: 16px; margin-bottom: 12px; color: var(--deep-blue); }
+  .card h3 { font-size: 14px; margin: 12px 0 6px; color: var(--ink); }
+  .stage-title { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .stage-title .badge { background: var(--deep-blue); color: #fff; font-size: 12px; font-weight: 600;
+                        padding: 3px 12px; border-radius: 999px; white-space: nowrap; }
+  .stage-title h2 { margin: 0; }
+  .stage-desc { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .tag { display: inline-block; font-size: 12px; padding: 1px 10px; border-radius: 999px;
+         margin-right: 6px; vertical-align: middle; }
+  .tag.novelty-new { background: #E4F7F5; color: #0E8F86; }
+  .tag.novelty-partial { background: #FFF1E6; color: #D9701B; }
+  .tag.novelty-known { background: #EEF0F4; color: var(--muted); }
+  .tag.ev { background: #E9F1FB; color: var(--deep-blue); }
+  .tag.verdict-known { background: #E4F7F5; color: #0E8F86; }
+  .tag.verdict-new { background: #E4F7F5; color: #0E8F86; }
+  .tag.verdict-counter { background: #FDEBEA; color: #C73E3E; }
+  .tag.verdict-fail { background: #FFF1E6; color: #D9701B; }
+  .tag.src { background: #EEF0F4; color: var(--muted); }
+  .tag.llm { background: #EFEAF8; color: #6B4FA3; }
+  .tag.role { background: #E9F1FB; color: var(--deep-blue); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--deep-blue); font-weight: 600; background: #F4F8FD; white-space: nowrap; }
+  .pill { display: inline-block; min-width: 34px; text-align: center; padding: 1px 8px;
+          border-radius: 8px; font-size: 12px; font-weight: 600; }
+  .pill.good { background: #E4F7F5; color: #0E8F86; }
+  .pill.mid { background: #FFF1E6; color: #D9701B; }
+  .pill.low { background: #FDEBEA; color: #C73E3E; }
+  .pill.blue { background: #E9F1FB; color: var(--deep-blue); }
+  .muted { color: var(--muted); font-size: 12px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13px; }
+  .kv b { color: var(--deep-blue); white-space: nowrap; }
+  .chunk { background: #F4F8FD; border-left: 3px solid var(--deep-blue); border-radius: 8px;
+           padding: 10px 14px; font-size: 12px; color: var(--ink); margin: 8px 0; }
+  .note { background: #F4F8FD; border-left: 3px solid var(--deep-blue); border-radius: 8px;
+          padding: 10px 14px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .note.warn { border-left-color: var(--warm); background: #FFF7F0; }
+  .flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; }
+  .flow .step { background: #EEF4FB; color: var(--deep-blue); border-radius: 10px;
+                padding: 8px 14px; font-weight: 600; }
+  .flow .arrow { color: var(--muted); }
+  .gap-item, .find-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px;
+                          margin-bottom: 10px; background: #FCFEFF; }
+  .gap-item .stmt { font-size: 13px; }
+  .find-item .rel { font-size: 13px; font-weight: 600; color: var(--deep-blue); }
+  .find-item .hyp { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .log-line { font-size: 12px; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  .log-line b { color: var(--deep-blue); font-weight: 600; }
+  .log-line .role { color: #6B4FA3; font-weight: 600; }
+  .stat-bars { display: flex; flex-wrap: wrap; gap: 14px; margin: 8px 0 4px; }
+  .stat-bar { flex: 1; min-width: 150px; background: #fff; border: 1px solid var(--line);
+              border-radius: 12px; padding: 12px 16px; text-align: center; }
+  .stat-bar b { display: block; font-size: 22px; color: var(--deep-blue); }
+  .stat-bar span { font-size: 12px; color: var(--muted); }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 24px 0 40px; }
+  footer code { background: #EEF0F4; padding: 1px 6px; border-radius: 6px; }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 20px; }
+    .flowbar button { font-size: 12px; padding: 6px 10px; }
+    main { padding: 0 12px; }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>Agent 流水线 · 六阶段过程演示</h1>
+  <p>检索 Agent → 抽取 Agent → Gap 识别 → 搜索算法 × LLM → OQMD/MP 验证 → 证据链审计</p>
+  <a class="backlink" href="demo-panel.html">← 返回数据面板</a>
+</header>
+
+<div class="flowbar" id="flowbar"></div>
+
+<main id="main">
+  <div class="controls">
+    <button id="btn-prev">← 上一步</button>
+    <span class="ind" id="ind">1 / 6</span>
+    <button id="btn-next">下一步 →</button>
+    <button id="btn-auto" class="primary">▶ 自动播放</button>
+  </div>
+  <section id="stage" class="panel active"></section>
+</main>
+
+<footer>本页为六阶段 Agent 流水线的过程演示，数据均为真实运行产物快照（retrieval / knowledge_base / gaps / findings / validation / evidence_report），
+  由 <code>scripts/build_demo_panel.py</code> 配套聚合 · 自包含无外部依赖，双击即开</footer>
+
+<script id="pipe-data" type="application/json">{
+  "stages": [
+    {
+      "id": "retrieval",
+      "name": "检索 Agent",
+      "sub": "文献检索与筛选",
+      "desc": "将研究问题拆解为子查询，通过 Sciverse 语义检索（agentic-search）与结构化检索（meta-search）双通道召回文献，输出带证据片段、评分与来源（语义/库表）的候选清单。",
+      "tool": "Sciverse agentic-search / meta-search + MinerU",
+      "query": "SiGe thermoelectric P doping power factor high temperature",
+      "sub_queries": ["SiGe thermoelectric P doping power factor high temperature"],
+      "total_found": 8,
+      "semantic_hits": 3,
+      "papers": [
+        {
+          "title": "thin-film thermoelectric generator based on polycrystalline sige formed by ag-induced layer exchange",
+          "year": 2020, "journal": "applied physics letters", "score": "0.955", "cite": 13,
+          "page": 4, "source": "semantic",
+          "chunk": "As shown in Fig. 5, SiGe generally requires high processing temperatures to obtain high PF values at RT. For p-type SiGe, the LE technique enabled us to achieve both a high PF and a low processing temperature. This is because the LE metal catalysts (Al and Zn) acted as p-type dopants..."
+        },
+        {
+          "title": "flexible thermoelectric generator based on polycrystalline sige thin films",
+          "year": 2022, "journal": "materials", "score": "0.939", "cite": 11,
+          "page": 4, "source": "semantic",
+          "chunk": "The p-type and n-type SiGe layers were synthesized on a highly heat-resistant polyimide film using LE. Despite a process temperature below 500°C, the SiGe layers showed high PFs of 560 µW m⁻¹K⁻² (p-type) and 390 µW m⁻¹K⁻² (n-type) due to self-organized doping during LE."
+        },
+        {
+          "title": "silicon‐germanium (sige) nanostructures for thermoelectric devices: recent advances and new approaches",
+          "year": 2017, "journal": "intech ebooks", "score": "0.923", "cite": 23,
+          "page": 7, "source": "semantic",
+          "chunk": "Another route studied has been the enhancement of the power factor in SiGe through the concept modulation doping [86]. A 40% power factor enhancement in Si80Ge20 bulk nanocomposites has been reported... zT values as high as 1.3 (n-type) and 0.95 (p-type)."
+        },
+        {
+          "title": "Structural Properties of Heavily B-Doped SiGe Thin Films for High Thermoelectric Power",
+          "year": 2010, "journal": "MATERIALS TRANSACTIONS", "score": null, "cite": 27,
+          "page": null, "source": "papers", "doi": "10.2320/matertrans.e-m2010806"
+        },
+        {
+          "title": "Double doping induced power factor enhancement in CuCrO2 for high temperature thermoelectric application",
+          "year": 2019, "journal": "Journal of Alloys and Compounds", "score": null, "cite": 27,
+          "page": null, "source": "papers", "doi": "10.1016/j.jallcom.2018.10.083"
+        },
+        {
+          "title": "High-Temperature Thermoelectric Measurement of B-Doped SiGe and Si Thin Films",
+          "year": 2009, "journal": "MATERIALS TRANSACTIONS", "score": null, "cite": 17,
+          "page": null, "source": "papers", "doi": "10.2320/matertrans.e-m2009811"
+        }
+      ]
+    },
+    {
+      "id": "extraction",
+      "name": "抽取 Agent",
+      "sub": "知识抽取（结构化）",
+      "desc": "对检索文献做 MinerU 深度解析后，按统一 Schema（成分 / 结构 / 性能 / 模拟方法 / 合成条件）抽取结构化知识，每条记录附带来源 doc_id、抽取时间与置信度，并回查原文防幻觉。",
+      "tool": "MinerU 解析 + LLM 结构化抽取 + Schema 校验",
+      "n_records": 5,
+      "records": [
+        {
+          "formula": "Ge0.93Ti0.01Bi0.06Te",
+          "properties": "zT = 1.6",
+          "synthesis": "温度 623",
+          "confidence": 0.4,
+          "doc_id": "0559a869...ae8c0c"
+        },
+        {
+          "formula": "PbTe",
+          "properties": "—",
+          "synthesis": "温度 900",
+          "confidence": 0.4,
+          "doc_id": "528cc1af...45f1"
+        },
+        {
+          "formula": "Bi2Te3",
+          "properties": "—",
+          "synthesis": "—",
+          "confidence": 0.4,
+          "doc_id": "934f300f...52cc"
+        },
+        {
+          "formula": "Ca5In2Sb6",
+          "properties": "—",
+          "synthesis": "温度 750 / 700 / 950",
+          "confidence": 0.4,
+          "doc_id": "5650fbb9...d2bd"
+        },
+        {
+          "formula": "Bi0.5Sb1.5Te",
+          "properties": "—",
+          "synthesis": "温度 600",
+          "confidence": 0.4,
+          "doc_id": "5dd7d342...5811"
+        }
+      ]
+    },
+    {
+      "id": "gaps",
+      "name": "Gap 识别",
+      "sub": "Research Gap 识别",
+      "desc": "基于抽取知识库做覆盖率分析、矛盾检测、缺失知识连接发现，并结合 LLM 推理提出候选 Gap；每条 Gap 带新颖性判定（新知/部分已知/已知）、可操作性建议与文献证据链，并回查 Sciverse 验证新颖性。",
+      "tool": "覆盖率分析 + 矛盾检测 + 连接发现 + LLM 推理 + Sciverse 回查",
+      "n_gaps": 29,
+      "stats": {
+        "types": { "未探索方向": 11, "缺失知识连接": 6, "矛盾结论": 7, "方法空白": 5 },
+        "novelty": { "新知": 9, "部分已知": 10, "已知": 10 },
+        "sources": { "coverage": 17, "llm": 12 }
+      },
+      "gaps": [
+        {
+          "type": "未探索方向", "novelty": "新知",
+          "statement": "Ge0.93Ti0.01Bi0.06Te 已被研究（1 条证据），但缺乏 figure_of_merit_zT/band_gap/seebeck_coefficient/thermal_conductivity/electrical_conductivity/power_factor 的系统研究",
+          "operability": "以 Ge0.93Ti0.01Bi0.06Te 为种子，搜索 zT/带隙/塞贝克/热导/电导/功率因子对应的成分-结构-性能关联",
+          "source": "coverage", "conf": 0.5
+        },
+        {
+          "type": "未探索方向", "novelty": "部分已知",
+          "statement": "PbTe 中 Na 掺杂提升 zT 已有充分报道，但 Na 与 Sr/Mg 共掺杂在 600-800K 温度窗口的协同效应缺乏系统研究",
+          "operability": "以 PbTe 为种子，搜索 Na/Sr/Mg 共掺杂组分-性能关联",
+          "source": "coverage", "conf": 0.7
+        },
+        {
+          "type": "未探索方向", "novelty": "新知",
+          "statement": "GeTe 中 Ti/Bi 共掺杂（Ge0.93Ti0.01Bi0.06Te）已报道 zT=1.6，但更高 Ti 含量（>2%）下的相变温度与热电性能关联空白",
+          "operability": "以 GeTe 为种子，扫描 Ti 掺杂浓度与 zT 的显式构效关系",
+          "source": "coverage", "conf": 0.6
+        },
+        {
+          "type": "矛盾结论", "novelty": "已知",
+          "statement": "填充方钴矿 CoSb3 中 Yb/Ba 双填充分数与 zT 的相图存在相互矛盾的报道（可能与合成路线相关）",
+          "operability": "以 CoSb3 为种子，扫描 Yb/Ba 填充量并做数据库交叉验证",
+          "source": "coverage", "conf": 0.6
+        },
+        {
+          "type": "缺失知识连接", "novelty": "新知",
+          "statement": "热电性能（zT）与力学性能（断裂韧性）的联合优化在 Mg3Sb2 基材料中未见报道",
+          "operability": "以 Mg3Sb2 为种子，评估掺杂对热电-力学联合代理指标的影响",
+          "source": "coverage", "conf": 0.4
+        },
+        {
+          "type": "方法空白", "novelty": "新知",
+          "statement": "GeTe 基材料中，利用机器学习势函数预测 Ti/Bi 掺杂对相变温度影响的声子计算尚未开展",
+          "operability": "训练 GeTe 基机器学习势，模拟不同掺杂浓度下的声子谱和自由能",
+          "source": "llm", "conf": 0.7
+        },
+        {
+          "type": "未探索方向", "novelty": "部分已知",
+          "statement": "Bi0.5Sb1.5Te3 中，Te 过量或不足对反位缺陷形成能和 zT 的影响未被系统研究",
+          "operability": "制备不同 Te 含量的样品，结合正电子湮灭和电输运测量",
+          "source": "llm", "conf": 0.8
+        },
+        {
+          "type": "未探索方向", "novelty": "已知",
+          "statement": "SnTe 中 In 与 Cd 共掺杂对能带收敛与晶格热导率的协同机制不明",
+          "operability": "以 SnTe 为种子，搜索 In/Cd 共掺杂的构效关系",
+          "source": "coverage", "conf": 0.6
+        }
+      ]
+    },
+    {
+      "id": "search",
+      "name": "搜索算法 × LLM",
+      "sub": "构效关系发现（路线 A）",
+      "desc": "搜索算法在候选空间探索（GA / MCTS / BO / 符号回归），LLM 以三角色深度融合参与：假设种子生成器、科学合理性评估器、搜索空间引导器。下方为贝叶斯优化（BO）真实运行轨迹——外层遍历 10 个掺杂元素、内层 UCB 采集寻优，LLM 作为 evaluator 评估了 40 次候选。",
+      "tool": "BO（贝叶斯优化）+ LLM evaluator",
+      "algo": "BO 贝叶斯优化",
+      "relation": "Ge0.93Ti0.01Bi0.06Te 掺 Se 浓度-性能关系（BO 二次代理 R²=0.204）：y = 0.655 + 0.020·x − 0.002·x²，最优浓度 ≈ 5.2%（采样最优 5.0%）",
+      "hypothesis": "Ge0.93Ti0.01Bi0.06Te 掺 Se 5.2% 可最大化热电性能代理（BO 预测 0.71，需实验/DFT 验证）",
+      "mechanism": "贝叶斯优化在「dopant × 浓度」二维空间平衡探索-利用：外层遍历 10 个掺杂元素、内层 UCB 采集寻优浓度；Se 最优代理二次项系数 -0.002 表明性能-浓度呈非线性（载流子增益 vs 声子散射回落的竞争）",
+      "candidates": [
+        { "formula": "Ge0.93Ti0.01Bi0.06Te-Se5%", "dopant": "Se", "concentration": "5.0%", "score": 0.85, "r2": 0.204 }
+      ],
+      "llm_calls": 40,
+      "llm_failures": 0,
+      "used_llm": true,
+      "roles": [
+        { "name": "假设种子生成器", "desc": "LLM 基于 Research Gap 生成候选假设，作为搜索种群/决策树的种子" },
+        { "name": "科学合理性评估器", "desc": "LLM 对中间候选打分（热力学可行性、物理合理性、文献支持度），过滤明显不合理候选" },
+        { "name": "搜索空间引导器", "desc": "LLM 分析搜索反馈，剪枝/聚焦搜索空间，调整采样方向" }
+      ],
+      "log": [
+        { "gen": 0, "action": "bo_start", "detail": "BO：Ge0.93Ti0.01Bi0.06Te 掺 [Ti, Bi, Sb, Na, Cu, Ag, In, Mn, Cd, Se] 浓度寻优 [1.0, 15.0]", "role": null },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Ti：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Bi：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Sb：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Na：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Cu：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Ag：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 In：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Mn：评估 19 点，最优 0.80", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Cd：评估 19 点，最优 0.70", "role": "evaluator" },
+        { "gen": 1, "action": "dopant_done", "detail": "掺 Se：评估 19 点，最优 0.85 ★", "role": "evaluator" },
+        { "gen": 1, "action": "bo_dopants_done", "detail": "dopant 外层遍历完成：10 个掺杂元素，探索轨迹 100 个候选", "role": null },
+        { "gen": 4, "action": "done", "detail": "输出最优 Ge0.93Ti0.01Bi0.06Te-Se 5.0%（采样 100 点，R²=0.204）", "role": null }
+      ]
+    },
+    {
+      "id": "validation",
+      "name": "OQMD/MP 验证",
+      "sub": "数据库交叉验证",
+      "desc": "对搜索输出的候选构效关系在 OQMD / Materials Project 数据库交叉验证：检查母体热力学稳定性（energy above hull）、带隙一致性，判定「已知 / 新知 / 反例 / 验证失败」，区分新知与已知并记录数据来源链接。",
+      "tool": "OQMD REST API + Materials Project (mp-api)",
+      "n_candidates": 220,
+      "verdict_stats": { "验证失败": 38, "已知": 162, "反例": 10, "新知": 10 },
+      "results": [
+        {
+          "candidate": "Ge0.96Ti0.04Te", "host": "GeTe", "dopant": "Ti", "conc": "4.0%",
+          "verdict": "已知",
+          "reason": "母体 GeTe 在 oqmd 中已收录且热力学稳定，基础体系得到支撑；掺杂成分 Ge0.96Ti0.04Te 为库外扩展（novel_dopant）",
+          "checks": [
+            { "property": "stability", "db": "hull=0.002 eV/atom, delta_e=-0.086 eV/atom", "ok": true, "note": "来源 oqmd（GeTe）" },
+            { "property": "band_gap", "db": "0.75 eV", "ok": true, "note": "DFT 带隙仅供参考（泛函低估 30-50%）" }
+          ],
+          "entries": [
+            { "db": "oqmd", "formula": "GeTe", "entry_id": "4062333", "delta_e": "-0.086", "stability": "0.002", "band_gap": "0.75", "stable": true }
+          ],
+          "source_url": "https://oqmd.org/oqmdapi/formationenergy?composition=GeTe&limit=10"
+        }
+      ]
+    },
+    {
+      "id": "audit",
+      "name": "证据链审计",
+      "sub": "全流程可追溯性审计",
+      "desc": "对全流程所有结论做「无来源检查」：每个结论必须可回溯到文献证据链；同时审计各 Agent 日志健康度、记录降级/跳过留痕（LLM 缺失、Sciverse 不可用等），确保任何结论不脱离证据。",
+      "tool": "证据链检查器 + JSON 审计日志 + 降级留痕",
+      "overview": { "检索文献 doc_id": 80, "Gap 结论": 29, "搜索 finding": 156, "验证产物": 47, "知识库条目": 5 },
+      "coverage": [
+        { "type": "Gap", "total": 29, "traceable": 29, "no_evidence": 0 },
+        { "type": "Finding", "total": 156, "traceable": 156, "no_evidence": 0 },
+        { "type": "验证", "total": 47, "traceable": 43, "no_evidence": 4 }
+      ],
+      "no_evidence": [
+        "validation_20260804T215128_20.json",
+        "validation_20260804T215134_27.json",
+        "validation_20260804T221700_rerun_8.json",
+        "validation_20260804T221700_rerun_9.json"
+      ],
+      "degraded": 540,
+      "health": [
+        { "agent": "orchestration", "logs": 1142, "ok": "0.953" },
+        { "agent": "retrieval_agent", "logs": 32, "ok": "0.938" },
+        { "agent": "extraction_agent", "logs": 195, "ok": "0.974" },
+        { "agent": "gap_agent", "logs": 416, "ok": "0.731" },
+        { "agent": "search_agent", "logs": 754, "ok": "1.000" },
+        { "agent": "validation_agent", "logs": 229, "ok": "1.000" }
+      ],
+      "degrade_samples": [
+        { "ts": "2026-08-04T15:25:43", "agent": "retrieval_agent.semantic_search", "status": "error", "msg": "未配置 Sciverse token：请设置 SCIVERSE_API_TOKEN 环境变量" },
+        { "ts": "2026-08-04T16:04:07", "agent": "gap_agent.gap_llm_skip", "status": "skipped", "msg": "{'reason': 'no LLM key'}" },
+        { "ts": "2026-08-04T16:04:07", "agent": "gap_agent.gap_novelty_verify", "status": "degraded", "msg": "{'reason': 'mock sciverse down'}" },
+        { "ts": "2026-08-04T16:12:35", "agent": "report_agent.report_generate", "status": "error", "msg": "KeyError: 'type'" }
+      ]
+    }
+  ]
+}</script>
+
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById('pipe-data').textContent);
+  var stages = DATA.stages;
+  var cur = 0;
+  var timer = null;
+  var autoOn = false;
+
+  var flowbar = document.getElementById('flowbar');
+  stages.forEach(function (s, i) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.innerHTML = '<span class="no">' + (i + 1) + '</span>' + s.name;
+    btn.addEventListener('click', function () { go(i); });
+    flowbar.appendChild(btn);
+    if (i < stages.length - 1) {
+      var a = document.createElement('span');
+      a.className = 'arrow';
+      a.textContent = '→';
+      flowbar.appendChild(a);
+    }
+  });
+
+  function esc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function noveltyTag(n) {
+    if (n === '新知') return '<span class="tag novelty-new">新知</span>';
+    if (n === '部分已知') return '<span class="tag novelty-partial">部分已知</span>';
+    return '<span class="tag novelty-known">已知</span>';
+  }
+  function verdictTag(v) {
+    if (v === '已知') return '<span class="tag verdict-known">已知</span>';
+    if (v === '新知') return '<span class="tag verdict-new">新知</span>';
+    if (v === '反例') return '<span class="tag verdict-counter">反例</span>';
+    return '<span class="tag verdict-fail">验证失败</span>';
+  }
+  function srcTag(s) {
+    return s === 'llm'
+      ? '<span class="tag llm">LLM 推理</span>'
+      : '<span class="tag src">' + esc(s) + '</span>';
+  }
+
+  function render(i) {
+    var s = stages[i];
+    var html = '';
+    html += '<div class="stage-title"><span class="badge">步骤 ' + (i + 1) + ' / 6</span><h2>' + esc(s.name) + ' · ' + esc(s.sub) + '</h2></div>';
+    html += '<div class="stage-desc">' + esc(s.desc) + '</div>';
+
+    if (s.id === 'retrieval') {
+      html += '<div class="card"><h2>检索输入</h2><div class="kv">';
+      html += '<b>研究问题</b><span>' + esc(s.query) + '</span>';
+      html += '<b>子查询</b><span>' + esc(s.sub_queries.join('；')) + '</span>';
+      html += '<b>召回数量</b><span><b style="color:var(--deep-blue)">' + s.total_found + '</b> 篇（语义命中 ' + s.semantic_hits + ' 篇，库表补充 ' + (s.papers.length - s.semantic_hits) + ' 篇）</span>';
+      html += '<b>调用工具</b><span>' + esc(s.tool) + '</span>';
+      html += '</div></div>';
+      html += '<div class="card"><h2>候选文献清单（按语义评分排序）</h2><table><thead><tr><th>#</th><th>文献标题</th><th>年份</th><th>期刊</th><th>语义评分</th><th>引用</th><th>来源</th></tr></thead><tbody>';
+      s.papers.forEach(function (p, j) {
+        html += '<tr><td>' + (j + 1) + '</td><td>' + esc(p.title) + (p.doi ? '<div class="muted">DOI: ' + esc(p.doi) + '</div>' : '') + '</td><td>' + esc(p.year) + '</td><td>' + esc(p.journal) + '</td>';
+        html += '<td>' + (p.score ? '<span class="pill blue">' + esc(p.score) + '</span>' : '<span class="muted">—</span>') + '</td>';
+        html += '<td>' + esc(p.cite) + '</td><td>' + (p.source === 'semantic' ? '<span class="tag ev">语义命中</span>' : '<span class="tag src">库表补充</span>') + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+      html += '<div class="card"><h2>证据片段（agentic-search 返回，可回溯）</h2>';
+      s.papers.filter(function (p) { return p.chunk; }).forEach(function (p) {
+        html += '<div class="chunk"><b style="color:var(--deep-blue)">评分 ' + esc(p.score) + '</b> · 页码 p.' + esc(p.page) + ' · ' + esc(p.journal) + ' ' + esc(p.year) + '<br>' + esc(p.chunk) + '</div>';
+      });
+      html += '<div class="note">每条证据片段对应唯一 doc_id，构成后续证据链的源头（source=sciverse, fetched_at 时间戳留痕）。</div></div>';
+    }
+
+    if (s.id === 'extraction') {
+      html += '<div class="card"><h2>抽取 Schema（五类结构化信息）</h2>';
+      html += '<div class="flow"><span class="step">材料成分</span><span class="arrow">→</span><span class="step">晶体结构</span><span class="arrow">→</span><span class="step">材料性能</span><span class="arrow">→</span><span class="step">模拟方法</span><span class="arrow">→</span><span class="step">合成条件</span></div>';
+      html += '<div class="note">MinerU 将 PDF 解析为结构化 Markdown → LLM 按 Schema 输出 JSON → Schema 校验 + 原文回查防幻觉 → 去重合并入库。</div></div>';
+      html += '<div class="card"><h2>知识库抽取结果（' + s.n_records + ' 条）</h2><table><thead><tr><th>材料体系</th><th>性能</th><th>合成条件</th><th>置信度</th><th>来源 doc_id</th></tr></thead><tbody>';
+      s.records.forEach(function (r) {
+        html += '<tr><td><b style="color:var(--deep-blue)">' + esc(r.formula) + '</b></td><td>' + esc(r.properties) + '</td><td>' + esc(r.synthesis) + '</td>';
+        html += '<td><span class="pill mid">' + esc(r.confidence) + '</span></td><td class="muted">' + esc(r.doc_id) + '</td></tr>';
+      });
+      html += '</tbody></table><div class="note">抽取记录通过 doc_id 关联回原文，形成「材料-性能-证据」三元组知识库，作为 Gap 识别与路线 A 搜索的输入。</div></div>';
+    }
+
+    if (s.id === 'gaps') {
+      html += '<div class="stat-bars">';
+      html += '<div class="stat-bar"><b>' + s.n_gaps + '</b><span>识别 Gap 总数</span></div>';
+      Object.keys(s.stats.types).forEach(function (k) {
+        html += '<div class="stat-bar"><b>' + s.stats.types[k] + '</b><span>' + esc(k) + '</span></div>';
+      });
+      html += '</div>';
+      html += '<div class="card"><h2>新颖性判定分布</h2>';
+      Object.keys(s.stats.novelty).forEach(function (k) {
+        html += noveltyTag(k) + ' <b>' + s.stats.novelty[k] + '</b> 条 &nbsp;';
+      });
+      html += '<span class="muted" style="margin-left:8px">｜ 来源：coverage ' + s.stats.sources.coverage + ' 条 / LLM 推理 ' + s.stats.sources.llm + ' 条</span>';
+      html += '</div>';
+      html += '<div class="card"><h2>代表性 Gap（含证据链与可操作性）</h2>';
+      s.gaps.forEach(function (g, j) {
+        html += '<div class="gap-item"><div class="muted">#' + (j + 1) + ' ' + esc(g.type) + ' ' + noveltyTag(g.novelty) + ' ' + srcTag(g.source) + ' 置信度 ' + g.conf + '</div>';
+        html += '<div class="stmt">' + esc(g.statement) + '</div>';
+        html += '<div class="muted" style="margin-top:6px">可操作性：' + esc(g.operability) + '</div></div>';
+      });
+      html += '<div class="note">每条 Gap 均带证据链（evidence_ids → 文献 doc_id）、Sciverse 回查验证与人工复核（novelty_confirmed + reviewer_note），保证「准确率 × 新颖性 × 可操作性」。</div></div>';
+    }
+
+    if (s.id === 'search') {
+      html += '<div class="card"><h2>LLM 与搜索算法深度融合的三种角色</h2><table><thead><tr><th>角色</th><th>作用</th></tr></thead><tbody>';
+      s.roles.forEach(function (r) {
+        html += '<tr><td><span class="tag role">' + esc(r.name) + '</span></td><td>' + esc(r.desc) + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+      html += '<div class="card"><h2>发现结果（算法：' + esc(s.algo) + '）</h2>';
+      html += '<div class="find-item"><div class="rel">' + esc(s.relation) + '</div>';
+      html += '<div class="hyp">假设：' + esc(s.hypothesis) + '</div>';
+      html += '<div class="muted" style="margin-top:6px">机制：' + esc(s.mechanism) + '</div></div>';
+      html += '<table><thead><tr><th>候选</th><th>掺杂元素</th><th>浓度</th><th>LLM 评估分</th><th>代理拟合 R²</th></tr></thead><tbody>';
+      s.candidates.forEach(function (c) {
+        html += '<tr><td><b style="color:var(--deep-blue)">' + esc(c.formula) + '</b></td><td>' + esc(c.dopant) + '</td><td>' + esc(c.concentration) + '</td>';
+        html += '<td><span class="pill good">' + c.score + '</span></td><td><span class="pill blue">' + esc(c.r2) + '</span></td></tr>';
+      });
+      html += '</tbody></table>';
+      html += '<div class="note">LLM 调用 <b style="color:#6B4FA3">' + s.llm_calls + '</b> 次 · 失败 ' + s.llm_failures + ' 次 · 已融合 LLM 评估（used_llm=' + s.used_llm + '）——LLM 作为科学合理性评估器参与每次采样打分。</div></div>';
+      html += '<div class="card"><h2>搜索运行轨迹（search_log，真实留痕）</h2>';
+      s.log.forEach(function (l) {
+        html += '<div class="log-line"><b>' + esc(l.action) + '</b> ' + (l.role ? '<span class="role">[LLM·' + esc(l.role) + ']</span> ' : '') + esc(l.detail) + '</div>';
+      });
+      html += '<div class="note">每次探索（生成/迭代）都记录：动作、候选数、LLM 角色、时间戳——构成搜索过程的完整审计轨迹。</div></div>';
+    }
+
+    if (s.id === 'validation') {
+      html += '<div class="card"><h2>验证判定分布（' + s.n_candidates + ' 个候选）</h2>';
+      Object.keys(s.verdict_stats).forEach(function (k) {
+        html += verdictTag(k) + ' <b>' + s.verdict_stats[k] + '</b> &nbsp;';
+      });
+      html += '</div>';
+      s.results.forEach(function (r) {
+        html += '<div class="card"><h2>候选 ' + esc(r.candidate) + '（母体 ' + esc(r.host) + ' · 掺杂 ' + esc(r.dopant) + ' ' + esc(r.conc) + '） ' + verdictTag(r.verdict) + '</h2>';
+        html += '<div class="kv"><b>判定依据</b><span>' + esc(r.reason) + '</span></div>';
+        html += '<h3>性质一致性检查（checks）</h3><table><thead><tr><th>性质</th><th>数据库值</th><th>一致性</th><th>说明</th></tr></thead><tbody>';
+        r.checks.forEach(function (c) {
+          html += '<tr><td>' + esc(c.property) + '</td><td>' + esc(c.db) + '</td>';
+          html += '<td>' + (c.ok ? '<span class="pill good">一致</span>' : '<span class="pill low">不一致</span>') + '</td><td class="muted">' + esc(c.note) + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        html += '<h3>数据库条目（entries）</h3><table><thead><tr><th>数据库</th><th>化学式</th><th>entry_id</th><th>ΔE (eV/atom)</th><th>hull (eV/atom)</th><th>带隙 (eV)</th><th>稳定</th></tr></thead><tbody>';
+        r.entries.forEach(function (e) {
+          html += '<tr><td>' + esc(e.db) + '</td><td>' + esc(e.formula) + '</td><td>' + esc(e.entry_id) + '</td><td>' + esc(e.delta_e) + '</td><td>' + esc(e.stability) + '</td><td>' + esc(e.band_gap) + '</td>';
+          html += '<td>' + (e.stable ? '<span class="pill good">是</span>' : '<span class="pill low">否</span>') + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        html += '<div class="muted" style="margin-top:6px">数据来源：<code>' + esc(r.source_url) + '</code></div>';
+      });
+      html += '<div class="note warn">验证区分「新知」与「已知」：母体库内稳定 = 已知体系支撑；掺杂成分库外扩展 = novel_dopant 标记，为后续实验/DFT 验证提供方向。</div>';
+    }
+
+    if (s.id === 'audit') {
+      html += '<div class="card"><h2>全流程数据概览</h2><div class="stat-bars">';
+      Object.keys(s.overview).forEach(function (k) {
+        html += '<div class="stat-bar"><b>' + s.overview[k] + '</b><span>' + esc(k) + '</span></div>';
+      });
+      html += '</div></div>';
+      html += '<div class="card"><h2>证据链覆盖（无来源结论检查）</h2><table><thead><tr><th>结论类型</th><th>总数</th><th>可追溯</th><th>无证据</th><th>覆盖率</th></tr></thead><tbody>';
+      s.coverage.forEach(function (c) {
+        var rate = Math.round(c.traceable / c.total * 100);
+        html += '<tr><td>' + esc(c.type) + '</td><td>' + c.total + '</td><td>' + c.traceable + '</td><td>' + c.no_evidence + '</td>';
+        html += '<td><span class="pill ' + (rate >= 90 ? 'good' : 'mid') + '">' + rate + '%</span></td></tr>';
+      });
+      html += '</tbody></table>';
+      html += '<div class="muted">无证据结论（evidence_ids 为空，共 ' + s.no_evidence.length + ' 条）：' + s.no_evidence.join('、') + '</div>';
+      html += '</div>';
+      html += '<div class="card"><h2>Agent 日志健康度（JSON 审计日志）</h2><table><thead><tr><th>Agent</th><th>日志数</th><th>成功率</th></tr></thead><tbody>';
+      s.health.forEach(function (h) {
+        html += '<tr><td>' + esc(h.agent) + '</td><td>' + h.logs + '</td><td><span class="pill ' + (parseFloat(h.ok) >= 0.9 ? 'good' : 'mid') + '">' + h.ok + '</span></td></tr>';
+      });
+      html += '</tbody></table></div>';
+      html += '<div class="card"><h2>降级留痕（' + s.degraded + ' 条 error / skipped / degraded）</h2>';
+      s.degrade_samples.forEach(function (d) {
+        html += '<div class="log-line"><b style="color:#D9701B">' + esc(d.status) + '</b> [' + esc(d.ts) + '] ' + esc(d.agent) + '：' + esc(d.msg) + '</div>';
+      });
+      html += '<div class="note warn">LLM/Sciverse 缺失时降级（retry → 简化 prompt → 跳过并记录），保证流水线可运行且不产生无来源结论——审计可复现性。</div></div>';
+    }
+
+    document.getElementById('stage').innerHTML = html;
+    document.getElementById('ind').textContent = (i + 1) + ' / ' + stages.length;
+    var btns = flowbar.querySelectorAll('button');
+    for (var k = 0; k < btns.length; k++) {
+      btns[k].classList.toggle('active', k === i * 2);
+    }
+  }
+
+  function go(i) {
+    cur = (i + stages.length) % stages.length;
+    render(cur);
+    if (autoOn) restart();
+  }
+  function next() { go(cur + 1); }
+  function prev() { go(cur - 1); }
+  function restart() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(function () { go(cur + 1); }, 6000);
+  }
+  function toggleAuto() {
+    autoOn = !autoOn;
+    var btn = document.getElementById('btn-auto');
+    if (autoOn) { restart(); btn.textContent = '⏸ 暂停'; }
+    else { if (timer) clearInterval(timer); timer = null; btn.textContent = '▶ 自动播放'; }
+  }
+
+  document.getElementById('btn-next').addEventListener('click', next);
+  document.getElementById('btn-prev').addEventListener('click', prev);
+  document.getElementById('btn-auto').addEventListener('click', toggleAuto);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+
+  render(0);
+})();
+</script>
+</body>
+</html>

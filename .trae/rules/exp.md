@@ -6,7 +6,7 @@ description: "各模块开发过程中积累的实测经验、踩坑与解决方
 created: "2026-08-04"
 updated: "2026-08-08"
 status: "active"
-version: "1.26"
+version: "1.27"
 ---
 
 # 开发经验记录（exp）
@@ -767,3 +767,14 @@ version: "1.26"
 - **原因**：① `nav` 是 `mount()` 函数内的 `const nav = document.getElementById("tabs")` 局部变量，`switchTab()` 却直接引用裸 `nav.children` ——函数作用域外访问未定义全局变量，点击任何 Tab 立即抛 ReferenceError；② 原 `mount()` 末尾一次性执行 `search.addEventListener("input", renderGapList)`，但当时搜索框（只存在于 gaps 面板）尚未渲染，`getElementById` 返回 null 静默跳过，事件从未绑定
 - **解决**：① `switchTab` 高亮逻辑改为 `document.querySelectorAll("nav button")`（不再依赖裸 `nav` 变量）；② 在 `switchTab` 内 `if (id === "gaps")` 分支重新 `getElementById("gap-search")` 绑定 `input` 事件（面板每次渲染后重绑）+ `focus()` 自动聚焦；③ 顺手加 `<link rel="icon" href="data:,">` 消除 favicon 404 控制台噪音；重新部署后 playwright 交互验证：Gap 面板可见、搜索框 count=1、输入 "GeTe" 过滤 29→8 条、清空恢复 29 条、评测指标面板切换正常、控制台错误 0
 - **注意**：① 自包含单页 JS 的「函数作用域」错误只会在用户操作时暴露——首屏渲染正常 ≠ 交互正常，**必须用 playwright 模拟点击/输入交互验证**，不能只 curl 状态码或只看首屏截图（呼应 exp 132）；② 「事件绑定时 DOM 不存在」是动态渲染面板的经典坑——事件绑定必须发生在对应 DOM 渲染之后（每次渲染重绑，或事件委托到常驻父节点）；③ 修 HTML/JS 后线上验证要清浏览器缓存（nginx 静态文件可能被缓存），或加版本查询参数；④ 验证脚本用临时文件跑完即删，不留仓库残留
+
+### 经验 135：为赛事组做「六阶段流水线过程演示」独立页——真实产物快照内联 + 步骤回放交互，比结果面板更能体现「过程」
+- **现象**：demo-panel.html 是「结果型」数据面板（按标签页展示 gaps/findings/validation 等统计与清单），但用户反馈赛事组想看到的是**全流程过程**——「检索 Agent → 抽取 Agent → Gap 识别 → 搜索算法 × LLM → OQMD/MP 验证 → 证据链审计」这条链路如何在系统里走通，demo 中没法体现
+- **解决**：新建 `docs/demo-pipeline.html` 自包含静态页（38KB，零外部依赖）：① 顶部 hero + 横向 6 步骤导航条（步骤号 + 名称 + 箭头，点击跳转）；② 主区每步骤一张「过程卡」——步骤 1 检索（query/sub_queries/total_found=8/papers 列表含语义评分与证据 chunk）、步骤 2 抽取（知识库 5 条：formula/性能/合成条件/置信度/doc_id）、步骤 3 Gap（29 条统计：类型 11/6/7/5、新颖性 9/10/10、来源 coverage 17/llm 12 + 代表 Gap 卡片含可操作性）、步骤 4 搜索×LLM（BO finding：relation/hypothesis/mechanism/top_candidates + search_log 13 步运行轨迹含 `[LLM·evaluator]` 标注 + llm_calls=40/used_llm=true 徽标 + LLM 三角色表）、步骤 5 验证（判定分布 已知 162/反例 10/新知 10/验证失败 38 + checks 一致性 + OQMD entries + source_url）、步骤 6 审计（数据概览 80/29/156/47/5 + 证据链覆盖表 29/29、156/156、43/47 + 降级留痕 540 条示例）；③ 交互：上一步/下一步 + 自动播放（6s/步）+ 键盘 ←→，数据全部内联 JSON 经 `render()` 渲染
+- **关键选择**：① 步骤 4 特意选用 **used_llm=true 的 BO finding**（`finding_20260808T101018_1.json`，llm_calls=40）而非 MCTS 规则模式产物——赛题考察「搜索算法与 LLM 深度融合」，演示页必须展示 LLM 真实参与评估的证据（search_log 的 `llm_role=evaluator` + 40 次调用计数），这是「过程感」的核心卖点；② 步骤间用同一主题主线串联（Gap 种子 Ge0.93Ti0.01Bi0.06Te → 搜索 → Se 5% 候选 → OQMD 验证）形成连贯叙事
+- **注意**：① 入口打通：demo-panel.html hero 加「▶ 六阶段 Agent 流水线过程演示（推荐体验）」链接跳 demo-pipeline.html，避免赛事组找不到新页面；② deploy_demo_static.py 的 upload 阶段要把 demo-pipeline.html 一起上传（files dict 扩展），只传 index.html 会导致链接 404；③ 步骤数据从真实产物手工提炼快照（注意 fidelity——knowledge_base 5 条、gap 分布、验证判定分布均与 `evidence_report` 核对一致），**禁止编造数据**
+
+### 经验 136：流水线演示页交互验证要覆盖「全部步骤导航 + 按钮 + 键盘」，测试脚本的断言逻辑本身也要先自检（verify_demo_pipeline.py）
+- **现象**：首次运行 `scripts/verify_demo_pipeline.py` 报 `AssertionError: 右键应前进到步骤2`——页面逻辑正常（flowbar 6 步、6 步骤逐一点击切换、上一步/下一步循环、自动播放开/关全部通过），**是测试脚本自身的导航前置条件错了**：测试在步骤 6 点了「上一步」注释说「回到步骤1」，但 prev 从步骤 6 实际回到步骤 5，后续键盘断言期望值随之错位
+- **解决**：① 键盘测试前置改为「直接点击步骤 1 的 flowbar 按钮」回到确定起点再按 ←→ 断言（1→2、2→1），消除对按钮循环路径的隐式依赖；② 每个断言带语义化消息（「应回到步骤1」「右键应前进到步骤2」）；③ 页面全 6 步交互 + 0 console 错误验证通过后，再做公网版验证脚本 `verify_demo_pipeline_online.py`（对 http://120.53.11.211/demo-pipeline.html 逐一点击 6 步 + 截图留痕）
+- **注意**：① 测试脚本与页面 bug 要分开归因——先看是「断言失败的信息是哪一步」再判断是页面还是测试问题，本次 6 步导航全过、唯独键盘断言错，显然是测试脚本自身状态机算错；② 本地 file:// 验证通过 ≠ 公网部署正常，必须加在线验证脚本（静态部署的路径/权限/缓存问题只能在线暴露，呼应 exp 132）；③ 截图选最有代表性的步骤（步骤 4 搜索×LLM）而非首屏，便于演示时展示核心融合卖点

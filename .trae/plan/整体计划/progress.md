@@ -6,7 +6,7 @@ tags: [整体计划, progress, 进度日志]
 created: "2026-08-04"
 updated: "2026-08-08"
 status: "active"
-version: "1.21"
+version: "1.22"
 ---
 
 # 整体开发计划 · 进度日志（progress）
@@ -431,6 +431,7 @@ version: "1.21"
 - [x] MP 双 thermo 交叉复核（2026-08-08 十五次深度开发：`src/validation/mp_phase.py` 固化 hull>0.5 触发 GGA_GGA+U legacy 复核 + thermo_discrepancy 留痕（判定一致也留痕）；`tests/test_mp_phase.py` 8 项单测（mock 模块级 monkeypatch + 可切换 hull 伪 PhaseDiagram）；`check_mp_phase_diagram.py` 薄封装复用）
 - [x] 现场 demo 脚本（2026-08-08 十五次深度开发：`docs/demo-script.md` 五幕分镜 + Q&A 预演，12 条共识 + 判定对照表（已知 9/反例 3）+ MP 双 thermo 核验为核心素材）
 - [x] pytest **450/450** 全绿、ruff 全量（src/tests/scripts）零 error（2026-08-08 十五次深度开发全量回归，新增 mp_phase 8 项；修复 1 处 E501）
+- [x] 六阶段 Agent 流水线独立演示页（2026-08-08：`docs/demo-pipeline.html` 自包含静态页，六步骤回放「检索 Agent → 抽取 Agent → Gap 识别 → 搜索算法 × LLM → OQMD/MP 验证 → 证据链审计」，全部真实产物快照内联（retrieval_20260808T090844 / knowledge_base 5 条 / gaps 29 条+分布 / BO×LLM finding（llm_calls=40、used_llm=true、search_log 轨迹）/ validation 判定 / evidence_report 覆盖表+降级留痕）；交互：步骤点击 + 上一步/下一步 + 自动播放 + 键盘 ←→；本地 playwright 交互验证 6 步骤全通过、0 console 错误（`scripts/verify_demo_pipeline.py`）；demo-panel.html hero 加「▶ 六阶段 Agent 流水线过程演示（推荐体验）」入口链接；deploy_demo_static.py upload 扩展同传 demo-pipeline.html → 腾讯云 http://120.53.11.211/demo-pipeline.html 公网 6 步骤验证通过 + 截图 `results/deploy_pipeline_verify.png`（`scripts/verify_demo_pipeline_online.py`））
 
 ### 待测项
 - [ ] 真实材料 PDF 全文解析（模块 3 补材料语料后执行）
