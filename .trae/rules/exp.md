@@ -6,7 +6,7 @@ description: "各模块开发过程中积累的实测经验、踩坑与解决方
 created: "2026-08-04"
 updated: "2026-08-08"
 status: "active"
-version: "1.25"
+version: "1.26"
 ---
 
 # 开发经验记录（exp）
@@ -761,3 +761,9 @@ version: "1.25"
 - **现象**：`git push origin main` HTTPS 失败——github.com:443 TCP 通但 TLS 被重置（SNI 阻断：DNS 指向 20.205.243.166 不通，而 140.82.112.3 等 IP 的 443 通）；api.github.com 可达（`gh` 可用）；本地无可用代理端口。且 `gh auth setup-git` 需写全局 gitconfig 被沙箱拒绝；默认 `~/.ssh/known_hosts` 写入也被沙箱拦截（SSH 首次连接 Host key 确认报错）
 - **解决**：① SSH 通道替代 HTTPS——账户已注册 id_ed25519 公钥（`gh ssh-key add` 确认已存在），`git remote set-url origin git@github.com:octave4649-creator/materials-science-agent.git`；② `GIT_SSH_COMMAND` 设 `ssh -o UserKnownHostsFile=$env:TEMP\known_hosts_demo -o StrictHostKeyChecking=accept-new` 规避沙箱对默认 known_hosts 的写入限制；③ push 成功（127 文件新增 / 23428 行，main 头 3337ee2，远端树 304 文件，demo-panel.html 124KB + deploy_demo_static.py 8.7KB 核验）
 - **注意**：① SNI 阻断判据三件套：`Test-NetConnection github.com -Port 443` TCP 通 + `git ls-remote` TLS 报错 + api.github.com 正常——齐备即走 SSH 通道；② SSH 通道要求账户已配公钥（`gh ssh-key add ~/.ssh/id_ed25519.pub`），`ssh -T git@github.com` 返回 `Hi octave4649-creator!` 验证；③ **`git add -A` 会误收无关文件**——曾误收 600MB WAYB/WAYC 原始数据（73e21efb-*）与 xiaohongshu_article.md，靠 `git status` 先审查剔除；大文件/无关文件先补 .gitignore 再 commit；④ 沙箱环境对 gitconfig/known_hosts 等用户级文件写入受限时，用环境变量/临时路径参数绕过，不改全局配置
+
+### 经验 134：单页面板 JS 交互失效——`switchTab` 引用 `mount` 局部变量 `nav` 报 `nav is not defined`，且搜索框事件在 DOM 未渲染时绑定无效（demo-panel.html 修复）
+- **现象**：用户打开线上 demo（http://120.53.11.211/）控制台报 `Uncaught ReferenceError: nav is not defined at switchTab`——页面能显示 overview 指标卡但所有 Tab 点击无效；且即使能切到 Research Gap 面板，搜索框输入也无法过滤列表（事件监听未生效）
+- **原因**：① `nav` 是 `mount()` 函数内的 `const nav = document.getElementById("tabs")` 局部变量，`switchTab()` 却直接引用裸 `nav.children` ——函数作用域外访问未定义全局变量，点击任何 Tab 立即抛 ReferenceError；② 原 `mount()` 末尾一次性执行 `search.addEventListener("input", renderGapList)`，但当时搜索框（只存在于 gaps 面板）尚未渲染，`getElementById` 返回 null 静默跳过，事件从未绑定
+- **解决**：① `switchTab` 高亮逻辑改为 `document.querySelectorAll("nav button")`（不再依赖裸 `nav` 变量）；② 在 `switchTab` 内 `if (id === "gaps")` 分支重新 `getElementById("gap-search")` 绑定 `input` 事件（面板每次渲染后重绑）+ `focus()` 自动聚焦；③ 顺手加 `<link rel="icon" href="data:,">` 消除 favicon 404 控制台噪音；重新部署后 playwright 交互验证：Gap 面板可见、搜索框 count=1、输入 "GeTe" 过滤 29→8 条、清空恢复 29 条、评测指标面板切换正常、控制台错误 0
+- **注意**：① 自包含单页 JS 的「函数作用域」错误只会在用户操作时暴露——首屏渲染正常 ≠ 交互正常，**必须用 playwright 模拟点击/输入交互验证**，不能只 curl 状态码或只看首屏截图（呼应 exp 132）；② 「事件绑定时 DOM 不存在」是动态渲染面板的经典坑——事件绑定必须发生在对应 DOM 渲染之后（每次渲染重绑，或事件委托到常驻父节点）；③ 修 HTML/JS 后线上验证要清浏览器缓存（nginx 静态文件可能被缓存），或加版本查询参数；④ 验证脚本用临时文件跑完即删，不留仓库残留

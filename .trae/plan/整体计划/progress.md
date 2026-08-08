@@ -6,7 +6,7 @@ tags: [整体计划, progress, 进度日志]
 created: "2026-08-04"
 updated: "2026-08-08"
 status: "active"
-version: "1.20"
+version: "1.21"
 ---
 
 # 整体开发计划 · 进度日志（progress）
@@ -289,6 +289,16 @@ version: "1.20"
   - **t3 渲染验证**：`scripts/verify_demo_deploy.py` playwright 复用系统 Chrome（executable_path 指向 `C:\Program Files\Google\Chrome\Application\chrome.exe`，规避 playwright 自带 headless shell 缺失）→ title/content 完整（94252 chars）+ 全页截图 `results/deploy_demo_verify.png`（166KB）（exp 132）
   - **t4 GitHub 仓库更新**：git 直连 github.com:443 被 SNI 阻断（TCP 通 TLS 重置、api.github.com 可达、无本地代理）→ 改 **SSH 通道**（账户已注册 id_ed25519 公钥，`gh ssh-key add` 确认）+ `UserKnownHostsFile` 指向 TEMP 规避沙箱 known_hosts 写入限制 → `git push origin main` 成功——**127 文件新增 / 23428 行，main 头 3337ee2，远端树 304 文件**（demo-panel.html 124KB + deploy_demo_static.py 8.7KB 已核验）（exp 133）
   - **t5 合规收尾**：.gitignore 补 `73e21efb-*`（WAYB/WAYC 600MB 原始数据）/*.zip/xiaohongshu_article.md（git add 先审查防误收）；旧部署脚本 deploy_server.py / deploy_v2.py 硬编码密码 → 全部脱敏为环境变量读取（红线修复）
+- **状态**：成功
+
+### 2026-08-08 demo 交互 Bug 修复（用户反馈线上面板无法操作）
+- **操作**：用户反馈「没法正常打开操作演示」，浏览器控制台 `Uncaught ReferenceError: nav is not defined at switchTab`（(索引):2802）——Tab 点击无效、Gap 搜索框不过滤
+- **结果**：
+  - **根因**：`switchTab()` 引用裸 `nav.children`，但 `nav` 是 `mount()` 内的局部变量（函数作用域外未定义）；且搜索框 `input` 事件在 `mount()` 末尾绑定，此时 gaps 面板 DOM 未渲染 → 绑定静默失败
+  - **修复**（docs/demo-panel.html）：`switchTab` 高亮改为 `document.querySelectorAll("nav button")`；`if (id==="gaps")` 分支每次渲染后重绑搜索框事件 + focus；`<link rel="icon" href="data:,">` 消除 favicon 404 噪音
+  - **重新部署**：`deploy_demo_static.py upload` 上传 127430 字节 → 公网验证 `nav.children` 已消失、修复代码已上线
+  - **交互验证**（playwright 复用系统 Chrome，临时脚本跑完即删）：overview 指标卡正常 / Gap 面板可见 / 搜索框 count=1 / 输入 "GeTe" 过滤 29→8 条 / 清空恢复 29 条 / 评测指标面板切换正常 / **控制台错误 0**
+  - **GitHub**：commit `ab0c84f`（fix(demo)）→ SSH 通道 push main `34187b1..ab0c84f`；exp.md 追加经验 134
 - **状态**：成功
 
 ## 阶段进度跟踪
