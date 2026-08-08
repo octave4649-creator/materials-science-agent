@@ -175,6 +175,8 @@ def stage_upload(c: paramiko.SSHClient) -> None:
     for src in (LIVE_PAGE, PANEL_PAGE, PIPELINE_PAGE):
         _put_file(c, src, "/tmp/live_pages")
     run(c, f"sudo mkdir -p {WEB_ROOT} && sudo cp /tmp/live_pages/*.html {WEB_ROOT}/ && sudo chown -R ubuntu:ubuntu {WEB_ROOT} && rm -rf /tmp/live_pages")
+    # 同步首页别名：用最新的 demo-panel.html 覆盖 index.html
+    run(c, f"sudo cp {WEB_ROOT}/demo-panel.html {WEB_ROOT}/index.html", silent=True)
     run(c, f"ls -la {WEB_ROOT} && echo '---' && ls -la {APP_DIR}/src {APP_DIR}/results/oracle {APP_DIR}/data/cache/scibase")
 
 
